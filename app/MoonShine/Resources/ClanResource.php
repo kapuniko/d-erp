@@ -24,7 +24,7 @@ class ClanResource extends ModelResource
 {
     protected string $model = Clan::class;
 
-    protected string $title = 'Clans';
+    protected string $title = 'Список кланов';
 
     public string $column = 'name';
 
