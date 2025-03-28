@@ -1,0 +1,10 @@
+td[data-column-selection="a"] .form-group,
+td[data-column-selection="dolgi"] .form-group{
+    flex-wrap: nowrap !important;
+}
+
+td[data-column-selection="a"] .form-group+.form-group,
+td[data-column-selection="dolgi"] .form-group+.form-group{
+    margin-bottom: 0 !important;
+    margin-top: 0 !important;
+}
