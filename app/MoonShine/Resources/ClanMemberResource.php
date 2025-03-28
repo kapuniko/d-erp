@@ -34,7 +34,7 @@ class ClanMemberResource extends ModelResource
 {
     protected string $model = ClanMember::class;
 
-    protected string $title = 'Игроки клана';
+    protected string $title = 'Список игроков клана';
 
     /**
      * @return list<MoonShineComponent|Field>
