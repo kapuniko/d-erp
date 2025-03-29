@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\ClanMember;
-
-use MoonShine\Laravel\Resources\ModelResource;
-use MoonShine\UI\Decorations\Block;
 use MoonShine\UI\Fields\ID;
+
+use MoonShine\Support\ListOf;
+use MoonShine\UI\Fields\Date;
+use MoonShine\UI\Fields\Text;
 use MoonShine\UI\Fields\Field;
-use MoonShine\UI\Components\MoonShineComponent;
+use MoonShine\UI\Fields\Number;
 
 use MoonShine\Laravel\Enums\Action;
-use MoonShine\Support\ListOf;
 
-
-use MoonShine\UI\Fields\Text;
-use MoonShine\Laravel\Fields\Relationships\BelongsTo;
-use MoonShine\UI\Fields\Number;
-use MoonShine\UI\Fields\Date;
+use MoonShine\UI\Decorations\Block;
+use Illuminate\Database\Eloquent\Model;
+use MoonShine\Laravel\Resources\ModelResource;
+use MoonShine\UI\Components\MoonShineComponent;
 
 use App\MoonShine\Resources\MoonShineUserResource;
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 
 
 

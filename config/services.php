@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'telegram' => [
+        'client_id' => null,
+        'bot' => env('TELEGRAM_BOT_USERNAME'),
+        'bot_username' => env('TELEGRAM_BOT_USERNAME'),
+        'token' => env('TELEGRAM_BOT_TOKEN'),
+        'redirect' => env('TELEGRAM_REDIRECT_URI', 'http://127.0.0.1:8000/auth/telegram/callback'),
+    ],
+
 ];
