@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TaxesController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TelegramAuthController;
 
 /*
