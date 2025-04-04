@@ -17,6 +17,7 @@
         "socialiteproviders/telegram": "^4.1"
     },
     "require-dev": {
+        "dev-lnk/moonshine-builder": "^2.3",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",

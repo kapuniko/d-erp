@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e10701be3297139cb920708c16617391",
+    "content-hash": "549a415f177d7feba8d4b5be3d53adc1",
     "packages": [
         {
             "name": "brick/math",
@@ -6651,6 +6651,70 @@
         }
     ],
     "packages-dev": [
+        {
+            "name": "dev-lnk/moonshine-builder",
+            "version": "2.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/dev-lnk/moonshine-builder.git",
+                "reference": "02d78675093bede6ee40ae8be5e27143ee53794a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/dev-lnk/moonshine-builder/zipball/02d78675093bede6ee40ae8be5e27143ee53794a",
+                "reference": "02d78675093bede6ee40ae8be5e27143ee53794a",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.2"
+            },
+            "conflict": {
+                "moonshine/moonshine": "<3.0"
+            },
+            "require-dev": {
+                "moonshine/moonshine": "^3.0",
+                "orchestra/testbench": "^9.0",
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^11.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "DevLnk\\MoonShineBuilder\\Providers\\MoonShineBuilderProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "files": [
+                    "src/helpers.php"
+                ],
+                "psr-4": {
+                    "DevLnk\\MoonShineBuilder\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ivan Levchenko",
+                    "email": "lkivanmail@gmail.com",
+                    "homepage": "https://github.com/dev-lnk"
+                }
+            ],
+            "description": "Project builder for MoonShine",
+            "keywords": [
+                "builder",
+                "moonshine"
+            ],
+            "support": {
+                "issues": "https://github.com/dev-lnk/moonshine-builder/issues",
+                "source": "https://github.com/dev-lnk/moonshine-builder/tree/2.3.4"
+            },
+            "time": "2025-04-01T11:25:58+00:00"
+        },
         {
             "name": "fakerphp/faker",
             "version": "v1.24.1",

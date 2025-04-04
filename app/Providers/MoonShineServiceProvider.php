@@ -15,6 +15,7 @@ use App\MoonShine\Resources\ClanMemberResource;
 use App\MoonShine\Resources\ClanResource;
 use App\MoonShine\Resources\TaxAmountResource;
 use App\MoonShine\Resources\TreasuryLogResource;
+use App\MoonShine\Resources\CalendarEventResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -35,6 +36,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 ClanMemberResource::class,
                 ClanResource::class,
                 TaxAmountResource::class,
+                CalendarEventResource::class,
             ])
             ->pages([
                 ...$config->getPages(),
