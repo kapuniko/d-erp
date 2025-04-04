@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\CalendarController;
+use App\Services\CalendarService;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaxesController;
 use App\Http\Controllers\ProfileController;
@@ -22,8 +24,12 @@ Route::get('/', function () {
 
 Route::get('/taxes/{token}', [TaxesController::class, 'show'])->name('taxes.show');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
+Route::get('/dashboard', function (CalendarService $calendarService) {
+    // Получаем данные из сервиса
+    $grouped = $calendarService->getGroupedEvents();
+
+    // Возвращаем представление с данными
+    return view('dashboard', compact('grouped'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -38,5 +44,7 @@ Route::get('/auth/telegram/callback', [TelegramAuthController::class, 'callback'
 Route::get('/cabinet', function () {
     return view('cabinet');
 })->middleware('auth');
+
+Route::get('/calendar', [CalendarController::class, 'index']);
 
 require __DIR__.'/auth.php';

@@ -1,0 +1,46 @@
+
+.month {
+    width: 100%;
+    padding: 20px;
+    background-color: white;
+    margin-bottom: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.month h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+.calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    padding: 10px;
+    text-align: center;
+}
+.day {
+    padding: 10px;
+    background-color: #eaeaea;
+    border-radius: 5px;
+    position: relative;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.weekday {
+    font-weight: bold;
+    background-color: #d4d4d4;
+}
+.emoji-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-top: 5px;
+}
+.emoji {
+    font-size: 14px;
+}
+.today {
+    background-color: #7cfc7c !important;
+} /* Зеленый цвет для текущего дня */

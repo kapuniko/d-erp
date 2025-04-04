@@ -14,4 +14,6 @@
             </div>
         </div>
     </div>
+
+    <x-calendar :grouped="$grouped" />
 </x-app-layout>
