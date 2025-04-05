@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace App\MoonShine\Resources;
 
+use App\Enums\CalendarEventType;
 use App\Models\CalendarEvent;
 
+use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
+use MoonShine\UI\Fields\Checkbox;
+use MoonShine\UI\Fields\Color;
+use MoonShine\UI\Fields\Enum;
 use MoonShine\UI\Fields\ID;
 use MoonShine\UI\Fields\Text;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\Number;
+use MoonShine\UI\Fields\Fieldset;
+
 
 /**
  * @extends ModelResource<CalendarEvent>
@@ -20,17 +27,36 @@ class CalendarEventResource extends ModelResource
 {
     protected string $model = CalendarEvent::class;
 
+    protected string $title = 'События на календаре';
+
     public function indexFields(): iterable
     {
         // TODO correct labels values
         return [
 			ID::make('id'),
 			Text::make('emoji', 'emoji'),
-			Date::make('event_date', 'event_date'),
-			Text::make('event_time', 'event_time'),
-			Date::make('repeat_until', 'repeat_until'),
-			Number::make('interval_hours', 'interval_hours'),
-			Number::make('amount', 'amount'),
+            Text::make('name', 'name'),
+            Fieldset::make('Начало', [
+                Date::make('Дата', 'event_date'),
+                Text::make('Время', 'event_time'),
+            ]),
+            Fieldset::make('Повтор',[
+                Number::make('Интервал в часах', 'interval_hours'),
+                Date::make('Дата окончания', 'repeat_until'),
+            ]),
+
+            Fieldset::make('Мультидэй',[
+                Checkbox::make('is_all_day', 'is_all_day'),
+                Date::make('Дата окончания', 'event_end_date'),
+                Enum::make('display_type')->attach(CalendarEventType::class)->nullable(),
+            ]),
+
+			//Number::make('amount', 'amount'),
+
+            Text::make('description', 'description'),
+            Text::make('type', 'type'),
+            Color::make('color', 'color'),
+            BelongsTo::make('User', 'user', resource: UserResource::class)->nullable(),
         ];
     }
 

@@ -1,7 +1,7 @@
 <?php
-
 namespace App\Models;
 
+use App\Enums\CalendarEventType;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,54 +10,76 @@ class CalendarEvent extends Model
 {
     use HasFactory;
 
-    protected $dates = ['event_date', 'created_at', 'updated_at', 'repeat_until'];
-
-    protected $fillable = [
-        'event_date', 'event_time', 'repeat_until', 'interval_hours', 'amount', 'emoji'
+    protected $casts = [
+        'display_type' => CalendarEventType::class,
+        'event_date' => 'date',
+        'event_end_date' => 'date',
+        'repeat_until' => 'date',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
-    // Кастуем event_time в нужный формат (HH:MM) без секунд
-    public function getEventTimeAttribute($value)
-    {
-        return Carbon::parse($value)->format('H:i'); // Форматируем только до минут
+    protected $fillable = [
+        'event_date',
+        'event_end_date',
+        'is_all_day',
+        'display_type',
+        'event_time',
+        'repeat_until',
+        'interval_hours',
+        'amount',
+        'emoji',
+        'name',
+        'description',
+        'type',
+        'color',
+        'user_id',
+    ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
     }
 
-    // Кастуем event_date в формат Y-m-d
+    public function getEventTimeAttribute($value)
+    {
+        return Carbon::parse($value)->format('H:i');
+    }
+
     public function getEventDateAttribute($value)
     {
         return Carbon::parse($value)->format('Y-m-d');
     }
 
-    // Кастуем эмодзи
     public function getEmojiAttribute($value)
     {
         return $value; // Просто возвращаем эмодзи
     }
 
-    // Получаем повторяющиеся события
+    // Фильтрация повторяющихся событий
+    public static function getRepeatEvents()
+    {
+        return self::where('display_type', 'repeat')->get();
+    }
+
+    // Фильтрация многодневных событий
+    public static function getRangeEvents()
+    {
+        return self::where('display_type', 'range')->get();
+    }
+
     public function getRepeatedInstances(): array
     {
         $instances = [];
-
-        // Формируем строку для Carbon
-        $formattedDateTime = $this->event_date . ' ' . substr($this->event_time, 0, 5); // Отрезаем секунды, если они есть
-
-//        \Log::info('Сформированная строка времени: ' . $formattedDateTime); // Логируем строку для отладки
+        $formattedDateTime = $this->event_date . ' ' . substr($this->event_time, 0, 5); // Отрезаем секунды
 
         $start = null;
-
         try {
-            // Попытка преобразования строки в объект Carbon
             $start = Carbon::createFromFormat('Y-m-d H:i', $formattedDateTime);
-//             \Log::info('Carbon объект создан: ' . $start); // Логируем успешное создание объекта
             $instances[] = $start;
         } catch (\Exception $e) {
-            // Логирование ошибки и вывода строки
-//            \Log::error('Ошибка при парсинге даты и времени: ' . $e->getMessage());
-//            \Log::error('Строка, которая вызвала ошибку: ' . $formattedDateTime);
+            // Обработка ошибки парсинга
         }
 
-        // Проверка, была ли успешно создана переменная $start
         if ($start && $this->repeat_until && $this->interval_hours) {
             $end = Carbon::parse($this->repeat_until)->endOfDay();
             $next = $start->copy()->addHours($this->interval_hours);
@@ -66,6 +88,32 @@ class CalendarEvent extends Model
                 $instances[] = $next->copy();
                 $next->addHours($this->interval_hours);
             }
+        }
+
+        return $instances;
+    }
+
+    public function isMultiDay(): bool
+    {
+        // Проверяем, что дата окончания существует и больше даты начала
+        return $this->event_end_date && $this->event_end_date > $this->event_date;
+    }
+
+    public function getMultiDayInstances(): array
+    {
+        // Проверяем, если событие не многодневное
+        if (!$this->isMultiDay()) {
+            return [];
+        }
+
+        $instances = [];
+        $current = Carbon::parse($this->event_date);
+        $end = Carbon::parse($this->event_end_date);
+
+        // Добавляем каждый день в интервале
+        while ($current <= $end) {
+            $instances[] = $current->copy();
+            $current->addDay();
         }
 
         return $instances;

@@ -41,6 +41,7 @@ use MoonShine\MenuManager\MenuItem;
 use MoonShine\Laravel\Resources\MoonShineUserResource;
 use MoonShine\Laravel\Resources\MoonShineUserRoleResource;
 use App\MoonShine\Resources\CalendarEventResource;
+use App\MoonShine\Resources\UserResource;
 
 final class MoonShineLayout extends AppLayout
 {
@@ -73,6 +74,7 @@ final class MoonShineLayout extends AppLayout
 
 
             MenuItem::make('CalendarEvent', CalendarEventResource::class),
+            MenuItem::make('User', UserResource::class),
         ];
 
         if (request()->user('moonshine')->moonshine_user_role_id == 1) {

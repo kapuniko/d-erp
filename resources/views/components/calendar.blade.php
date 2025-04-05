@@ -37,7 +37,16 @@
                         <span>{{ $day }}</span>
                         <div class="emoji-container">
                             @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                                <x-event :event="$event" />
+                                @if(is_object($event) && $event->display_type === 'range')
+                                    <!-- Многодневное событие -->
+                                    <x-event :event="$event" is_multiday="true" />
+                                @elseif(is_object($event) && property_exists($event, 'event_end_date') && $event->event_end_date)
+                                    <!-- Повторяющееся событие с датой окончания -->
+                                    <x-event :event="$event" />
+                                @else
+                                    <!-- Обычное (единичное или повторяющееся) событие -->
+                                    <x-event :event="$event" />
+                                @endif
                             @endforeach
                         </div>
                     </div>
