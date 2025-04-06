@@ -12,14 +12,18 @@ class CalendarService
         $events = CalendarEvent::all();
         $grouped = [];
 
+//        \Log::info("All Events: ", $events->toArray());
+
         // Для каждого события
         foreach ($events as $event) {
             $instances = $event->getRepeatedInstances();
 
+//            \Log::info("Instances for Event " . $event->id . ": ", $instances);
+
             // Для повторяющихся событий
             if ($event->display_type->value === 'repeat') {
                 foreach ($instances as $instance) {
-                    $key = $instance->format('n-j');
+                    $key = $instance->format('Y-m-d');
                     $grouped[$key] = $grouped[$key] ?? collect();
                     $grouped[$key]->push((object)[
                         'emoji' => $event->emoji,
@@ -37,7 +41,7 @@ class CalendarService
                 $multiDayInstances = $event->getMultiDayInstances();
 
                 foreach ($multiDayInstances as $multiDayInstance) {
-                    $key = $multiDayInstance->format('n-j');
+                    $key = $multiDayInstance->format('Y-m-d');
 
                     // Добавляем только если этот день еще не был добавлен (чтобы избежать дублирования)
                     if (!isset($grouped[$key])) {
@@ -56,6 +60,7 @@ class CalendarService
             }
         }
 
+//        \Log::info("Grouped Events: ", $grouped);
         return $grouped;
     }
 

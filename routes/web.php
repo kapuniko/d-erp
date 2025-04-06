@@ -24,12 +24,8 @@ Route::get('/', function () {
 
 Route::get('/taxes/{token}', [TaxesController::class, 'show'])->name('taxes.show');
 
-Route::get('/dashboard', function (CalendarService $calendarService) {
-    // Получаем данные из сервиса
-    $grouped = $calendarService->getGroupedEvents();
-
-    // Возвращаем представление с данными
-    return view('dashboard', compact('grouped'));
+Route::get('/dashboard', function () {
+    return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {

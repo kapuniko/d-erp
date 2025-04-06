@@ -1,3 +1,7 @@
+@push('calendar-assets')
+    @vite(['resources/css/calendar.css', 'resources/js/calendar.js'])
+@endpush
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -15,5 +19,9 @@
         </div>
     </div>
 
-    <x-calendar :grouped="$grouped" />
+{{--    <x-calendar :grouped="$grouped" />--}}
+
+
+
+    <x-calendar-year :year="2025"  />
 </x-app-layout>
