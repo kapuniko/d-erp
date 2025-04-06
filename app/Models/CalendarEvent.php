@@ -86,10 +86,9 @@ class CalendarEvent extends Model
 
             while ($next <= $end) {
                 $instances[] = $next->copy();
-                $next->addHours($this->interval_hours);
+                $next = $next->addHours($this->interval_hours);
             }
         }
-
         return $instances;
     }
 

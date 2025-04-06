@@ -8,7 +8,7 @@
     @endif
     @if($is_multiday)
         <span class="event-duration">
-            (Многодневное: {{ \Carbon\Carbon::parse($event->event_date)->format('d.m.Y') }} — {{ \Carbon\Carbon::parse($event->event_end_date)->format('d.m.Y') }})
+            {{ $event->name }}
         </span>
     @endif
 </div>

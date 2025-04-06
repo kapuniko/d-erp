@@ -21,6 +21,7 @@
                 @php
                     $firstDay = \Carbon\Carbon::create(2025, $month, 1)->dayOfWeekIso - 1;
                     $daysInMonth = \Carbon\Carbon::create(2025, $month)->daysInMonth;
+                    $grouped = app(\App\Services\CalendarService::class)->getGroupedEvents(); // Получаем все события
                 @endphp
 
                 @for($i = 0; $i < $firstDay; $i++)
@@ -36,16 +37,26 @@
                     <div class="day {{ $isToday ? 'today' : '' }}">
                         <span>{{ $day }}</span>
                         <div class="emoji-container">
+                            <!-- Повторяющиеся события -->
                             @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                                @if(is_object($event) && $event->display_type === 'range')
-                                    <!-- Многодневное событие -->
-                                    <x-event :event="$event" is_multiday="true" />
-                                @elseif(is_object($event) && property_exists($event, 'event_end_date') && $event->event_end_date)
-                                    <!-- Повторяющееся событие с датой окончания -->
-                                    <x-event :event="$event" />
-                                @else
-                                    <!-- Обычное (единичное или повторяющееся) событие -->
-                                    <x-event :event="$event" />
+                                @if($event->display_type->value === 'repeat')
+                                    <div>
+                                        <!-- Повторяющееся событие -->
+                                        <x-event :event="$event" />
+                                    </div>
+                                @endif
+                            @endforeach
+
+                            <!-- Разделитель -->
+                            <hr>
+
+                            <!-- Многодневные события -->
+                            @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
+                                @if($event->display_type->value === 'range')
+                                    <div>
+                                        <!-- Многодневное событие -->
+                                        <x-event :event="$event" is_multiday="true" />
+                                    </div>
                                 @endif
                             @endforeach
                         </div>

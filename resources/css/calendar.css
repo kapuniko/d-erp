@@ -44,3 +44,11 @@
 .today {
     background-color: #7cfc7c !important;
 } /* Зеленый цвет для текущего дня */
+
+
+.multiday-event {
+    background-color: rgba(241, 196, 15, 0.44); /* Желтый фон для многодневных событий */
+    border-radius: 5px;
+    padding: 5px;
+    display: block;
+}
