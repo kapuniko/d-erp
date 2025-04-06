@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Calendar;
 
 use Illuminate\View\Component;
 
@@ -21,7 +21,7 @@ class CalendarMonth extends Component
 
     public function render()
     {
-        return view('components.calendar-month');
+        return view('components.calendar.calendar-month');
     }
 }
 

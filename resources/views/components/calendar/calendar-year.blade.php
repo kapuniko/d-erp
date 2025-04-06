@@ -18,7 +18,7 @@
 
         @endphp
 
-        <x-calendar-month
+        <x-calendar.calendar-month
             :year="$year"
             :month="$month"
             :monthName="$months[$month - 1]"

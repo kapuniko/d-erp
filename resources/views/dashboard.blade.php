@@ -23,5 +23,5 @@
 
 
 
-    <x-calendar-year :year="2025"  />
+    <x-calendar.calendar-year :year="2025"  />
 </x-app-layout>

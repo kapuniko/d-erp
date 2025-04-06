@@ -33,7 +33,7 @@
                     @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
                         @if($event->display_type->value === 'repeat')
                             <div>
-                                <x-event :event="$event" />
+                                <x-calendar.event :event="$event" />
                             </div>
                         @endif
                     @endforeach
@@ -44,7 +44,7 @@
                     @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
                         @if($event->display_type->value === 'range')
                             <div>
-                                <x-event :event="$event" is_multiday="true" />
+                                <x-calendar.event :event="$event" is_multiday="true" />
                             </div>
                         @endif
                     @endforeach

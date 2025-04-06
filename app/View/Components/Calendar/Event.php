@@ -1,6 +1,6 @@
 <?php
 
-namespace App\View\Components;
+namespace App\View\Components\Calendar;
 
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -16,6 +16,6 @@ class Event extends Component
 
     public function render(): View|Closure|string
     {
-        return view('components.event');
+        return view('components.calendar.event');
     }
 }
