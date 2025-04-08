@@ -24,4 +24,7 @@ jobs:
             php artisan cache:clear
             php artisan route:cache
             php artisan queue:restart
-            /root/.nvm/versions/node/v20.19.0/bin/npm run build
+            export NVM_DIR="/root/.nvm"
+            source "$NVM_DIR/nvm.sh"
+            nvm use 20
+            npm run build
