@@ -39,7 +39,7 @@
     margin-top: 5px;
 }
 .emoji {
-    font-size: 14px;
+    font-size: 12px;
 }
 .today {
     background-color: #7cfc7c !important;
@@ -51,4 +51,8 @@
     border-radius: 5px;
     padding: 5px;
     display: block;
+}
+
+.season-event {
+    background-color: rgba(45, 241, 15, 0.47);
 }
