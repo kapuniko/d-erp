@@ -1,3 +1,4 @@
+@php use Carbon\Carbon; @endphp
 @push('calendar-assets')
     @vite(['resources/css/calendar.css', 'resources/js/calendar.js'])
 @endpush
@@ -9,19 +10,11 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900 dark:text-gray-100">
-                    {{ __("You're logged in!") }}
-                </div>
-            </div>
-        </div>
-    </div>
+    @php
+        $currentYear = Carbon::now()->year; // Текущий год
+        $currentMonth = Carbon::now()->month; // Текущий месяц
+    @endphp
 
-{{--    <x-calendar :grouped="$grouped" />--}}
+    @livewire('calendar-month', ['year' => $currentYear, 'month' => $currentMonth])
 
-
-
-    <x-calendar.calendar-year :year="2025"  />
 </x-app-layout>
