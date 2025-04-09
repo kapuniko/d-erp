@@ -2,49 +2,68 @@
 
 namespace App\Livewire;
 
+use Livewire\Component;
 use App\Services\CalendarService;
 use Carbon\Carbon;
-use Livewire\Component;
 
 class CalendarMonth extends Component
 {
-    public $year;
-    public $month;
-    public $monthName;
-    public $groupedEvents;
+    public int $year;
+    public int $month;
+    public array $grouped = [];
+    public array $monthlyEvents = [];
 
-    public function mount($year = 2025, $month = 4)
+    public function mount($year, $month)
     {
         $this->year = $year;
         $this->month = $month;
-        $this->monthName = Carbon::create($year, $month, 1)->monthName;
-        $this->groupedEvents = (new CalendarService())->getGroupedEvents();
+
+        $calendarService = new CalendarService();
+        $this->grouped = $calendarService->getGroupedEvents();
+
+        // Собираем события для отображения в сайдбаре
+        $this->monthlyEvents = $this->getEventsForMonth();
     }
 
-    // Метод для изменения месяца
-    public function changeMonth($direction)
+    public function getEventsForMonth(): array
     {
-        if ($direction === 'next') {
-            $this->month++;
-            if ($this->month > 12) {
-                $this->month = 1;
-                $this->year++;
-            }
-        } elseif ($direction === 'previous') {
-            $this->month--;
-            if ($this->month < 1) {
-                $this->month = 12;
-                $this->year--;
+        $start = Carbon::create($this->year, $this->month)->startOfMonth();
+        $end = Carbon::create($this->year, $this->month)->endOfMonth();
+        $events = [];
+
+        foreach ($this->grouped as $date => $dayEvents) {
+            $dateObj = Carbon::parse($date);
+            if ($dateObj->between($start, $end)) {
+                foreach ($dayEvents as $event) {
+                    $events[] = $event;
+                }
             }
         }
 
-        // Обновляем события после изменения месяца
-        $this->monthName = Carbon::create($this->year, $this->month, 1)->monthName;
-        $this->groupedEvents = (new CalendarService())->getGroupedEvents();
+        return $events;
+    }
+
+    public function changeMonth($direction)
+    {
+        if ($direction === 'previous') {
+            $date = Carbon::create($this->year, $this->month)->subMonth();
+        } else {
+            $date = Carbon::create($this->year, $this->month)->addMonth();
+        }
+
+        $this->year = $date->year;
+        $this->month = $date->month;
+
+        $calendarService = new CalendarService();
+        $this->grouped = $calendarService->getGroupedEvents();
+        $this->monthlyEvents = $this->getEventsForMonth();
     }
 
     public function render()
     {
-        return view('livewire.calendar-month');
+        $monthName = Carbon::create($this->year, $this->month)->translatedFormat('F');
+        return view('livewire.calendar-month', [
+            'monthName' => $monthName,
+        ]);
     }
 }
