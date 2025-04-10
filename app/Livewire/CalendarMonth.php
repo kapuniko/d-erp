@@ -56,7 +56,7 @@ class CalendarMonth extends Component
         $this->month = $date->month;
 
         $calendarService = new CalendarService();
-        $this->grouped = $calendarService->getGroupedEvents();
+        $this->grouped = $calendarService->getGroupedEvents(Auth::id());
         $this->monthlyEvents = $this->getEventsForMonth();
     }
 
