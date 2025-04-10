@@ -9,7 +9,7 @@
             <x-moonshine::layout.box>
                 Спасибо всем, кто понимает, что наши клан-таланты качаются не сами собой. Что это наше, самое большое, общее дело.
                 <br><br>Спасибо всем, кто выделяет на общее дело одну, а иногда и две (и три) радуги в месяце!
-                <br><br>В диаграммах приведено количество поступивших в казну ресурсов, для прокачки клановых талантов, за <strong>Март</strong>.
+                <br><br>В диаграммах приведено количество поступивших в казну ресурсов, для прокачки клановых талантов, за <strong>{{ \Carbon\Carbon::now()->translatedFormat('F') }}</strong>.
                 <br><br>В будущем тут появится "прогресс-бар", отражающий - сколько нам осталось до апа намеченного таланта.
                 <br><br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
@@ -19,7 +19,7 @@
             {!! $donutChart_coins->render() !!}
         </x-moonshine::layout.column>
     </x-moonshine::layout.grid>
-    
+
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
             {!! $donutChart_crystals->render() !!}
