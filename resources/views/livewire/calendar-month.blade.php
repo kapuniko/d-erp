@@ -9,29 +9,32 @@
 
 <div class="flex flex-col md:flex-row gap-6">
     {{-- Sidebar --}}
-    <div class="w-full md:w-1/4 bg-white dark:bg-gray-800 rounded-xl shadow p-4">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">📋 События в {{ $monthName }}</h3>
+    <x-moonshine::layout.box>
+        <div class="w-full md:w-1/4 bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">📋 События в {{ $monthName }}</h3>
 
-        {{-- Повторяющиеся --}}
-        <div class="mb-5">
-            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🔁 Повторяющиеся</h4>
-            <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                @foreach(collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('name') as $event)
-                    <li>{{ $event->emoji }} {{ $event->name }}</li>
-                @endforeach
-            </ul>
-        </div>
+            {{-- Повторяющиеся --}}
+            <div class="mb-5">
+                <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🔁 Повторяющиеся</h4>
+                <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                    @foreach(collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('name') as $event)
+                        <li>{{ $event->emoji }} {{ $event->name }}</li>
+                    @endforeach
+                </ul>
+            </div>
 
-        {{-- Многодневные --}}
-        <div>
-            <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🗓️ Многодневные</h4>
-            <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                @foreach(collect($monthlyEvents)->where('display_type.value', 'range')->unique('name') as $event)
-                    <li>{{ $event->emoji }} {{ $event->name }}</li>
-                @endforeach
-            </ul>
+            {{-- Многодневные --}}
+            <div>
+                <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🗓️ Многодневные</h4>
+                <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
+                    @foreach(collect($monthlyEvents)->where('display_type.value', 'range')->unique('name') as $event)
+                        <li>{{ $event->emoji }} {{ $event->name }}</li>
+                    @endforeach
+                </ul>
+            </div>
         </div>
-    </div>
+    </x-moonshine::layout.box>
+
 
     {{-- Calendar --}}
     <div class="w-full md:w-3/4">
@@ -53,7 +56,7 @@
             </button>
         </div>
 
-        <div class="calendar grid grid-cols-7 gap-1">
+        <div class="calendar">
             @foreach ($weekdays as $day)
                 <div class="day weekday font-semibold text-center">{{ $day }}</div>
             @endforeach
@@ -69,9 +72,9 @@
                     $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
                 @endphp
 
-                <div class="day border rounded p-1 {{ $isToday ? 'bg-blue-100 dark:bg-blue-900' : '' }}">
+                <div class="day border rounded p-1 {{ $isToday ? 'today' : '' }}">
                     <span class="font-bold">{{ $day }}</span>
-                    <div class="emoji-container text-sm space-y-1 mt-1">
+                    <div class="emoji-container">
                         {{-- Повторяющиеся события --}}
                         @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
                             @if($event->display_type->value === 'repeat')

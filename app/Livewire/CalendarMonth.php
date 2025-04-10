@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Services\CalendarService;
 use Carbon\Carbon;
@@ -19,7 +20,7 @@ class CalendarMonth extends Component
         $this->month = $month;
 
         $calendarService = new CalendarService();
-        $this->grouped = $calendarService->getGroupedEvents();
+        $this->grouped = $calendarService->getGroupedEvents(Auth::id());
 
         // Собираем события для отображения в сайдбаре
         $this->monthlyEvents = $this->getEventsForMonth();

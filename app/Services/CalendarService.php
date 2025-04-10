@@ -7,9 +7,10 @@ use Carbon\Carbon;
 
 class CalendarService
 {
-    public function getGroupedEvents(): array
+    public function getGroupedEvents(?int $userId = null): array
     {
-        $events = CalendarEvent::all();
+        //$events = CalendarEvent::all();
+        $events = CalendarEvent::visibleForUser($userId)->get();
         $grouped = [];
 
 //        \Log::info("All Events: ", $events->toArray());

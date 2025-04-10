@@ -6,6 +6,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * @method static visibleForUser(int|null $userId)
+ */
 class CalendarEvent extends Model
 {
     use HasFactory;
@@ -35,6 +38,13 @@ class CalendarEvent extends Model
         'color',
         'user_id',
     ];
+
+    // Скоуп: события, которые видны конкретному пользователю
+    public function scopeVisibleForUser($query, $userId)
+    {
+        return $query->whereNull('user_id')
+            ->when($userId, fn($q) => $q->orWhere('user_id', $userId));
+    }
 
     public function user(){
         return $this->belongsTo(User::class);
