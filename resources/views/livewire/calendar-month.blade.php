@@ -6,11 +6,9 @@
     $firstDay = Carbon::create($year, $month, 1)->dayOfWeekIso - 1;
     $daysInMonth = Carbon::create($year, $month)->daysInMonth;
 @endphp
-
-<div class="flex flex-col md:flex-row gap-6">
-    {{-- Sidebar --}}
-    <x-moonshine::layout.box>
-        <div class="w-full md:w-1/4 bg-white dark:bg-gray-800 rounded-xl shadow p-4">
+<x-moonshine::layout.grid @style('margin: 1.25rem')>
+    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3" >
+        <x-moonshine::layout.box>
             <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">📋 События в {{ $monthName }}</h3>
 
             {{-- Повторяющиеся --}}
@@ -32,71 +30,74 @@
                     @endforeach
                 </ul>
             </div>
-        </div>
-    </x-moonshine::layout.box>
+        </x-moonshine::layout.box>
 
+    </x-moonshine::layout.column>
+    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="9">
+        <x-moonshine::layout.box>
+            <div class="calendar-controls flex justify-between items-center mb-4">
+                <button
+                    wire:click="changeMonth('previous')"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
+                >
+                    ← Предыдущий месяц
+                </button>
 
-    {{-- Calendar --}}
-    <div class="w-full md:w-3/4">
-        <div class="calendar-controls flex justify-between items-center mb-4">
-            <button
-                wire:click="changeMonth('previous')"
-                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
-            >
-                ← Предыдущий месяц
-            </button>
+                <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">{{ $monthName }} {{ $year }}</h2>
 
-            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-200">{{ $monthName }} {{ $year }}</h2>
+                <button
+                    wire:click="changeMonth('next')"
+                    class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
+                >
+                    Следующий месяц →
+                </button>
+            </div>
 
-            <button
-                wire:click="changeMonth('next')"
-                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 text-sm"
-            >
-                Следующий месяц →
-            </button>
-        </div>
+            <div class="calendar">
+                @foreach ($weekdays as $day)
+                    <div class="day weekday font-semibold text-center">{{ $day }}</div>
+                @endforeach
 
-        <div class="calendar">
-            @foreach ($weekdays as $day)
-                <div class="day weekday font-semibold text-center">{{ $day }}</div>
-            @endforeach
+                @for ($i = 0; $i < $firstDay; $i++)
+                    <div class="day empty"></div>
+                @endfor
 
-            @for ($i = 0; $i < $firstDay; $i++)
-                <div class="day empty"></div>
-            @endfor
+                @for ($day = 1; $day <= $daysInMonth; $day++)
+                    @php
+                        $key = sprintf("%04d-%02d-%02d", $year, $month, $day);
+                        $today = Carbon::now();
+                        $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
+                    @endphp
 
-            @for ($day = 1; $day <= $daysInMonth; $day++)
-                @php
-                    $key = sprintf("%04d-%02d-%02d", $year, $month, $day);
-                    $today = Carbon::now();
-                    $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
-                @endphp
+                    <div class="day border rounded p-1 {{ $isToday ? 'today' : '' }}">
+                        <span class="font-bold">{{ $day }}</span>
+                        <div class="emoji-container">
+                            {{-- Повторяющиеся события --}}
+                            @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
+                                @if($event->display_type->value === 'repeat')
+                                    <div>
+                                        <x-calendar.event :event="$event" />
+                                    </div>
+                                @endif
+                            @endforeach
 
-                <div class="day border rounded p-1 {{ $isToday ? 'today' : '' }}">
-                    <span class="font-bold">{{ $day }}</span>
-                    <div class="emoji-container">
-                        {{-- Повторяющиеся события --}}
-                        @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                            @if($event->display_type->value === 'repeat')
-                                <div>
-                                    <x-calendar.event :event="$event" />
-                                </div>
-                            @endif
-                        @endforeach
+                            <hr>
 
-                        <hr>
-
-                        {{-- Многодневные события --}}
-                        @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                            @if($event->display_type->value === 'range')
-                                <div>
-                                    <x-calendar.event :event="$event" is_multiday="true" />
-                                </div>
-                            @endif
-                        @endforeach
+                            {{-- Многодневные события --}}
+                            @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
+                                @if($event->display_type->value === 'range')
+                                    <div>
+                                        <x-calendar.event :event="$event" is_multiday="true" />
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-            @endfor
-        </div>
-    </div>
-</div>
+                @endfor
+            </div>
+        </x-moonshine::layout.box>
+    </x-moonshine::layout.column>
+</x-moonshine::layout.grid>
+
+
+
