@@ -8,8 +8,7 @@
 @endphp
 <x-moonshine::layout.grid @style('margin: 1.25rem')>
     <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3" >
-        <x-moonshine::layout.box>
-            <h3 class="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">📋 События в {{ $monthName }}</h3>
+        <x-moonshine::layout.box class="sticky top-0" title="События: {{ $monthName }}">
 
             {{-- Повторяющиеся --}}
             <div class="mb-5">
