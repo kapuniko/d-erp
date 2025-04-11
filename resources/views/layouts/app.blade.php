@@ -16,12 +16,11 @@
 
         @stack('calendar-assets')
 
-        <x-moonshine::layout.assets>
-            @vite([
+        @vite([
                 'resources/css/main.css',
                 'resources/js/app.js',
             ], 'vendor/moonshine')
-        </x-moonshine::layout.assets>
+
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

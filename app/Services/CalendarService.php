@@ -22,7 +22,7 @@ class CalendarService
 //            \Log::info("Instances for Event " . $event->id . ": ", $instances);
 
             // Для повторяющихся событий
-            if ($event->display_type->value === 'repeat') {
+            if ($event->display_type->value === 'repeat' || $event->display_type->value === 'single') {
                 foreach ($instances as $instance) {
                     $key = $instance->format('Y-m-d');
                     $grouped[$key] = $grouped[$key] ?? collect();
@@ -32,6 +32,12 @@ class CalendarService
                         'amount' => $event->amount,
                         'display_type' => $event->display_type,
                         'name' => $event->name,
+                        'id' => $event->id,
+                        'event_date' => $event->event_date,
+                        'user_id' => $event->user_id,
+                        'event_end_date' => $event->event_end_date,
+                        'repeat_until' => $event->repeat_until,
+                        'interval_hours' => $event->interval_hours,
                     ]);
                 }
             }
@@ -56,6 +62,12 @@ class CalendarService
                         'display_type' => $event->display_type,
                         'is_multiday' => true, // Для использования в шаблоне
                         'name' => $event->name,
+                        'id' => $event->id,
+                        'event_date' => $event->event_date,
+                        'user_id' => $event->user_id,
+                        'event_end_date' => $event->event_end_date,
+                        'repeat_until' => $event->repeat_until,
+                        'interval_hours' => $event->interval_hours,
                     ]);
                 }
             }

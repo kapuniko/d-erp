@@ -43,4 +43,6 @@ Route::get('/cabinet', function () {
 
 Route::get('/calendar', [CalendarController::class, 'index']);
 
+Route::post('/calendar-events/save', [CalendarController::class, 'saveEvent']);
+
 require __DIR__.'/auth.php';

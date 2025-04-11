@@ -58,3 +58,9 @@
 .season-event {
     background-color: rgba(45, 241, 15, 0.47);
 }
+
+
+#closeModal {
+    top: 0;
+    right: 20px;
+}
