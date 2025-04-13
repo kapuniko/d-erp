@@ -18,6 +18,7 @@
         "livewire/livewire": "^3.0"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.15",
         "dev-lnk/moonshine-builder": "^2.3",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",

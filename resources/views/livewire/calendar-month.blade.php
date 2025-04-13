@@ -8,91 +8,50 @@
     $daysInMonth = Carbon::create($year, $month)->daysInMonth;
 
     $eventTypes = CalendarEventType::cases();
+
+//     TODO:
+//     чтобы кроме эмодзи можно было сунуть ссылку на картинку - чтоб оно парсило
+//     что это именно ссылка на картинку с w1.dawar.ru...gif|jpg и тд
+//
+//     обрезать названия на календаре (чтоб влазивало и не распидорсивало день на весь экран)
+//
+//     вывести даты в сайдбаре
+//
+//     сделать бледными события которые уже прошли
+//     добавить ссылки на события (на двар-вику и офф)
+
 @endphp
 <x-moonshine::layout.grid @style('margin: 1.25rem')>
     <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
         <x-moonshine::layout.box class="sticky top-0" title="События: {{ $monthName }}">
 
             {{-- Обычные --}}
-            <div class="mb-5">
-                <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">1️⃣ Обычные (единичные)</h4>
-                <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                    @foreach(collect($monthlyEvents)->where('display_type.value', 'single')->unique('name') as $event)
-                        <li>
-                            {{ $event->emoji }}
-                            {{ $event->name }}
-                            @if ($event->user_id === auth()->id())
-                                <button class="edit-event-btn btn btn-sm btn-outline-secondary"
-                                        data-id="{{ $event->id ?? '' }}"
-                                        data-name="{{ $event->name }}"
-                                        data-date="{{ $event->event_date }}"
-                                        data-time="{{ $event->event_time }}"
-                                        data-emoji="{{ $event->emoji }}"
-                                        data-display_type="{{ $event->display_type }}"
-                                        data-event_end_date="{{ $event->event_end_date }}">
-                                    ✏️
-                                </button>
-                            @endif
-                        </li>
-
-                    @endforeach
-                </ul>
-            </div>
+            <x-calendar.event-list
+                :title="'1️⃣ Обычные (единичные)'"
+                :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('name')"
+                :data_attributes="['id', 'name', 'event_date', 'event_time', 'emoji', 'display_type', 'event_end_date']"
+            />
 
             {{-- Повторяющиеся --}}
-            <div class="mb-5">
-                <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🔁 Повторяющиеся</h4>
-                <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                    @foreach(collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('name') as $event)
-                        <li>
-                            {{ $event->emoji }}
-                            {{ $event->name }}
-                            @if ($event->user_id === auth()->id())
-                                <button class="edit-event-btn btn btn-sm btn-outline-secondary"
-                                        data-id="{{ $event->id ?? '' }}"
-                                        data-name="{{ $event->name }}"
-                                        data-date="{{ $event->event_date }}"
-                                        data-time="{{ $event->event_time }}"
-                                        data-emoji="{{ $event->emoji }}"
-                                        data-display_type="{{ $event->display_type }}"
-                                        data-event_end_date="{{ $event->event_end_date }}"
-                                        data-event_interval_hours="{{ $event->interval_hours }}"
-                                        data-event_repeat_until="{{ $event->repeat_until }}">
-                                    ✏️
-                                </button>
-                            @endif
-                        </li>
-
-                    @endforeach
-                </ul>
-            </div>
+            <x-calendar.event-list
+                :title="'🔁 Повторяющиеся'"
+                :events="collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('name')"
+                :data_attributes="['id', 'name', 'event_date', 'event_time',
+                                   'emoji', 'display_type', 'event_end_date',
+                                   'interval_hours', 'repeat_until']"
+            />
 
             {{-- Многодневные --}}
-            <div>
-                <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">🗓️ Многодневные</h4>
-                <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                    @foreach(collect($monthlyEvents)->where('display_type.value', 'range')->unique('name') as $event)
-                        <li>{{ $event->emoji }} {{ $event->name }}
-                            @if ($event->user_id === auth()->id())
-                                <button class="edit-event-btn btn btn-sm btn-outline-secondary"
-                                        data-id="{{ $event->id ?? '' }}"
-                                        data-name="{{ $event->name }}"
-                                        data-date="{{ $event->event_date }}"
-                                        data-time="{{ $event->event_time }}"
-                                        data-emoji="{{ $event->emoji }}"
-                                        data-display_type="{{ $event->display_type }}"
-                                        data-event_end_date="{{ $event->event_end_date }}">
-                                    ✏️
-                                </button>
-                            @endif
-                        </li>
-                    @endforeach
-                </ul>
-            </div>
+            <x-calendar.event-list
+                :title="'🗓️ Многодневные'"
+                :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('name')"
+                :data_attributes="['id', 'name', 'event_date', 'event_time',
+                                   'emoji', 'display_type', 'event_end_date']"
+            />
 
             <!-- Кнопка для добавления -->
             @auth
-                <button id="addEventBtn" class="btn mb-3">➕ Добавить событие</button>
+                <button id="addEventBtn" class="btn mb-3"><x-moonshine::icon icon="plus" /> Добавить событие</button>
             @endauth
 
 
@@ -140,25 +99,24 @@
                     <div class="day border rounded p-1 {{ $isToday ? 'today' : '' }}">
                         <span class="font-bold">{{ $day }}</span>
                         <div class="emoji-container">
+
+                            @php
+                                $events = ($grouped[$key] ?? collect())->sortBy('event_time');
+                                $singleEvents = $events->whereIn('display_type.value', ['repeat', 'single']);
+                                $rangeEvents = $events->where('display_type.value', 'range');
+                            @endphp
+
                             {{-- Повторяющиеся события --}}
-                            @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                                @if($event->display_type->value === 'repeat' || $event->display_type->value === 'single')
-                                    <div>
-                                        <x-calendar.event :event="$event"/>
-                                    </div>
-                                @endif
+                            @foreach($singleEvents as $event)
+                                <x-calendar.event :event="$event" />
                             @endforeach
 
                             <hr>
-
                             {{-- Многодневные события --}}
-                            @foreach(($grouped[$key] ?? collect())->sortBy('event_time') as $event)
-                                @if($event->display_type->value === 'range')
-                                    <div>
-                                        <x-calendar.event :event="$event" is_multiday="true"/>
-                                    </div>
-                                @endif
+                            @foreach($rangeEvents as $event)
+                                <x-calendar.event :event="$event" is_multiday="true" />
                             @endforeach
+
                         </div>
                     </div>
                 @endfor
@@ -321,8 +279,8 @@
             resetForm();
             document.getElementById('event_id').value = this.dataset.id;
             document.getElementById('event_name').value = this.dataset.name;
-            document.getElementById('event_date').value = this.dataset.date;
-            document.getElementById('event_time').value = this.dataset.time;
+            document.getElementById('event_date').value = this.dataset.event_date;
+            document.getElementById('event_time').value = this.dataset.event_time;
             document.getElementById('event_emoji').value = this.dataset.emoji;
             document.getElementById('event_display_type').value = this.dataset.display_type;
             if(this.dataset.display_type === 'range'){
@@ -333,8 +291,8 @@
             }
             if(this.dataset.display_type === 'repeat'){
                 document.getElementById('event_repeat_wrapper').classList.remove('hidden');
-                document.getElementById('event_interval_hours').value = this.dataset.event_interval_hours;
-                document.getElementById('event_repeat_until').value = this.dataset.event_repeat_until;
+                document.getElementById('event_interval_hours').value = this.dataset.interval_hours;
+                document.getElementById('event_repeat_until').value = this.dataset.repeat_until;
             }else{
                 document.getElementById('event_interval_hours').value = '';
                 document.getElementById('event_repeat_until').value = '';
