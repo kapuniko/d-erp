@@ -28,14 +28,14 @@
             {{-- Обычные --}}
             <x-calendar.event-list
                 :title="'1️⃣ Обычные (единичные)'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('name')"
+                :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('id')"
                 :data_attributes="['id', 'name', 'event_date', 'event_time', 'emoji', 'display_type', 'event_end_date']"
             />
 
             {{-- Повторяющиеся --}}
             <x-calendar.event-list
                 :title="'🔁 Повторяющиеся'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('name')"
+                :events="collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('id')"
                 :data_attributes="['id', 'name', 'event_date', 'event_time',
                                    'emoji', 'display_type', 'event_end_date',
                                    'interval_hours', 'repeat_until']"
@@ -44,7 +44,7 @@
             {{-- Многодневные --}}
             <x-calendar.event-list
                 :title="'🗓️ Многодневные'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('name')"
+                :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('id')"
                 :data_attributes="['id', 'name', 'event_date', 'event_time',
                                    'emoji', 'display_type', 'event_end_date']"
             />
@@ -207,6 +207,7 @@
 </x-moonshine::layout.grid>
 
 <script>
+
     document.getElementById('addEventBtn').addEventListener('click', () => {
         resetForm();
         showModal();
