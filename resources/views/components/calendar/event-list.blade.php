@@ -5,7 +5,7 @@
 
 <div class="mb-5">
     <h4 class="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">{{ $title }}</h4>
-    <ul class="list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
+    <ul class=" eventList list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
         @foreach($events as $event)
             <li @if(Carbon::parse($event->event_end_date) < Carbon::now() ) class="end"  @endif >
                 {{ $event->emoji }} {{ $event->name }}
