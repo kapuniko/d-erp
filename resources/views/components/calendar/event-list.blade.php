@@ -17,9 +17,11 @@
     <div x-data="{ showPast: false }">
         {{-- Актуальные события --}}
         <ul class="eventList list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
-            @foreach($upcomingEvents as $event)
+            @forelse($upcomingEvents as $event)
                 @include('components.calendar._event-item', ['event' => $event, 'data_attributes' => $data_attributes])
-            @endforeach
+            @empty
+                <li>Событий нет</li>
+            @endforelse
         </ul>
 
         {{-- Кнопка "показать прошедшие" --}}
@@ -39,41 +41,3 @@
     </div>
 </x-moonshine::layout.box>
 
-<script>
-    function eyeToggle(eventId) {
-        return {
-            visible: true,
-            storageKey: `event-visible-${eventId}`,
-
-            init() {
-                // Чтение состояния из localStorage
-                const stored = localStorage.getItem(this.storageKey);
-                this.visible = stored === null ? true : stored === 'true';
-
-                // Применить это состояние к DOM
-                this.applyVisibility();
-            },
-
-            toggle() {
-                this.visible = !this.visible;
-
-                // Сохранить новое состояние
-                localStorage.setItem(this.storageKey, this.visible);
-
-                // Применить
-                this.applyVisibility();
-            },
-
-            applyVisibility() {
-                const selector = `.event_${eventId}`;
-                document.querySelectorAll(selector).forEach(div => {
-                    if (this.visible) {
-                        div.classList.remove('hidden');
-                    } else {
-                        div.classList.add('hidden');
-                    }
-                });
-            }
-        }
-    }
-</script>

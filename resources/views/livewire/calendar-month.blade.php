@@ -319,4 +319,42 @@
                 }
             });
     });
+
+
+    function eyeToggle(eventId) {
+        return {
+            visible: true,
+            storageKey: `event-visible-${eventId}`,
+
+            init() {
+                // Чтение состояния из localStorage
+                const stored = localStorage.getItem(this.storageKey);
+                this.visible = stored === null ? true : stored === 'true';
+
+                // Применить это состояние к DOM
+                this.applyVisibility();
+            },
+
+            toggle() {
+                this.visible = !this.visible;
+
+                // Сохранить новое состояние
+                localStorage.setItem(this.storageKey, this.visible);
+
+                // Применить
+                this.applyVisibility();
+            },
+
+            applyVisibility() {
+                const selector = `.event_${eventId}`;
+                document.querySelectorAll(selector).forEach(div => {
+                    if (this.visible) {
+                        div.classList.remove('hidden');
+                    } else {
+                        div.classList.add('hidden');
+                    }
+                });
+            }
+        }
+    }
 </script>
