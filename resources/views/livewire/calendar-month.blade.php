@@ -47,6 +47,7 @@
                 :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('id')"
                 :data_attributes="['id', 'name', 'event_date', 'event_time',
                                    'emoji', 'display_type', 'event_end_date']"
+                :dropdown_past="true"
             />
 
             <!-- Кнопка для добавления -->

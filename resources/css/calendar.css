@@ -65,16 +65,7 @@
     right: 20px;
 }
 
-
-.end{
-    filter: saturate(0) contrast(0.5);
-}
-
-.end:hover{
-    filter: none;
-}
-
-.eventList li{
+.eventList_elem{
     display: flex;
     align-items: center;
     gap: 5px;
