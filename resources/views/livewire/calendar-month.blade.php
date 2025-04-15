@@ -22,41 +22,37 @@
 
 @endphp
 <x-moonshine::layout.grid @style('margin: 1.25rem')>
-    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-        <x-moonshine::layout.box class="sticky top-0" title="События: {{ $monthName }}">
+    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3" class="sticky top-0">
 
-            {{-- Обычные --}}
-            <x-calendar.event-list
-                :title="'1️⃣ Обычные (единичные)'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('id')"
-                :data_attributes="['id', 'name', 'event_date', 'event_time', 'emoji', 'display_type', 'event_end_date']"
-            />
+        {{-- Обычные --}}
+        <x-calendar.event-list
+            :title="'1️⃣ Обычные (единичные)'"
+            :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('id')"
+            :data_attributes="['id', 'name', 'event_date', 'event_time', 'emoji', 'display_type', 'event_end_date']"
+        />
 
-            {{-- Повторяющиеся --}}
-            <x-calendar.event-list
-                :title="'🔁 Повторяющиеся'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('id')"
-                :data_attributes="['id', 'name', 'event_date', 'event_time',
-                                   'emoji', 'display_type', 'event_end_date',
-                                   'interval_hours', 'repeat_until']"
-            />
+        {{-- Повторяющиеся --}}
+        <x-calendar.event-list
+            :title="'🔁 Повторяющиеся'"
+            :events="collect($monthlyEvents)->where('display_type.value', 'repeat')->unique('id')"
+            :data_attributes="['id', 'name', 'event_date', 'event_time',
+                               'emoji', 'display_type', 'event_end_date',
+                               'interval_hours', 'repeat_until']"
+        />
 
-            {{-- Многодневные --}}
-            <x-calendar.event-list
-                :title="'🗓️ Многодневные'"
-                :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('id')"
-                :data_attributes="['id', 'name', 'event_date', 'event_time',
-                                   'emoji', 'display_type', 'event_end_date']"
-                :dropdown_past="true"
-            />
+        {{-- Многодневные --}}
+        <x-calendar.event-list
+            :title="'🗓️ Многодневные'"
+            :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('id')"
+            :data_attributes="['id', 'name', 'event_date', 'event_time',
+                               'emoji', 'display_type', 'event_end_date']"
+            :dropdown_past="true"
+        />
 
-            <!-- Кнопка для добавления -->
-            @auth
-                <button id="addEventBtn" class="btn mb-3"><x-moonshine::icon icon="plus" /> Добавить событие</button>
-            @endauth
-
-
-        </x-moonshine::layout.box>
+        <!-- Кнопка для добавления -->
+        @auth
+            <button id="addEventBtn" class="btn mb-3"><x-moonshine::icon icon="plus" /> Добавить событие</button>
+        @endauth
 
     </x-moonshine::layout.column>
 
