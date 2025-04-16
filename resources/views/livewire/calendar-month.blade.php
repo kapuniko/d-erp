@@ -206,8 +206,9 @@
 
 </x-moonshine::layout.grid>
 
+@if(Auth::user())
 <script>
-    @if(Auth::user())
+
     document.getElementById('addEventBtn').addEventListener('click', () => {
         resetForm();
         showModal();
@@ -322,9 +323,11 @@
                 }
             });
     });
-    @endif
+ </script>
+@endif
 
 
+<script>
     function eyeToggle(eventId) {
         return {
             visible: true,
