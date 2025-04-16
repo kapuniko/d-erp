@@ -29,6 +29,7 @@
             :title="'1️⃣ Обычные (единичные)'"
             :events="collect($monthlyEvents)->where('display_type.value', 'single')->unique('id')"
             :data_attributes="['id', 'name', 'event_date', 'event_time', 'emoji', 'display_type', 'event_end_date']"
+            :dropdown_past="'single'"
         />
 
         {{-- Повторяющиеся --}}
@@ -46,7 +47,7 @@
             :events="collect($monthlyEvents)->where('display_type.value', 'range')->unique('id')"
             :data_attributes="['id', 'name', 'event_date', 'event_time',
                                'emoji', 'display_type', 'event_end_date']"
-            :dropdown_past="true"
+            :dropdown_past="'range'"
         />
 
         <!-- Кнопка для добавления -->

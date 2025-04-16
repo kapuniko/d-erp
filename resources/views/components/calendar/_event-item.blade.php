@@ -8,7 +8,7 @@
     @switch($event->display_type->value)
         @case('single')
             <x-moonshine::badge color="gray">
-                {{ $event->event_time }}
+                {{ Carbon::parse($event->event_date)->translatedFormat('j F') }}  {{ $event->event_time }}
             </x-moonshine::badge>
             @break
 
