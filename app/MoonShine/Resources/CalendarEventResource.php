@@ -18,6 +18,7 @@ use MoonShine\UI\Fields\Text;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\Number;
 use MoonShine\UI\Fields\Fieldset;
+use MoonShine\UI\Fields\Textarea;
 
 
 /**
@@ -37,23 +38,23 @@ class CalendarEventResource extends ModelResource
 			Text::make('emoji', 'emoji'),
             Text::make('name', 'name'),
             Fieldset::make('Начало', [
-                Date::make('Дата', 'event_date'),
-                Text::make('Время', 'event_time'),
+                Date::make('Дата', 'event_date')->nullable(),
+                Text::make('Время', 'event_time')->nullable(),
             ]),
             Fieldset::make('Повтор',[
                 Number::make('Интервал в часах', 'interval_hours'),
-                Date::make('Дата окончания', 'repeat_until'),
+                Date::make('Дата окончания', 'repeat_until')->nullable(),
             ]),
 
             Fieldset::make('Мультидэй',[
                 Checkbox::make('is_all_day', 'is_all_day'),
-                Date::make('Дата окончания', 'event_end_date'),
+                Date::make('Дата окончания', 'event_end_date')->nullable(),
                 Enum::make('display_type')->attach(CalendarEventType::class)->nullable(),
             ]),
 
 			//Number::make('amount', 'amount'),
 
-            Text::make('description', 'description'),
+            Textarea::make('description', 'description'),
             Text::make('type', 'type'),
             Color::make('color', 'color'),
             BelongsTo::make('User', 'user', resource: UserResource::class)->nullable(),
