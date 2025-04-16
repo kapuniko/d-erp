@@ -80,7 +80,7 @@
             </button>
 
             <!-- Кнопка редактирования -->
-            @if ($event->user_id === auth()->id())
+            @if (Auth::user() && $event->user_id === auth()->id())
                 <button
                     class="edit-event-btn text-gray-600 hover:text-black"
                     @click="open = false"

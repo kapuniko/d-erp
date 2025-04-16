@@ -123,6 +123,7 @@
     </x-moonshine::layout.column>
 
     <!-- Модальное окно -->
+    @if(Auth::user())
     <div id="eventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative mx-auto mt-4">
             <!-- Кнопка закрытия -->
@@ -201,11 +202,12 @@
             </form>
         </div>
     </div>
+        @endif
 
 </x-moonshine::layout.grid>
 
 <script>
-
+    @if(Auth::user())
     document.getElementById('addEventBtn').addEventListener('click', () => {
         resetForm();
         showModal();
@@ -320,6 +322,7 @@
                 }
             });
     });
+    @endif
 
 
     function eyeToggle(eventId) {
