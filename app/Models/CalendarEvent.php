@@ -57,17 +57,17 @@ class CalendarEvent extends Model
 
     public function getEventDateAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d');
+        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
     }
 
     public function getEventEndDateAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d');
+        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
     }
 
     public function getRepeatUntilAttribute($value)
     {
-        return Carbon::parse($value)->format('Y-m-d');
+        return $value ? Carbon::parse($value)->format('Y-m-d') : null;
     }
 
     public function getEmojiAttribute($value)
