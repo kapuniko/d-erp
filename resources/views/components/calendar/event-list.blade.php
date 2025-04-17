@@ -9,11 +9,11 @@
 
    // Разделение только если включён dropdown
    if ($dropdown_past === 'single') {
-       $upcomingEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_date)->gte($now));
-       $pastEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_date)->lt($now));
+       $upcomingEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_date)->gt($now));
+       $pastEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_date)->lte($now));
    } elseif ($dropdown_past === 'range') {
-       $upcomingEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_end_date)->gte($now));
-       $pastEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_end_date)->lt($now));
+       $upcomingEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_end_date)->gt($now));
+       $pastEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_end_date)->lte($now));
    }
 @endphp
 <x-moonshine::layout.box title="{{ $title }}" class="dark:bg-gray-800" >
