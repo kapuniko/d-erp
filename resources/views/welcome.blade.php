@@ -61,14 +61,27 @@
 <x-app-layout>
 
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="4">
-            <img class="logo" src="{{ asset('images/d-erp.webp') }}" alt="D-ERP Logo">
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
+            <h2  class="pink_heading">
+                Календарь событий:
+            </h2>
+
         </x-moonshine::layout.column>
 
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="8">
-            <x-moonshine::heading h="1">
-                Hello world
-            </x-moonshine::heading>
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
+            @if(!Auth::user())
+                <p>
+                    Войдите, или зарегистрируйтесь, и вы сможете добавлять на календарь<br>
+                    свои собственные штуки, за которыми хотели бы следить наглядно:<br>
+                    события, откат предметов, квесты, что угодно =)
+                    <span class="strelka">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="74" height="72" class="absolute right-0 tra sm:right-full lg:right-6 -top-4 lg:top-2 mr-4 lg:mr-0 rotate-[145deg] lg:rotate-0" fill="currentColor" viewBox="0 0 74 72">
+                        <path d="M69.534 43.712a1 1 0 0 0-.71-1.223l-8.698-2.31a1 1 0 0 0-.514 1.934l7.733 2.052-2.052 7.733a1 1 0 0 0 1.933.512l2.308-8.698ZM1.087 21.218c5.689 7.084 15.88 16.735 28.015 22.695 12.15 5.966 26.39 8.29 39.968.407l-1.004-1.73c-12.796 7.429-26.285 5.321-38.082-.472-11.81-5.8-21.783-15.235-27.338-22.152l-1.56 1.252Z"></path>
+                    </svg>
+                </span>
+                </p>
+
+            @endif
         </x-moonshine::layout.column>
 
     </x-moonshine::layout.grid>

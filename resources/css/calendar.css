@@ -53,7 +53,7 @@
 }
 
 .multiday-event {
-    background-color: rgba(241, 196, 15, 0.44); /* Желтый фон для многодневных событий */
+    background-color: rgb(114 0 219 / 32%); /* фон для многодневных событий */
     border-radius: 5px;
     padding: 5px;
     display: block;
@@ -75,3 +75,16 @@
     gap: 5px;
 }
 
+.pink_heading{
+    font-size: 48px;
+    line-height: 1.15em;
+    color: deeppink;
+    font-weight: 900;
+}
+
+.strelka{
+    position: absolute;
+    top: 35px;
+    right: 116px;
+    transform: rotate(-66deg);
+}
