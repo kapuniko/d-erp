@@ -43,10 +43,14 @@
 .emoji {
     font-size: 12px;
 }
-.today {
-    background-color: #7cfc7c !important;
-} /* Зеленый цвет для текущего дня */
 
+.today {
+    filter: drop-shadow(0px 0px 12px #7cfc7c)
+}
+
+.dark .today {
+    filter: drop-shadow(0px 0px 12px white)
+}
 
 .multiday-event {
     background-color: rgba(241, 196, 15, 0.44); /* Желтый фон для многодневных событий */

@@ -1,11 +1,3 @@
-{{--<!DOCTYPE html>--}}
-{{--<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">--}}
-{{--    <head>--}}
-{{--        <meta charset="utf-8">--}}
-{{--        <meta name="viewport" content="width=device-width, initial-scale=1">--}}
-
-{{--        <title>D-ERP</title>--}}
-
 
 {{--        <!-- Styles -->--}}
 {{--        <style>--}}
@@ -59,13 +51,7 @@
 {{--                }--}}
 {{--            }--}}
 {{--        </style>--}}
-{{--    </head>--}}
-{{--    <body>--}}
 
-{{--        <img class="logo" src="{{ asset('images/d-erp.webp') }}" alt="D-ERP Logo">--}}
-
-{{--    </body>--}}
-{{--</html>--}}
 
 @php use Carbon\Carbon; @endphp
 @push('calendar-assets')
@@ -73,6 +59,20 @@
 @endpush
 
 <x-app-layout>
+
+    <x-moonshine::layout.grid @style('margin: 1.25rem')>
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="4">
+            <img class="logo" src="{{ asset('images/d-erp.webp') }}" alt="D-ERP Logo">
+        </x-moonshine::layout.column>
+
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="8">
+            <x-moonshine::heading h="1">
+                Hello world
+            </x-moonshine::heading>
+        </x-moonshine::layout.column>
+
+    </x-moonshine::layout.grid>
+
 
     @php
         $currentYear = Carbon::now()->year; // Текущий год

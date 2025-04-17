@@ -80,11 +80,11 @@
 
             <div class="calendar">
                 @foreach ($weekdays as $day)
-                    <div class="day weekday font-semibold text-center">{{ $day }}</div>
+                    <div class="day weekday font-semibold text-center dark:bg-gray-700">{{ $day }}</div>
                 @endforeach
 
                 @for ($i = 0; $i < $firstDay; $i++)
-                    <div class="day empty"></div>
+                    <div class="day empty dark:bg-gray-800"></div>
                 @endfor
 
                 @for ($day = 1; $day <= $daysInMonth; $day++)
@@ -94,7 +94,7 @@
                         $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
                     @endphp
 
-                    <div class="day border rounded p-1 {{ $isToday ? 'today' : '' }}">
+                    <div class="day rounded p-1 dark:bg-gray-800 {{ $isToday ? 'today' : '' }}  ">
                         <span class="font-bold">{{ $day }}</span>
                         <div class="emoji-container">
 
@@ -125,7 +125,7 @@
     <!-- Модальное окно -->
     @if(Auth::user())
     <div id="eventModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
-        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative mx-auto mt-4">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md p-6 relative mx-auto mt-4">
             <!-- Кнопка закрытия -->
             <button id="closeModal" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 text-2xl">
                 &times;
@@ -138,9 +138,9 @@
                 <input type="hidden" name="id" id="event_id">
 
                 <div>
-                    <label for="event_display_type" class="block text-sm font-medium text-gray-700">Тип события</label>
+                    <x-input-label for="event_display_type">Тип события</x-input-label>
                     <select name="display_type" id="event_display_type" required
-                            class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                            class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                         @foreach ($eventTypes as $type)
                             <option value="{{ $type->value }}">{{ $type->toString() }}</option>
                         @endforeach
@@ -148,56 +148,55 @@
                 </div>
                 <div class="flex gap-4">
                     <div class="w-1/4">
-                        <label for="event_emoji" class="block text-sm font-medium text-gray-700">Эмодзи</label>
+                        <x-input-label for="event_emoji">Эмодзи</x-input-label>
                         <input type="text" name="emoji" id="event_emoji"
-                               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                               class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                     </div>
                     <div class="w-3/4">
-                        <label for="event_name" class="block text-sm font-medium text-gray-700">Название</label>
+                        <x-input-label for="event_name">Название</x-input-label>
                         <input type="text" name="name" id="event_name" required
-                               class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                               class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                     </div>
                 </div>
 
 
                 <div>
-                    <label for="event_date" class="block text-sm font-medium text-gray-700">Дата</label>
+                    <x-input-label for="event_date">Дата</x-input-label>
                     <input type="date" name="event_date" id="event_date" required
-                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                           class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                 </div>
 
                 <div>
-                    <label for="event_time" class="block text-sm font-medium text-gray-700">Время</label>
+                    <x-input-label for="event_time">Время</x-input-label>
                     <input type="time" name="event_time" id="event_time" required
-                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                           class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                 </div>
 
                 <div id="event_repeat_wrapper" class="hidden">
                     <div class="flex gap-4">
                         <div class="w-1/2">
-                            <label for="event_interval_hours" class="block text-sm font-medium text-gray-700">Интервал (в часах)</label>
+                            <x-input-label for="event_interval_hours">Интервал (в часах)</x-input-label>
                             <input type="number" name="interval_hours" id="event_interval_hours"
-                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                         </div>
                         <div class="w-1/2">
-                            <label for="event_repeat_until" class="block text-sm font-medium text-gray-700">Повторять до этой даты</label>
+                            <x-input-label for="event_repeat_until">Повторять до этой даты</x-input-label>
                             <input type="date" name="repeat_until" id="event_repeat_until"
-                                   class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                   class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                         </div>
                     </div>
                 </div>
 
                 <div id="event_end_date_wrapper" class="hidden">
-                    <label for="event_end_date" class="block text-sm font-medium text-gray-700">Дата окончания</label>
+                    <x-input-label for="event_end_date">Дата окончания</x-input-label>
                     <input type="date" name="event_end_date" id="event_end_date"
-                           class="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                           class="mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm">
                 </div>
 
                 <div class="text-center">
-                    <button type="submit"
-                            class="mt-4 inline-flex items-center justify-center px-4 py-2  text-sm font-medium rounded-lg shadow  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    <x-primary-button>
                         Сохранить
-                    </button>
+                    </x-primary-button>
                 </div>
             </form>
         </div>

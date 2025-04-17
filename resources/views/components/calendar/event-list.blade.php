@@ -16,7 +16,7 @@
        $pastEvents = collect($events)->filter(fn($e) => Carbon::parse($e->event_end_date)->lt($now));
    }
 @endphp
-<x-moonshine::layout.box title="{{ $title }}">
+<x-moonshine::layout.box title="{{ $title }}" class="dark:bg-gray-800" >
     <div x-data="{ showPast: false }">
         {{-- Актуальные события --}}
         <ul class="eventList list-disc list-inside text-sm text-gray-700 dark:text-gray-300 space-y-1">
