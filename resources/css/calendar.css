@@ -56,7 +56,6 @@
     background-color: rgb(114 0 219 / 32%); /* фон для многодневных событий */
     border-radius: 5px;
     padding: 5px;
-    display: block;
 }
 
 .season-event {
