@@ -2,7 +2,7 @@
 @php
     use Carbon\Carbon;
 
-   $now = Carbon::now();
+   $now = Carbon::now()->toDateString();
 
    $upcomingEvents = collect($events);
    $pastEvents = collect();
