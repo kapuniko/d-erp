@@ -22,7 +22,13 @@
 
 @endphp
 <x-moonshine::layout.grid @style('margin: 1.25rem')>
-    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3" class="sticky top-0">
+    <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3" >
+
+    <div class="flex flex-col gap-4 sticky top-0 ">
+        <!-- Кнопка для добавления -->
+        @auth
+            <button id="addEventBtn" class="btn mb-3"><x-moonshine::icon icon="plus" /> Добавить событие</button>
+        @endauth
 
         {{-- Обычные --}}
         <x-calendar.event-list
@@ -49,11 +55,7 @@
                                'emoji', 'display_type', 'event_end_date']"
             :dropdown_past="'range'"
         />
-
-        <!-- Кнопка для добавления -->
-        @auth
-            <button id="addEventBtn" class="btn mb-3"><x-moonshine::icon icon="plus" /> Добавить событие</button>
-        @endauth
+    </div>
 
     </x-moonshine::layout.column>
 
