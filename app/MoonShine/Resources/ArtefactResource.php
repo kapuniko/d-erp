@@ -34,17 +34,17 @@ class ArtefactResource extends ModelResource
         // TODO correct labels values
         return [
 			ID::make('id'),
-			Text::make('game_id', 'game_id'),
-			Text::make('name', 'name'),
-			Text::make('type', 'type'),
-			Text::make('image', 'image'),
-			Textarea::make('description', 'description'),
-			Number::make('duration_sec', 'duration_sec'),
-			Number::make('level', 'level'),
-			Text::make('group', 'group'),
-			Number::make('price', 'price'),
+			Text::make('game_id', 'game_id')->updateOnPreview(),
+			Text::make('name', 'name')->updateOnPreview(),
+			Text::make('type', 'type')->updateOnPreview(),
+			Text::make('image', 'image')->updateOnPreview(),
+			//Textarea::make('description', 'description'),
+			Number::make('duration_sec', 'duration_sec')->updateOnPreview(),
+			Number::make('level', 'level')->updateOnPreview(),
+			Text::make('group', 'group')->updateOnPreview(),
+			Number::make('price', 'price')->updateOnPreview(),
 			BelongsTo::make('user_id', 'user')->nullable(),
-            BelongsToMany::make('artefactsCases', 'artefactsCases', resource: ArtefactsCaseResource::class)->nullable()->creatable(),
+            //BelongsToMany::make('artefactsCases', 'artefactsCases', resource: ArtefactsCaseResource::class)->nullable()->creatable(),
         ];
     }
 
