@@ -87,3 +87,63 @@
     right: 116px;
     transform: rotate(-66deg);
 }
+
+
+.artefact-icon {
+    display: inline-block;
+    /*margin: 2px;*/
+}
+
+.artefact-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.artefact-tooltip .artefact-content {
+    visibility: hidden;
+    width: max-content;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: left;
+    padding: 5px 10px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 999;
+    bottom: 120%;
+    left:50%;
+    /*transform: translateX(-50%);*/
+    white-space: nowrap;
+    font-size: 10px;
+
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.artefact-tooltip:hover .artefact-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.artefact-icon__size-25{
+    width: 25px;
+    height: 25px;
+}
+
+.artefact-icon__size-16{
+    width: 16px;
+    height: 16px;
+}
+
+
+.addInDay{
+    opacity: 0;
+    right: 5px;
+    top: 5px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.day:hover .addInDay{
+    opacity: 1;
+}

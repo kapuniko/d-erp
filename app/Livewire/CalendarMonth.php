@@ -2,6 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Artefact;
+use App\Models\ArtefactsCase;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use App\Services\CalendarService;
@@ -14,6 +17,9 @@ class CalendarMonth extends Component
     public array $grouped = [];
     public array $monthlyEvents = [];
 
+    public Collection $artefacts;
+    public Collection $artefactsCases;
+
     public function mount($year, $month)
     {
         $this->year = $year;
@@ -24,6 +30,14 @@ class CalendarMonth extends Component
 
         // Собираем события для отображения в сайдбаре
         $this->monthlyEvents = $this->getEventsForMonth();
+
+        $this->artefacts = Artefact::where('user_id', auth()->id())
+            ->orWhereNull('user_id')
+            ->get();
+
+        $this->artefactsCases = ArtefactsCase::where('user_id', auth()->id())
+            ->orWhereNull('user_id')
+            ->get();
     }
 
     public function getEventsForMonth(): array

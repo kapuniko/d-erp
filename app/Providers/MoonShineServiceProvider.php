@@ -17,6 +17,8 @@ use App\MoonShine\Resources\TaxAmountResource;
 use App\MoonShine\Resources\TreasuryLogResource;
 use App\MoonShine\Resources\CalendarEventResource;
 use App\MoonShine\Resources\UserResource;
+use App\MoonShine\Resources\ArtefactResource;
+use App\MoonShine\Resources\ArtefactsCaseResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -39,6 +41,8 @@ class MoonShineServiceProvider extends ServiceProvider
                 TaxAmountResource::class,
                 CalendarEventResource::class,
                 UserResource::class,
+                ArtefactResource::class,
+                ArtefactsCaseResource::class,
             ])
             ->pages([
                 ...$config->getPages(),

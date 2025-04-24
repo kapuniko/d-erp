@@ -42,6 +42,8 @@ use MoonShine\Laravel\Resources\MoonShineUserResource;
 use MoonShine\Laravel\Resources\MoonShineUserRoleResource;
 use App\MoonShine\Resources\CalendarEventResource;
 use App\MoonShine\Resources\UserResource;
+use App\MoonShine\Resources\ArtefactResource;
+use App\MoonShine\Resources\ArtefactsCaseResource;
 
 final class MoonShineLayout extends AppLayout
 {
@@ -75,6 +77,8 @@ final class MoonShineLayout extends AppLayout
 
             MenuItem::make('CalendarEvent', CalendarEventResource::class),
             MenuItem::make('User', UserResource::class),
+            MenuItem::make('Artefact', ArtefactResource::class),
+            MenuItem::make('ArtefactsCase', ArtefactsCaseResource::class),
         ];
 
         if (request()->user('moonshine')->moonshine_user_role_id == 1) {

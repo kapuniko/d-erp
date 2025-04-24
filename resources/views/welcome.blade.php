@@ -61,14 +61,14 @@
 <x-app-layout>
 
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
+        <div class="col-span-12 xl:col-span-6 space-elements">
             <h2  class="pink_heading">
                 Календарь событий:
             </h2>
 
-        </x-moonshine::layout.column>
+        </div>
 
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
+        <div class="col-span-12 xl:col-span-6 space-elements">
             @if(!Auth::user())
                 <p>
                     Войдите, или зарегистрируйтесь, и вы сможете добавлять на календарь<br>
@@ -82,7 +82,7 @@
                 </p>
 
             @endif
-        </x-moonshine::layout.column>
+        </div>
 
     </x-moonshine::layout.grid>
 
