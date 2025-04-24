@@ -14,7 +14,7 @@
     {{-- Кнопка удаления (абсолютное позиционирование в верхнем правом углу) --}}
     <button type="button"
             @click.stop="if (confirm('Вы уверены, что хотите удалить этот кейс?')) { $wire.deleteCase() }" {{-- ИСПРАВЛЕНО: Вызываем $wire.deleteCase() без аргументов --}}
-            class="absolute top-1 right-1 p-1 text-red-400 hover:text-red-600 focus:outline-none z-10"
+            class="absolute bottom-0 right-0 p-1 text-red-400 hover:text-red-600 focus:outline-none z-10"
             aria-label="Удалить кейс"
     >
         {{-- Иконка крестика --}}

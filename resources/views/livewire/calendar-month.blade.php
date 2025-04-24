@@ -24,8 +24,9 @@
 @endphp
 <x-moonshine::layout.grid
     @style('margin: 1.25rem')
-                x-data="{   showModal: false,
+                x-data="{   showModal: false, // Для кейсов
                 formData: { type: 'in_calendar', date: null },
+                showArtefactModal: false, // Для артефактов
                 // openCaseModal метод остается здесь
                 openCaseModal(type, date = null) {
                 console.log('openCaseModal called with type:', type, 'date:', date); // Отладочный вывод
@@ -39,15 +40,24 @@
                         }
                     }, 50); // Небольшая задержка
                 },
+                // Метод для открытия модалки артефактов (просто устанавливает переменную в true)
+                openArtefactModal() {
+                    console.log('openArtefactModal called');
+                    this.showArtefactModal = true;
+                },
               sidebarOpen: JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true'),
                 toggleSidebar() {
                   this.sidebarOpen = !this.sidebarOpen;
                   localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarOpen));
                 },
-              artefactId: null,
-              artefactFromCaseId: null }"
-    {{-- Оставляем слушатель @case-added.window для закрытия модалки после сохранения --}}
+              artefactId: null, // Используется для drop/remove
+              artefactFromCaseId: null // Используется для remove
+            }"
+    {{-- слушатель @case-added.window для закрытия модалки после сохранения --}}
     @case-added.window="showModal = false; $dispatch('close-case-form-modal');"
+
+    {{-- <-- Слушатель для закрытия модалки артефактов --> --}}
+    @close-artefact-modal.window="showArtefactModal = false;"
 >
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-3' : 'xl:col-span-0 hidden'"
@@ -84,9 +94,10 @@
                             <li>Тут совсем ничиво нету =(</li>
                         @endforelse
 
-                        <button class="rounded">
-                            +
-                        </button>
+                            <button class="rounded px-3 py-1 bg-indigo-600 text-white hover:bg-indigo-500"
+                                    @click="openArtefactModal()"> {{-- Вызываем Alpine метод для открытия модалки --}}
+                                + добавить какуюнибудь штуку
+                            </button>
                     </div>
                 </x-moonshine::layout.box>
 
@@ -97,10 +108,10 @@
                     />
 
                     <button type="button"
-                            class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600" {{-- Tailwind классы --}}
+                            class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-500" {{-- Tailwind классы --}}
                             {{-- Устанавливаем showModal в true и formData с типом 'sample' и date: null --}}
                             @click="openCaseModal('sample')">
-                        Добавить шаблон кейса
+                        + добавить коробочку для штук
                     </button>
 
                 </x-moonshine::layout.box>
@@ -252,14 +263,14 @@
         <!-- Модальное окно кейсов -->
         <div
             id="caseModal"
-            class="fixed inset-0 z-50 overflow-y-auto"
+            class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-800 bg-opacity-50"
             x-show="showModal"
             style="display: none;"
             x-cloak
         >
             {{-- Устанавливаем @click.away и @click на фон ЗДЕСЬ, на внешнем контейнере модалки --}}
             <div
-                class="fixed inset-0 bg-black bg-opacity-50 transition-opacity"
+                class="fixed inset-0 bg-gray-800 bg-opacity-50 transition-opacity"
                 aria-hidden="true"
                 @click="showModal = false; $dispatch('close-case-form-modal');"
             ></div>
@@ -275,7 +286,7 @@
                 x-transition:leave-end="opacity-0 scale-90"
             >
                 <div
-                    class="relative bg-white rounded-lg shadow-xl max-w-lg mx-auto p-6"
+                    class="relative bg-gray-800 rounded-lg shadow-xl max-w-lg mx-auto p-6"
                 >
                     {{-- ... Заголовок ... --}}
 
@@ -376,6 +387,41 @@
                 </form>
             </div>
         </div>
+
+        {{-- <-- Модальное окно для формы артефакта --> --}}
+        <div
+            id="artefactModal"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            x-show="showArtefactModal" {{-- Управляется новой Alpine переменной --}}
+            style="display: none;"
+            x-cloak
+        >
+            {{-- Фон модалки --}}
+            <div class="fixed inset-0 bg-black bg-opacity-50 transition-opacity" aria-hidden="true"
+                 @click="showArtefactModal = false; $dispatch('close-artefact-modal');"> {{-- Закрытие и диспатч события закрытия --}}
+            </div>
+
+            {{-- Контент модалки --}}
+            <div class="flex items-center justify-center min-h-screen p-4"
+                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90">
+                <div class="relative bg-white rounded-lg shadow-xl max-w-lg mx-auto p-6 dark:bg-gray-800">
+                    {{-- Кнопка закрытия --}}
+                    <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500"
+                            @click="showArtefactModal = false; $dispatch('close-artefact-modal');"> {{-- Закрытие и диспатч события закрытия --}}
+                        <span class="sr-only">Закрыть</span>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                    {{-- <-- ДОБАВЛЕНО: Livewire компонент формы артефакта --> --}}
+                    <livewire:artefact-form
+                        {{-- Слушатель события закрытия, чтобы сбросить форму --}}
+                        x-on:close-artefact-modal.window="$wire.resetForm()"
+                    />
+                </div>
+            </div>
+        </div>
+
+        {{-- ... Модальное окно событий (eventModal) ... --}}
     @endif
 
 </x-moonshine::layout.grid>
