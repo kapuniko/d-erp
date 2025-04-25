@@ -59,6 +59,11 @@
 
     {{-- <-- Слушатель для закрытия модалки артефактов --> --}}
     @close-artefact-modal.window="showArtefactModal = false;"
+
+    @dom-updated.window="
+        window.dispatchEvent(new Event('calendar:updated'));
+        console.log('🚀 calendar:updated отправлен');
+        "
 >
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-3' : 'xl:col-span-0 hidden'"
@@ -201,6 +206,8 @@
                          @dragleave="isDragOver = false" {{-- Меняем состояние при уходе курсора --}}
                          @drop="isDragOver = false; $wire.copyCaseToCalendar(event.dataTransfer.getData('case-id'), dayDate)" {{-- Обрабатываем сброс --}}
                          :class="{'bg-white bg-opacity-20': isDragOver}" {{-- Визуальный фидбек при наведении --}}
+
+
                         >
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">
                             @if(Auth::user())<div class="size-6"></div>@endif
@@ -596,4 +603,21 @@
             }
         }
     }
+
+    window.addEventListener('calendar:updated', () => {
+        console.log('🎯 calendar:updated пойман, применяем видимость');
+
+        setTimeout(() => {
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('event-visible-')) {
+                    const id = key.replace('event-visible-', '');
+                    const visible = localStorage.getItem(key) === 'true';
+                    document.querySelectorAll(`.event_${id}`).forEach(div => {
+                        div.classList.toggle('hidden', !visible);
+                    });
+                }
+            }
+        }, 30);
+    });
 </script>

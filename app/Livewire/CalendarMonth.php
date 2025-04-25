@@ -73,6 +73,8 @@ class CalendarMonth extends Component
         $calendarService = new CalendarService();
         $this->grouped = $calendarService->getGroupedEvents(Auth::id());
         $this->monthlyEvents = $this->getEventsForMonth();
+
+        $this->dispatch('dom-updated');
     }
 
     // --- ДОБАВЛЯЕМ МЕТОД ДЛЯ КОПИРОВАНИЯ КЕЙСА В КАЛЕНДАРЬ ---
@@ -138,6 +140,7 @@ class CalendarMonth extends Component
         // Событие глобальное ('case-copied-to-day').
         // Передаем дату, чтобы нужный компонент списка среагировал.
         $this->dispatch('case-copied-to-day', date: $dropDate);
+        $this->dispatch('dom-updated');
 
         // Опционально: Флеш-сообщение об успехе
         // session()->flash('message', 'Кейс успешно скопирован в календарь!');
