@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use App\Models\ArtefactsCase;
 use Livewire\Attributes\On;
@@ -22,6 +23,7 @@ class CaseListComponent extends Component
     ];
 
     protected $listeners = [
+        'case-copied-to-day' => 'refreshIfMatchesDate', // Событие 'case-copied-to-day' обрабатывается методом refreshIfMatchesDate
         'case-deleted' => 'removeCaseFromList', // Слушаем глобальное событие 'case-deleted'
         // ... другие слушатели ...
     ];
@@ -98,6 +100,25 @@ class CaseListComponent extends Component
         // Выполняем запрос и сохраняем коллекцию в публичное свойство
         $this->cases = $query->get();
     }
+
+    // --- Метод, вызываемый при получении события 'case-copied-to-day' ---
+    public function refreshIfMatchesDate($date)
+    {
+        Log::info('CaseListComponent: received case-copied-to-day event', ['eventDate' => $date, 'myDate' => $this->date, 'myType' => $this->listType]);
+
+        // Проверяем, что этот компонент является списком 'in_calendar' и его дата
+        // соответствует дате, куда был скопирован кейс.
+        if ($this->listType === 'in_calendar' && $this->date === $date) {
+            Log::info('CaseListComponent: Date match, refreshing cases', ['date' => $date]);
+            $this->loadCases(); // Перезагружаем кейсы для этой даты
+            // Livewire автоматически увидит изменение в $this->cases и перерисует компонент
+        } else {
+            Log::info('CaseListComponent: Date or type mismatch, not refreshing.');
+        }
+    }
+
+    // ... Метод removeCaseFromList($caseId) для обработки удаления (если этот компонент управляет удалением) ...
+    // public function removeCaseFromList($caseId) { ... }
 
 
     public function render()

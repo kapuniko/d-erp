@@ -1,14 +1,17 @@
 @props(['id', 'name', 'type', 'case_cost', 'case_profit', 'artefacts'])
 
 <div class="bg-gray-900 text-white p-1 rounded mb-1 transition text-xs {{ $type === 'in_calendar' ? 'case-tooltip' : '' }}"
-     x-data="{ isDragOver: false }"
+     x-data="{ isDragOver: false, caseId: {{ $id }} }"
      :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver, 'highlightGreen': artefactIsDragging }"
      x-on:dragover.prevent="isDragOver = true"
      x-on:dragleave="isDragOver = false"
      {{-- Убрал передачу caseId в drop, так как drop находится в компоненте Case --}}
-     x-on:drop="isDragOver = false; $wire.drop(artefactId)"
+     x-on:drop.stop="isDragOver = false; $wire.drop(artefactId)"
      data-case
      style="position: relative;" {{-- Делаем контейнер относительно позиционированным --}}
+     draggable="{{ $type === 'sample' ? 'true' : 'false' }}" {{-- Только sample кейсы перетаскиваются --}}
+     @dragstart="event.dataTransfer.setData('case-id', caseId); event.dataTransfer.effectAllowed = 'copy';" {{-- Сохраняем ID и указываем тип операции "копирование" --}}
+     @dragend="" {{-- Опционально: для стилей после окончания перетаскивания --}}
 >
 
     {{-- Кнопка удаления (абсолютное позиционирование в верхнем правом углу) --}}

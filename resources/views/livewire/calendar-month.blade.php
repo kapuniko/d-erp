@@ -195,7 +195,13 @@
                         $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
                     @endphp
 
-                    <div class="day dark:bg-gray-800 {{ $isToday ? 'today' : '' }}  ">
+                    <div class="day bg-gray-800 {{ $isToday ? 'today' : '' }}  "
+                         x-data="{ isDragOver: false, dayDate: '{{ $key }}' }" {{-- Храним дату дня --}}
+                         @dragover.prevent="isDragOver = true" {{-- Позволяем сброс и меняем состояние --}}
+                         @dragleave="isDragOver = false" {{-- Меняем состояние при уходе курсора --}}
+                         @drop="isDragOver = false; $wire.copyCaseToCalendar(event.dataTransfer.getData('case-id'), dayDate)" {{-- Обрабатываем сброс --}}
+                         :class="{'bg-white bg-opacity-20': isDragOver}" {{-- Визуальный фидбек при наведении --}}
+                        >
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">
                             @if(Auth::user())<div class="size-6"></div>@endif
                             <span class="font-bold">{{ $day }}</span>
