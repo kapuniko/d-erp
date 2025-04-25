@@ -11,6 +11,9 @@
                                 })
                             "
                         @endif
+     @dragstart="artefactIsDragging = true;"
+     @dragend="artefactIsDragging = false"
+     class="artefact-icon__size-{{ $iconSize }}"
                     >
     <div class="artefact-tooltip">
         <img src="https://w1.dwar.ru/{{ $artefact->image }}" alt="{{ $artefact->name }}" class="artefact-icon__size-{{ $iconSize }}" />

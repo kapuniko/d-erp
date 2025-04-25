@@ -51,7 +51,8 @@
                   localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarOpen));
                 },
               artefactId: null, // Используется для drop/remove
-              artefactFromCaseId: null // Используется для remove
+              artefactFromCaseId: null, // Используется для remove
+              artefactIsDragging: false // Для подсветки кейсов при перемещении артефактов
             }"
     {{-- слушатель @case-added.window для закрытия модалки после сохранения --}}
     @case-added.window="showModal = false; $dispatch('close-case-form-modal');"
@@ -101,7 +102,7 @@
                     </div>
                 </x-moonshine::layout.box>
 
-                <x-moonshine::layout.box title="Коробочки для всяких штук" class="dark:bg-gray-800">
+                <x-moonshine::layout.box title="Чумаданы для всяких штук" class="dark:bg-gray-800">
                     <livewire:case-list-component
                         :listType="'sample'" {{-- Тип списка --}}
                     :key="'sample-cases-list'" {{-- Уникальный ключ для Livewire --}}
@@ -111,7 +112,7 @@
                             class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-500" {{-- Tailwind классы --}}
                             {{-- Устанавливаем showModal в true и formData с типом 'sample' и date: null --}}
                             @click="openCaseModal('sample')">
-                        + добавить коробочку для штук
+                        + добавить чумадан
                     </button>
 
                 </x-moonshine::layout.box>
@@ -180,7 +181,7 @@
 
             <div class="calendar">
                 @foreach ($weekdays as $day)
-                    <div class="day weekday font-semibold text-center dark:bg-gray-700">{{ $day }}</div>
+                    <div class="day weekday dark:bg-gray-700">{{ $day }}</div>
                 @endforeach
 
                 @for ($i = 0; $i < $firstDay; $i++)
@@ -194,7 +195,7 @@
                         $isToday = $today->year == $year && $today->month == $month && $today->day == $day;
                     @endphp
 
-                    <div class="day rounded p-1 dark:bg-gray-800 {{ $isToday ? 'today' : '' }}  ">
+                    <div class="day dark:bg-gray-800 {{ $isToday ? 'today' : '' }}  ">
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">
                             @if(Auth::user())<div class="size-6"></div>@endif
                             <span class="font-bold">{{ $day }}</span>
@@ -215,7 +216,7 @@
 
                                         <x-dropdown-link class="cursor-pointer addCaseInDay"
                                                          @click="openCaseModal('in_calendar', '{{ $key }}')" >
-                                            Добавить коробочку
+                                            Добавить чумадан
                                         </x-dropdown-link>
                                     </x-slot>
 
@@ -237,13 +238,12 @@
                                 <x-calendar.event :event="$event" />
                             @endforeach
 
-                            <hr>
                             {{-- Многодневные события --}}
                             @foreach($rangeEvents as $event)
                                 <x-calendar.event :event="$event" is_multiday="true" />
                             @endforeach
 
-                            <hr>
+
                             {{-- Вставляем компонент для отображения кейсов календаря для ЭТОГО дня --}}
                             <livewire:case-list-component
                                 :listType="'in_calendar'" {{-- Тип списка --}}
@@ -263,7 +263,7 @@
         <!-- Модальное окно кейсов -->
         <div
             id="caseModal"
-            class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-gray-800 bg-opacity-50"
+            class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black bg-opacity-50"
             x-show="showModal"
             style="display: none;"
             x-cloak

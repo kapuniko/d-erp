@@ -1,8 +1,8 @@
 @props(['id', 'name', 'type', 'case_cost', 'case_profit', 'artefacts'])
 
-<div class="bg-gray-950 text-white p-2 rounded mb-2 transition text-xs {{ $type === 'in_calendar' ? 'case-tooltip' : '' }}"
+<div class="bg-gray-900 text-white p-1 rounded mb-1 transition text-xs {{ $type === 'in_calendar' ? 'case-tooltip' : '' }}"
      x-data="{ isDragOver: false }"
-     :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver }"
+     :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver, 'highlightGreen': artefactIsDragging }"
      x-on:dragover.prevent="isDragOver = true"
      x-on:dragleave="isDragOver = false"
      {{-- Убрал передачу caseId в drop, так как drop находится в компоненте Case --}}
@@ -29,7 +29,7 @@
         <span class="flex items-center justify-start ">
             - <img src="{{  asset('/images/m_game3.gif') }}" alt=""> {{ $case_cost }}
         </span>
-        <br>
+        <div class="w-4"> </div>
         <span class="flex items-center justify-start">
             + <img src="{{  asset('/images/m_game3.gif') }}" alt=""> {{ $case_profit }}
         </span>
