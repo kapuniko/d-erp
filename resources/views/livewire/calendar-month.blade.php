@@ -52,7 +52,34 @@
                 },
               artefactId: null, // Используется для drop/remove
               artefactFromCaseId: null, // Используется для remove
-              artefactIsDragging: false // Для подсветки кейсов при перемещении артефактов
+              artefactIsDragging: false, // Для подсветки кейсов при перемещении артефактов
+
+              // Обработчик события сброса кейса
+                handleDroppedCase(detail) {
+
+                     const { caseId, date } = detail; // Получаем ID кейса и дату из данных события
+
+                     // Формируем имя рефа для CaseListComponent нужной даты
+                     const targetRefName = `caseList_${date}`;
+
+                     // <-- ДОБАВЛЕНО: Обертываем доступ к $refs в $nextTick -->
+                     // Это откладывает поиск по $refs до тех пор, пока Alpine не завершит
+                     // регистрацию всех рефов в обновленном DOM.
+                     this.$nextTick(() => {
+                         // Теперь пытаемся найти компонент через $refs
+                         const targetComponentRef = this.$refs[targetRefName];
+
+                         if (targetComponentRef) {
+                             // Вызываем метод Livewire на целевом компоненте списка
+                             targetComponentRef.$wire.addSampleCaseFromDrop(caseId);
+                         } else {
+                             console.error('Could not find target CaseListComponent via $refs', targetRefName, '. Final $refs state:', this.$refs);
+                             // Опционально: показать сообщение об ошибке пользователю
+                             // Например: $dispatch('notify', message: 'Не удалось добавить кейс. Попробуйте еще раз.', type: 'error');
+                         }
+                     }); // <-- Конец $nextTick
+
+                },
             }"
     {{-- слушатель @case-added.window для закрытия модалки после сохранения --}}
     @case-added.window="showModal = false; $dispatch('close-case-form-modal');"
@@ -60,10 +87,6 @@
     {{-- <-- Слушатель для закрытия модалки артефактов --> --}}
     @close-artefact-modal.window="showArtefactModal = false;"
 
-    @dom-updated.window="
-        window.dispatchEvent(new Event('calendar:updated'));
-        console.log('🚀 calendar:updated отправлен');
-        "
 >
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-3' : 'xl:col-span-0 hidden'"
@@ -205,10 +228,8 @@
                          x-data="{ isDragOver: false }"
                          @dragover.prevent="isDragOver = true" {{-- Позволяем сброс и меняем состояние --}}
                          @dragleave="isDragOver = false" {{-- Меняем состояние при уходе курсора --}}
-                         @drop="isDragOver = false; $wire.copyCaseToCalendar(event.dataTransfer.getData('case-id'), $el.dataset.date);"
+                         @drop="isDragOver = false; Livewire.dispatch('add-sample-case-to-list-event', { sampleCaseId: event.dataTransfer.getData('case-id'), targetDate: $el.dataset.date })"
                          :class="{'bg-white bg-opacity-20': isDragOver}" {{-- Визуальный фидбек при наведении --}}
-
-
                         >
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">
                             @if(Auth::user())<div class="size-6"></div>@endif
@@ -606,7 +627,6 @@
     }
 
     window.addEventListener('calendar:updated', () => {
-        console.log('🎯 calendar:updated пойман, применяем видимость');
 
         setTimeout(() => {
             for (let i = 0; i < localStorage.length; i++) {

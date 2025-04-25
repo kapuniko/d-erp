@@ -2,9 +2,11 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use App\Models\ArtefactsCase;
+use App\Models\Artefact;
 use Livewire\Attributes\On;
 use Illuminate\Support\Collection; // Импортируем Collection
 
@@ -23,20 +25,14 @@ class CaseListComponent extends Component
     ];
 
     protected $listeners = [
-        'case-copied-to-day' => 'refreshIfMatchesDate', // Событие 'case-copied-to-day' обрабатывается методом refreshIfMatchesDate
+        'add-sample-case-to-list-event' => 'addSampleCaseLogic', // Слушаем это новое событие
         'case-deleted' => 'removeCaseFromList', // Слушаем глобальное событие 'case-deleted'
-        // ... другие слушатели ...
     ];
 
     // Этот метод будет вызван при срабатывании события
     public function removeCaseFromList($caseId)
     {
-        \Log::info('CaseListComponent: received case-deleted event', ['deletedCaseId' => $caseId]);
-
-        // Обновляем коллекцию кейсов
         $this->cases = $this->cases->filter(fn($case) => $case->id != $caseId);
-
-        // Livewire перерисует список
     }
 
     // Метод mount принимает тип списка и опционально дату
@@ -101,25 +97,61 @@ class CaseListComponent extends Component
         $this->cases = $query->get();
     }
 
-    // --- Метод, вызываемый при получении события 'case-copied-to-day' ---
-    public function refreshIfMatchesDate($date)
-    {
-        Log::info('CaseListComponent: received case-copied-to-day event', ['eventDate' => $date, 'myDate' => $this->date, 'myType' => $this->listType]);
 
-        // Проверяем, что этот компонент является списком 'in_calendar' и его дата
-        // соответствует дате, куда был скопирован кейс.
-        if ($this->listType === 'in_calendar' && $this->date === $date) {
-            Log::info('CaseListComponent: Date match, refreshing cases', ['date' => $date]);
-            $this->loadCases(); // Перезагружаем кейсы для этой даты
-            // Livewire автоматически увидит изменение в $this->cases и перерисует компонент
+    // <-- Метод для обработки события сброса sample кейса -->
+    // Вызывается, когда ЛЮБОЙ экземпляр CaseListComponent ловит событие 'add-sample-case-to-list-event'
+    public function addSampleCaseLogic($sampleCaseId, $targetDate)
+    {
+
+        // <-- ВАЖНО: Проверяем, что этот экземпляр CaseListComponent - ЦЕЛЕВОЙ -->
+        // Только in_calendar список с правильной датой должен обрабатывать событие
+        if ($this->listType === 'in_calendar' && $this->date === $targetDate) {
+
+            // 1. Находим исходный Sample Case
+            $originalCase = ArtefactsCase::where('id', $sampleCaseId)
+                ->where('type', 'sample')
+                ->first();
+
+            if (!$originalCase) {
+                Log::warning('CaseListComponent::addSampleCaseLogic failed - Original sample case not found', ['sampleCaseId' => $sampleCaseId]);
+                // Dispatch error event if needed (e.g., $this->dispatch('notify', ...))
+                return;
+            }
+
+            // 2. Создаем реплику (копию) модели
+            $newCase = $originalCase->replicate();
+
+            // 3. Изменяем необходимые атрибуты для нового кейса
+            $newCase->type = 'in_calendar';
+            $newCase->calendar_date = $this->date; // Используем дату, которую отображает ЭТОТ компонент списка
+            $newCase->calendar_time = null; // Или другое дефолтное значение
+            $newCase->sample_order = 0;
+            $newCase->user_id = Auth::id();
+
+            // 4. Сохраняем новую запись в БД
+            $newCase->save();
+
+            // 5. Копируем связи с артефактами
+            $artefactIds = $originalCase->artefacts()->pluck('artefacts.id'); // Убедитесь в имени столбца в промежуточной таблице
+            if ($artefactIds->isNotEmpty()) {
+                $newCase->artefacts()->attach($artefactIds);
+            } else {
+                Log::info('CaseListComponent::addSampleCaseLogic: No artefacts to attach', ['newCaseId' => $newCase->id]);
+            }
+
+            // 6. Добавляем новый кейс в коллекцию *этого компонента* (без перезагрузки всех кейсов)
+            // Eager load artefacts для нового кейса, чтобы он отобразился сразу с артефактами в x-artefact.case
+            $newCase->load('artefacts');
+            $this->cases->push($newCase); // Добавляем новый кейс в конец коллекции
+
+            // Опционально: отсортировать коллекцию, если важен порядок
+            $this->cases = $this->cases->sortBy('calendar_time');
+
         } else {
-            Log::info('CaseListComponent: Date or type mismatch, not refreshing.');
+            // Этот экземпляр компонента списка не является целью, игнорируем событие.
+            Log::info('CaseListComponent::addSampleCaseLogic - Date or type mismatch, ignoring event.', ['targetDate' => $targetDate, 'myDate' => $this->date, 'myListType' => $this->listType]);
         }
     }
-
-    // ... Метод removeCaseFromList($caseId) для обработки удаления (если этот компонент управляет удалением) ...
-    // public function removeCaseFromList($caseId) { ... }
-
 
     public function render()
     {

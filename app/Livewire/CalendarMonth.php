@@ -74,83 +74,8 @@ class CalendarMonth extends Component
         $this->grouped = $calendarService->getGroupedEvents(Auth::id());
         $this->monthlyEvents = $this->getEventsForMonth();
 
-        $this->dispatch('dom-updated');
     }
 
-    // --- ДОБАВЛЯЕМ МЕТОД ДЛЯ КОПИРОВАНИЯ КЕЙСА В КАЛЕНДАРЬ ---
-    public function copyCaseToCalendar($sampleCaseId, $dropDate)
-    {
-        Log::info('CalendarComponent: copyCaseToCalendar called', ['sampleCaseId' => $sampleCaseId, 'dropDate' => $dropDate]);
-
-        // 1. Находим исходный Sample Case
-        $originalCase = ArtefactsCase::where('id', $sampleCaseId)
-            ->where('type', 'sample') // Убедимся, что копируем именно Sample
-            ->first();
-
-        if (!$originalCase) {
-            Log::warning('CalendarComponent: copyCaseToCalendar failed - Original sample case not found', ['sampleCaseId' => $sampleCaseId]);
-            // Опционально: диспатчить событие об ошибке на фронтенд
-            // $this->dispatch('notify', message: 'Исходный шаблон кейса не найден.', type: 'error');
-            return;
-        }
-
-        // Убедимся, что дата валидна
-        if (!strtotime($dropDate)) {
-            Log::warning('CalendarComponent: copyCaseToCalendar failed - Invalid drop date', ['dropDate' => $dropDate]);
-            // $this->dispatch('notify', message: 'Неверная дата для копирования кейса.', type: 'error');
-            return;
-        }
-
-
-        // 2. Создаем реплику (копию) модели
-        // replicate() копирует атрибуты, но не ID и отношения
-        $newCase = $originalCase->replicate();
-
-        // 3. Изменяем необходимые атрибуты для нового кейса
-        $newCase->type = 'in_calendar'; // Изменяем тип
-        $newCase->calendar_date = $dropDate; // Устанавливаем дату
-        $newCase->calendar_time = null; // Сбрасываем время или устанавливаем по умолчанию, если нужно
-        $newCase->sample_order = 0; // Сбрасываем порядок, т.к. это больше не sample
-        $newCase->user_id = Auth::id(); // Устанавливаем текущего пользователя как владельца копии
-
-        // Сбрасываем ID, чтобы Eloquent создал новую запись
-        // replicate() обычно делает это автоматически, но явное указание не повредит
-        // $newCase->id = null; // replicate() делает это
-
-        // 4. Сохраняем новую запись в БД
-        $newCase->save();
-
-        Log::info('CalendarComponent: New case created', ['newCaseId' => $newCase->id, 'type' => $newCase->type, 'date' => $newCase->calendar_date]);
-
-        // 5. Копируем связи с артефактами
-        // Получаем ID артефактов из оригинального кейса
-        $artefactIds = $originalCase->artefacts()->pluck('artefacts.id'); // Убедитесь, что 'artefacts.id' правильное имя столбца
-
-        // Присоединяем эти артефакты к новому кейсу
-        if ($artefactIds->isNotEmpty()) {
-            $newCase->artefacts()->attach($artefactIds);
-            Log::info('CalendarComponent: Artefacts attached to new case', ['newCaseId' => $newCase->id, 'artefactIds' => $artefactIds->toArray()]);
-        } else {
-            Log::info('CalendarComponent: No artefacts to attach for new case', ['newCaseId' => $newCase->id]);
-        }
-
-
-        // 6. Уведомляем компонент списка кейсов для этого дня о необходимости обновиться
-        // Диспатчим событие, которое поймает CaseListComponent для конкретной даты.
-        // Событие глобальное ('case-copied-to-day').
-        // Передаем дату, чтобы нужный компонент списка среагировал.
-        $this->dispatch('case-copied-to-day', date: $dropDate);
-        $this->dispatch('dom-updated');
-
-        // Опционально: Флеш-сообщение об успехе
-        // session()->flash('message', 'Кейс успешно скопирован в календарь!');
-
-        Log::info('CalendarComponent: copyCaseToCalendar finished successfully', ['newCaseId' => $newCase->id]);
-
-        // Livewire автоматически перерисует календарь, если какие-то свойства компонента календаря изменились.
-        // Главное - уведомить ДОЧЕРНИЙ CaseListComponent для конкретного дня обновиться.
-
-    }
 
     public function render()
     {
