@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\ArtefactsCase as ArtefactsCaseModel; // Импортируем модель с псевдонимом
+
 use App\Models\Artefact;
 use Closure;
 use Illuminate\Contracts\View\View;
@@ -26,7 +28,7 @@ class ArtefactsCase extends Component
     {
         $artefact = Artefact::find($artefactId);
 
-        $case = \App\Models\ArtefactsCase::find($this->id);
+        $case = ArtefactsCaseModel::find($this->id);
 
         if ($case && $artefact) {
             // Ищем артефакт в целевом кейсе
@@ -58,7 +60,7 @@ class ArtefactsCase extends Component
     public function handleArtefactDoubleClick($artefactId): void
     {
         // Находим модель кейса и артефакта
-        $case = \App\Models\ArtefactsCase::find($this->id); // Используем псевдоним
+        $case = ArtefactsCaseModel::find($this->id); // Используем псевдоним
         $artefact = Artefact::find($artefactId);
 
         if ($case && $artefact) {
@@ -118,7 +120,7 @@ class ArtefactsCase extends Component
 //    {
 //        if (!$caseId || $this->id != $caseId) return; // Только если удаляется из этого кейса
 //
-//        $case = \App\Models\ArtefactsCase::find($this->id);
+//        $case = ArtefactsCaseModel::find($this->id);
 //        $artefact = Artefact::find($artefactId);
 //
 //        if ($case && $artefact) {
@@ -134,7 +136,7 @@ class ArtefactsCase extends Component
         \Log::info('ArtefactsCase::deleteCase called', ['caseId' => $this->id]);
 
         // Находим модель кейса по ID этого компонента
-        $case = \App\Models\ArtefactsCase::find($this->id);
+        $case = ArtefactsCaseModel::find($this->id);
 
         if ($case) {
             // Опционально: Добавьте проверку авторизации/политики, чтобы только владелец мог удалить
@@ -161,6 +163,83 @@ class ArtefactsCase extends Component
             // Опционально: диспатчить событие об ошибке
             // $this->dispatch('notify', message: 'Кейс не найден для удаления.', type: 'error');
         }
+    }
+
+    // метод для обновления количества артефактов через инлайн-редактор
+    public function updateArtefactCount(int $artefactId, int $newCount): void
+    {
+        \Log::info('updateArtefactCount called', [
+            'caseId' => $this->id,
+            'artefactId' => $artefactId,
+            'newCount' => $newCount
+        ]);
+
+        $case = ArtefactsCaseModel::find($this->id); // Используем псевдоним
+        $artefact = Artefact::find($artefactId);
+
+        // Проверяем существование кейса и артефакта
+        if (!$case || !$artefact) {
+            \Log::warning('updateArtefactCount failed: Case or Artefact not found', [
+                'caseId' => $this->id,
+                'artefactId' => $artefactId
+            ]);
+            // Опционально: диспатчить событие об ошибке на фронтенд
+            $this->dispatch('notify', message: 'Кейс или артефакт не найден.', type: 'error');
+            return;
+        }
+
+        // Проверяем, что артефакт действительно связан с этим кейсом
+        $existingPivot = $case->artefacts()->where('artefact_id', $artefactId)->first();
+
+        if (!$existingPivot) {
+            \Log::warning('updateArtefactCount failed: Artefact not in case', [
+                'caseId' => $this->id,
+                'artefactId' => $artefactId
+            ]);
+            $this->dispatch('notify', message: 'Артефакт не найден в этом кейсе.', type: 'warning');
+            return;
+        }
+
+
+        // Валидируем новое количество
+        $validatedCount = max(0, $newCount); // Убеждаемся, что количество не отрицательное
+
+        if ($validatedCount <= 0) {
+            // Если новое количество 0 или меньше, отсоединяем артефакт полностью
+            \Log::info("Detaching artefact {$artefactId} from case {$this->id} due to count <= 0");
+            $case->artefacts()->detach($artefactId);
+        } else {
+            // Иначе, обновляем количество в промежуточной таблице
+            \Log::info("Updating artefact {$artefactId} count in case {$this->id} to {$validatedCount}");
+            $case->artefacts()->updateExistingPivot($artefactId, [
+                'artefact_in_case_count' => $validatedCount,
+            ]);
+        }
+
+        // !!! Благодаря методу booted() в вашей модели ArtefactCasePivot,
+        // recalculateCaseCost() будет вызван автоматически при detach или updateExistingPivot.
+        // Вам не нужно вызывать его явно здесь.
+
+        // Обновляем свойства компонента, чтобы UI синхронизировался
+        // Fetch fresh data для case_cost и коллекции артефактов
+        $case->refresh(); // Обновляем модель кейса, чтобы получить свежий case_cost
+        $this->case_cost = $case->case_cost; // Обновляем публичное свойство
+
+        // Перезагружаем коллекцию артефактов для компонента
+        $this->artefacts = $case->artefacts()->get(); // Загружаем отношения заново
+
+        \Log::info('Artefact count updated successfully and case state refreshed.', [
+            'caseId' => $this->id,
+            'artefactId' => $artefactId,
+            'finalCount' => $validatedCount,
+            'newCaseCost' => $this->case_cost
+        ]);
+
+        // Опционально: диспатчить событие об успешном обновлении, если нужно
+        // $this->dispatch('notify', message: 'Количество обновлено.', type: 'success');
+
+        // Опционально: диспатчить событие вверх, если родитель должен быть уведомлен
+        // $this->dispatch('artefact-count-updated-in-case', caseId: $this->id, artefactId: $artefactId, newCount: $validatedCount)->up();
     }
 
 
