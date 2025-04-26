@@ -108,7 +108,8 @@ class CaseListComponent extends Component
         if ($this->listType === 'in_calendar' && $this->date === $targetDate) {
 
             // 1. Находим исходный Sample Case
-            $originalCase = ArtefactsCase::where('id', $sampleCaseId)
+            $originalCase = ArtefactsCase::with('artefacts')
+                ->where('id', $sampleCaseId)
                 ->where('type', 'sample')
                 ->first();
 
@@ -131,10 +132,13 @@ class CaseListComponent extends Component
             // 4. Сохраняем новую запись в БД
             $newCase->save();
 
-            // 5. Копируем связи с артефактами
-            $artefactIds = $originalCase->artefacts()->pluck('artefacts.id'); // Убедитесь в имени столбца в промежуточной таблице
-            if ($artefactIds->isNotEmpty()) {
-                $newCase->artefacts()->attach($artefactIds);
+            // 5. Копируем связи с артефактами, включая количество из pivot
+            $pivotData = $originalCase->artefacts->pluck('pivot.artefact_in_case_count', 'id')->map(function ($count) {
+                return ['artefact_in_case_count' => $count];
+            })->toArray();
+
+            if (!empty($pivotData)) {
+                $newCase->artefacts()->attach($pivotData);
             } else {
                 Log::info('CaseListComponent::addSampleCaseLogic: No artefacts to attach', ['newCaseId' => $newCase->id]);
             }

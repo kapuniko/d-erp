@@ -16,7 +16,6 @@
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 5px;
-    padding: .5rem;
     text-align: center;
 }
 .day {
@@ -134,6 +133,18 @@
 .artefact-icon__size-16{
     width: 16px;
     height: 16px;
+}
+
+.artefact_in_case_count{
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    line-height: 9px;
+    font-size: 9px;
+    text-shadow:    -1px -1px 0 black,
+                    1px -1px 0 black,
+                    -1px 1px 0 black,
+                    1px 1px 0 black;
 }
 
 

@@ -33,6 +33,7 @@ class ArtefactsCase extends Model
     public function artefacts(): BelongsToMany
     {
         return $this->belongsToMany(Artefact::class, 'artefact_case', 'artefacts_case_id', 'artefact_id')
-            ->using(ArtefactCasePivot::class);
+            ->using(ArtefactCasePivot::class)
+            ->withPivot('artefact_in_case_count');
     }
 }

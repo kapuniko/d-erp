@@ -22,38 +22,112 @@ class ArtefactsCase extends Component
 
     public Collection $artefacts;
 
-    protected $listeners = [
-        'artefact-double-click' => 'removeArtefact',
-    ];
-
-    public function drop($artefactId): void
+    public function drop($artefactId, int $artefactCount = 1): void
     {
         $artefact = Artefact::find($artefactId);
-
-        $case = \App\Models\ArtefactsCase::where('id', $this->id)->first();
-
-        if ($case && $artefact) {
-            $case->artefacts()->attach($artefact);
-
-            $this->case_cost = $case->fresh()->case_cost;
-
-            $this->artefacts->push($artefact);
-        }
-    }
-
-    public function removeArtefact($artefactId, $caseId): void
-    {
-        if (!$caseId || $this->id != $caseId) return; // Только если удаляется из этого кейса
 
         $case = \App\Models\ArtefactsCase::find($this->id);
+
+        if ($case && $artefact) {
+            // Ищем артефакт в целевом кейсе
+            $existingArtefact = $case->artefacts()->where('artefact_id', $artefactId)->first();
+
+            if ($existingArtefact) {
+                // Безопасно получаем старое количество
+                $currentCount = $existingArtefact->pivot->artefact_in_case_count ?? 1;
+
+                // Обновляем количество: старое + добавляемое
+                $case->artefacts()->updateExistingPivot($artefactId, [
+                    'artefact_in_case_count' => $currentCount + $artefactCount,
+                ]);
+            } else {
+                // Если артефакта нет в кейсе — добавляем с нужным количеством
+                $case->artefacts()->attach($artefactId, [
+                    'artefact_in_case_count' => $artefactCount,
+                ]);
+            }
+
+            // Обновляем стоимость кейса
+            $this->case_cost = $case->fresh()->case_cost;
+
+            // Обновляем коллекцию артефактов
+            $this->artefacts = $case->fresh()->artefacts;
+        }
+    }
+
+    public function handleArtefactDoubleClick($artefactId): void
+    {
+        // Находим модель кейса и артефакта
+        $case = \App\Models\ArtefactsCase::find($this->id); // Используем псевдоним
         $artefact = Artefact::find($artefactId);
 
         if ($case && $artefact) {
-            $case->artefacts()->detach($artefactId);
-            $this->artefacts = $this->artefacts->filter(fn($a) => $a->id != $artefactId);
-            $this->case_cost = $case->fresh()->case_cost;
+            // Проверяем количество артефактов в кейсе перед удалением
+            $existingPivot = $case->artefacts()->where('artefact_id', $artefactId)->first();
+
+            if ($existingPivot) {
+
+                $case->artefacts()->detach($artefactId);
+                \Log::info("Detached artefact {$artefactId} from case {$this->id}.");
+
+                // Обновляем стоимость кейса (fetch fresh data)
+                $case->refresh(); // Обновляем модель кейса
+                $this->case_cost = $case->case_cost;
+                \Log::info("Case cost updated for case {$this->id}. New cost: " . $this->case_cost);
+
+
+                // Обновляем коллекцию артефактов компонента
+                // Загружаем отношения artefacts заново после изменений
+                $this->artefacts = $case->artefacts()->get();
+                \Log::info("Artefacts collection refreshed for case {$this->id}.");
+
+
+                // !!! ОПЦИОНАЛЬНО: Диспатчим событие вверх к родительскому компоненту !!!
+                // Это уведомит родителя об изменении в этом дочернем кейсе.
+                // Родитель должен слушать событие 'artefact-removed-from-case'.
+//                $this->dispatch('artefact-removed-from-case',
+//                    caseId: $this->id, // ID кейса, из которого удален артефакт
+//                    artefactId: $artefactId // ID удаленного артефакта
+//                )->up(); // Отправляем событие вверх по дереву компонентов
+
+                \Log::info('Dispatched artefact-removed-from-case event up', [
+                    'caseId' => $this->id,
+                    'artefactId' => $artefactId
+                ]);
+
+
+            } else {
+                \Log::warning("Attempted to remove artefact {$artefactId} from case {$this->id}, but it was not found in the pivot table.");
+                // Опционально: диспатчить событие об ошибке или флеш-сообщение
+                // $this->dispatch('notify', message: 'Артефакт не найден в кейсе.', type: 'warning');
+            }
+
+
+        } else {
+            \Log::warning('handleArtefactDoubleClick failed: Case or Artefact not found', [
+                'caseId' => $this->id,
+                'artefactId' => $artefactId
+            ]);
+            // Опционально: диспатчить событие об ошибке
+            // $this->dispatch('notify', message: 'Кейс или артефакт не найден.', type: 'error');
         }
     }
+
+
+//    public function removeArtefact($artefactId, $caseId): void
+//    {
+//        if (!$caseId || $this->id != $caseId) return; // Только если удаляется из этого кейса
+//
+//        $case = \App\Models\ArtefactsCase::find($this->id);
+//        $artefact = Artefact::find($artefactId);
+//
+//        if ($case && $artefact) {
+//            $case->artefacts()->detach($artefactId);
+//
+//            $this->case_cost = $case->fresh()->case_cost;
+//            $this->artefacts = $case->artefacts()->get();
+//        }
+//    }
 
     public function deleteCase(): void
     {

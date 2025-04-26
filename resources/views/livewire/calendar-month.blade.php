@@ -51,6 +51,7 @@
                   localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarOpen));
                 },
               artefactId: null, // Используется для drop/remove
+              artefactCount: null, // колличество для дропа
               artefactFromCaseId: null, // Используется для remove
               artefactIsDragging: false, // Для подсветки кейсов при перемещении артефактов
 
@@ -229,6 +230,7 @@
                          @dragover.prevent="isDragOver = true" {{-- Позволяем сброс и меняем состояние --}}
                          @dragleave="isDragOver = false" {{-- Меняем состояние при уходе курсора --}}
                          @drop="isDragOver = false; Livewire.dispatch('add-sample-case-to-list-event', { sampleCaseId: event.dataTransfer.getData('case-id'), targetDate: $el.dataset.date })"
+                         @dragend="isDragOver = false"
                          :class="{'bg-white bg-opacity-20': isDragOver}" {{-- Визуальный фидбек при наведении --}}
                         >
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">

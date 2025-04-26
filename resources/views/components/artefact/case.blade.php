@@ -2,22 +2,22 @@
 
 <div class="bg-gray-900 text-white p-1 rounded mb-1 transition text-xs {{ $type === 'in_calendar' ? 'case-tooltip' : '' }}"
      x-data="{ isDragOver: false, caseId: {{ $id }} }"
-     :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver, 'highlightGreen': artefactIsDragging }"
      x-on:dragover.prevent="isDragOver = true"
      x-on:dragleave="isDragOver = false"
      {{-- Убрал передачу caseId в drop, так как drop находится в компоненте Case --}}
-     x-on:drop.stop="isDragOver = false; $wire.drop(artefactId)"
+     x-on:drop.stop="isDragOver = false; $wire.drop(artefactId, artefactCount)"
      data-case
      style="position: relative;" {{-- Делаем контейнер относительно позиционированным --}}
      draggable="{{ $type === 'sample' ? 'true' : 'false' }}" {{-- Только sample кейсы перетаскиваются --}}
      @dragstart="event.dataTransfer.setData('case-id', caseId); event.dataTransfer.effectAllowed = 'copy';" {{-- Сохраняем ID и указываем тип операции "копирование" --}}
-     @dragend="" {{-- Опционально: для стилей после окончания перетаскивания --}}
+     @dragend="isDragOver = false" {{-- Опционально: для стилей после окончания перетаскивания --}}
+     :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver, 'highlightGreen': artefactIsDragging }"
 >
 
     {{-- Кнопка удаления (абсолютное позиционирование в верхнем правом углу) --}}
     <button type="button"
             @click.stop="if (confirm('Вы уверены, что хотите удалить этот кейс?')) { $wire.deleteCase() }" {{-- ИСПРАВЛЕНО: Вызываем $wire.deleteCase() без аргументов --}}
-            class="absolute bottom-0 right-0 p-1 text-red-400 hover:text-red-600 focus:outline-none z-10"
+            class="absolute bottom-0 right-0 text-red-400 hover:text-red-600 focus:outline-none z-10"
             aria-label="Удалить кейс"
     >
         {{-- Иконка крестика --}}
@@ -40,7 +40,12 @@
     <div class="flex flex-wrap gap-1">
         @forelse($artefacts as $artefact)
             {{-- Убедитесь, что x-on:dblclick на артефакте диспатчит событие с artefactId и caseId --}}
-            <x-artefact.artefact :artefact="$artefact" :caseId="$id" :iconSize="$type === 'sample' ? '25' : '16'"/>
+            <x-artefact.artefact
+                :artefact="$artefact"
+                :caseId="$id"
+                :iconSize="$type === 'sample' ? '25' : '16'"
+                wire:key="artefact-{{ $artefact->id }}"
+            />
         @empty
             <li>Тут пока ничего нету</li>
         @endforelse

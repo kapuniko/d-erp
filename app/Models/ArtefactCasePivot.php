@@ -13,6 +13,10 @@ class ArtefactCasePivot extends Pivot
             $pivot->recalculateCaseCost();
         });
 
+        static::updated(function (ArtefactCasePivot $pivot) {
+            $pivot->recalculateCaseCost();
+        });
+
         static::deleted(function (ArtefactCasePivot $pivot) {
             $pivot->recalculateCaseCost();
         });
@@ -24,7 +28,11 @@ class ArtefactCasePivot extends Pivot
 
         if (!$case) return;
 
-        $total = $case->artefacts()->sum('price');
+        $total = $case->artefacts->sum(function ($artefact) {
+            $count = $artefact->pivot?->artefact_in_case_count ?? 1;
+            return $count * $artefact->price;
+        });
+
         $case->update(['case_cost' => $total]);
     }
 }
