@@ -102,7 +102,7 @@
             </button>
 
             <!-- Табы -->
-            <div class="flex gap-2 mb-5">
+            <div class="flex gap-2 mb-5" x-cloak>
                 <button @click="tab = 'events'"
                         :class="{ 'text-indigo-400': tab === 'events' }"
                         class="px-3 py-1 rounded bg-gray-200 dark:bg-gray-700">
@@ -116,7 +116,7 @@
             </div>
 
             <!-- Вкладка: Всякие штуки -->
-            <div x-show="tab === 'stuff'" x-transition class="flex flex-col gap-4">
+            <div x-show="tab === 'stuff'" x-transition class="flex flex-col gap-4" x-cloak>
                 <x-moonshine::layout.box title="Всякие штуки" class="dark:bg-gray-800">
                     <div class="flex flex-wrap gap-1">
                         @forelse($artefacts as $artefact)
