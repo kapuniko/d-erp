@@ -92,6 +92,7 @@
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-3' : 'xl:col-span-0 hidden'"
          class="relative"
+         x-cloak
     >
         <div x-data="{ tab: 'events' }" class="sticky top-0 ">
             <button @click="toggleSidebar" class="absolute top-0 right-0 p-1 text-xs z-10">
@@ -181,6 +182,7 @@
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-9' : 'xl:col-span-12'"
          class="relative"
+         x-cloak
     >
         <!-- Кнопка показать сайдбар (появляется, когда он скрыт) -->
         <button x-show="!sidebarOpen" @click="toggleSidebar" class="fixed top-20 left-1 z-10">

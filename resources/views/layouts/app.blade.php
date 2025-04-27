@@ -28,7 +28,11 @@
 
         @stack('calendar-assets')
 
-
+        <style>
+            [x-cloak] {
+                display: none !important;
+            }
+        </style>
 
     </head>
     <body class="font-sans antialiased">
