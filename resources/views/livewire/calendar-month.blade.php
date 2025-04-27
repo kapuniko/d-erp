@@ -87,6 +87,8 @@
 
     {{-- <-- Слушатель для закрытия модалки артефактов --> --}}
     @close-artefact-modal.window="showArtefactModal = false;"
+    x-cloak
+
 
 >
 
