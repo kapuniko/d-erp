@@ -17,6 +17,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/laravel
+            git reset --hard HEAD
             git pull origin main
             composer install --no-dev --optimize-autoloader
             php artisan migrate --force
