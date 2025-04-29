@@ -30,8 +30,8 @@ class EventServiceProvider extends ServiceProvider
         parent::boot();
 
         // Добавляем поддержку Telegram
-        \Event::listen(SocialiteWasCalled::class, function (SocialiteWasCalled $event) {
-            $event->extendSocialite('telegram', TelegramExtendSocialite::class);
+        Event::listen(function (\SocialiteProviders\Manager\SocialiteWasCalled $event) {
+            $event->extendSocialite('telegram', \SocialiteProviders\Telegram\Provider::class);
         });
     }
 

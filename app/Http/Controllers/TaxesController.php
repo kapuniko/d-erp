@@ -9,6 +9,7 @@ use App\Models\Clan; // Импорт модели
 use App\Models\TreasuryLog;
 
 use MoonShine\Apexcharts\Components\DonutChartMetric;
+use Carbon\Carbon;
 
 
 
@@ -60,9 +61,9 @@ class TaxesController extends Controller
 
     public function getLog($clan_id)
     {
-        $currentMonth = now(); // Текущий месяц
-        $previousMonth = now()->subMonth(); // Предыдущий месяц
-        $twoMonthsAgo = now()->subMonths(2); // Месяц перед предыдущим
+        $currentMonth = Carbon::now(); // Текущий месяц
+        $previousMonth = Carbon::now()->subMonth(); // Предыдущий месяц
+        $twoMonthsAgo = Carbon::now()->subMonths(2); // Месяц перед предыдущим
 
         return TreasuryLog::select(
             'name',

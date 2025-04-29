@@ -45,4 +45,8 @@
         </div>
     </form>
 
+    <a href="{{ route('auth.telegram') }}" class="btn btn-primary">
+        Войти через Telegram
+    </a>
+
 </x-guest-layout>

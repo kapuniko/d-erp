@@ -32,11 +32,10 @@ return [
     ],
 
     'telegram' => [
+        'bot' => 'derpsystemBot',  // The bot's username
         'client_id' => null,
-        'bot' => env('TELEGRAM_BOT_USERNAME'),
-        'bot_username' => env('TELEGRAM_BOT_USERNAME'),
-        'token' => env('TELEGRAM_BOT_TOKEN'),
-        'redirect' => env('TELEGRAM_REDIRECT_URI', 'http://127.0.0.1:8000/auth/telegram/callback'),
+        'client_secret' => '7516431766:AAEmFGc7pf3tHvpVPpm6CJcjWr4GLeNcx3o',
+        'redirect' => 'TELEGRAM_REDIRECT_URI',
     ],
 
 ];

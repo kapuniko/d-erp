@@ -292,22 +292,22 @@
         document.addEventListener("keydown", moveCat);
 
         document.getElementById("up").addEventListener("click", function () {
-            var event = new KeyboardEvent("keydown", { keyCode: "38" });
+            var event = new KeyboardEvent("keydown", { keyCode: 38 });
             document.dispatchEvent(event);
         });
 
         document.getElementById("left").addEventListener("click", function () {
-            var event = new KeyboardEvent("keydown", { keyCode: "37" });
+            var event = new KeyboardEvent("keydown", { keyCode: 37 });
             document.dispatchEvent(event);
         });
 
         document.getElementById("right").addEventListener("click", function () {
-            var event = new KeyboardEvent("keydown", { keyCode: "39" });
+            var event = new KeyboardEvent("keydown", { keyCode: 39 });
             document.dispatchEvent(event);
         });
 
         document.getElementById("down").addEventListener("click", function () {
-            var event = new KeyboardEvent("keydown", { keyCode: "40" });
+            var event = new KeyboardEvent("keydown", { keyCode: 40 });
             document.dispatchEvent(event);
         });
     </script>
