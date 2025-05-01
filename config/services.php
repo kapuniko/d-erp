@@ -32,9 +32,9 @@ return [
     ],
 
     'telegram' => [
-        'bot' => env('TELEGRAM_BOT_USERNAME'),  // The bot's usernameы
+        'bot' => 'derpsystemBot',  // The bot's username
         'client_id' => null,
-        'client_secret' => env('TELEGRAM_CLIENT_SECRET'),
+        'client_secret' => env('TELEGRAM_TOKEN'),
         'redirect' => env('TELEGRAM_REDIRECT_URI'),
     ],
 

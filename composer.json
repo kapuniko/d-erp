@@ -12,10 +12,10 @@
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.18",
         "laravel/tinker": "^2.8",
+        "livewire/livewire": "^3.0",
         "moonshine/apexcharts": "^1.0",
         "moonshine/moonshine": "^3.0",
-        "socialiteproviders/telegram": "^4.1",
-        "livewire/livewire": "^3.0"
+        "socialiteproviders/telegram": "^4.1"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",

@@ -1,13 +1,10 @@
 <?php
 
 use App\Http\Controllers\CalendarController;
-use App\Models\User;
-use Laravel\Socialite\Facades\Socialite;
-use App\Services\CalendarService;
+use App\Http\Controllers\SocialAuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaxesController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TelegramAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,39 +31,30 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/cabinet', function () {
+        return view('cabinet');
+    })->name('cabinet'); // Добавим имя для удобства
 });
-
-Route::get('/cabinet', function () {
-    return view('cabinet');
-})->middleware('auth');
 
 Route::get('/calendar', [CalendarController::class, 'index']);
 
 Route::post('/calendar-events/save', [CalendarController::class, 'saveEvent']);
 
-Route::get('/auth/telegram', function () {
-    return Socialite::driver('telegram')->redirect();
-})->name('auth.telegram');
+// --- Единый роут для редиректа на Telegram (инициируется и для входа, и для привязки) ---
+// Этот роут используется кнопками "Войти через Telegram" и "Привязать Telegram"
+Route::get('/auth/telegram', [SocialAuthController::class, 'redirectToTelegram'])->name('auth.telegram');
 
-Route::get('/auth/telegram/callback', function () {
-    $telegramUser = Socialite::driver('telegram')->user();
 
-    // Ищем юзера по telegram_id
-    $user = User::where('telegram_id', $telegramUser->getId())->first();
+// --- Единый роут для обработки ВСЕХ ответов (callback) от Telegram ---
+// Логика внутри handleTelegramCallback определит, это был вход или привязка
+Route::get('/auth/telegram/callback', [SocialAuthController::class, 'handleTelegramCallback']);
 
-    // Если нет - регистрируем нового
-    if (!$user) {
-        $user = User::create([
-            'name' => $telegramUser->getName() ?? $telegramUser->getNickname(),
-            'email' => $telegramUser->getId().'@telegram.fake', // Телега не отдает email, фейковый
-            'telegram_id' => $telegramUser->getId(),
-            'password' => bcrypt(Str::random(24)), // случайный пароль
-        ]);
-    }
 
-    Auth::login($user);
-
-    return redirect('/dashboard'); // или куда хочешь
+// --- Роут для инициирования привязки аккаунта из кабинета (ТРЕБУЕТ АУТЕНТИФИКАЦИИ) ---
+// Этот роут просто перенаправляет на /auth/telegram, инициируя Socialite flow
+Route::middleware('auth')->group(function () {
+    Route::get('/profile/link/telegram', [SocialAuthController::class, 'redirectToTelegram'])->name('profile.link.telegram');
+    // Обратите внимание: здесь НЕТ отдельного callback роута.
+    // Callback пойдет на единый /auth/telegram/callback
 });
-
 require __DIR__.'/auth.php';

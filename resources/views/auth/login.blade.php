@@ -45,8 +45,23 @@
         </div>
     </form>
 
-{{--    <a href="{{ route('auth.telegram') }}" class="btn btn-primary">--}}
-{{--        Войти через Telegram--}}
-{{--    </a>--}}
+    <div class="mt-4 flex items-center justify-center flex-col">
+        {!! Socialite::driver('telegram')->getButton() !!}
+
+        @if (session('error'))
+            <div class="alert alert-danger mt-4">
+                {{ session('error') }}
+            </div>
+        @endif
+    </div>
+
+    <div class="mt-4">
+        <a href="{{ route('register') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">
+            {{ __('Create account') }}
+        </a>
+    </div>
+
+
+
 
 </x-guest-layout>
