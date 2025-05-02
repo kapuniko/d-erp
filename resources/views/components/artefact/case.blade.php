@@ -4,8 +4,11 @@
      x-data="{ isDragOver: false, caseId: {{ $id }} }"
      x-on:dragover.prevent="isDragOver = true"
      x-on:dragleave="isDragOver = false"
-     {{-- Убрал передачу caseId в drop, так как drop находится в компоненте Case --}}
-     x-on:drop.stop="isDragOver = false; $wire.drop(artefactId, artefactCount)"
+     x-on:drop.stop="isDragOver = false;
+                        const caseId = event.dataTransfer.getData('case-id');
+                        if (!caseId) {
+                            $wire.drop(artefactId, artefactCount);
+                        }"
      data-case
      style="position: relative;" {{-- Делаем контейнер относительно позиционированным --}}
      draggable="{{ $type === 'sample' ? 'true' : 'false' }}" {{-- Только sample кейсы перетаскиваются --}}

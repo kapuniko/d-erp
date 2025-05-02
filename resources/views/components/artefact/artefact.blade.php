@@ -1,6 +1,6 @@
 @props(['artefact', 'caseId' => null, 'iconSize'])
 
-<div draggable="true"  x-on:dragstart="
+<div draggable="{{ $caseId == null ? 'true' : 'false' }}"  x-on:dragstart="
                             artefactId = {{ $artefact->id }};
                             artefactCount = {{ $artefact->pivot?->artefact_in_case_count ?? 1 }}
                             artefactFromCaseId = {{ $caseId ?? 'null' }}
@@ -10,7 +10,9 @@
                                $wire.handleArtefactDoubleClick({{ $artefact->id }})
                             "
                         @endif
-                         @dragstart="artefactIsDragging = true;"
+                         @dragstart="if ($el.draggable) {
+                                            artefactIsDragging = true;
+                                        }"
                          @dragend="artefactIsDragging = false"
                          class="artefact-icon__size-{{ $iconSize }}"
                     >
