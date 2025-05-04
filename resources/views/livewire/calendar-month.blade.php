@@ -29,20 +29,17 @@
                 showArtefactModal: false, // Для артефактов
                 // openCaseModal метод остается здесь
                 openCaseModal(type, date = null) {
-                console.log('openCaseModal called with type:', type, 'date:', date); // Отладочный вывод
                     this.formData = { type: type, date: date };
                     this.showModal = true;
                     setTimeout(() => {
                          // Проверяем, что модалка действительно открыта перед диспатчем
                         if (this.showModal) {
-                             console.log('Dispatching open-case-form-modal with:', this.formData); // Отладочный вывод
                              this.$dispatch('open-case-form-modal', this.formData);
                         }
                     }, 50); // Небольшая задержка
                 },
                 // Метод для открытия модалки артефактов (просто устанавливает переменную в true)
                 openArtefactModal() {
-                    console.log('openArtefactModal called');
                     this.showArtefactModal = true;
                 },
               sidebarOpen: JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true'),

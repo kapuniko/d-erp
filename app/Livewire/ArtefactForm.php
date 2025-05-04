@@ -14,15 +14,14 @@ class ArtefactForm extends Component
     public $name = '';
     public $type = 'buf';
     public $price = null;
-    public string $image = ''; // <-- ИЗМЕНЕНО: Теперь это строка для URL
+    public string $image = '';
 
     // Правила валидации
     protected $rules = [
         'name' => 'required|string|max:255',
         'type' => 'required|string|in:buf,pot',
         'price' => 'nullable|numeric|min:0',
-        // <-- ИЗМЕНЕНО: Правила для URL изображения -->
-        'image' => 'nullable|string|max:255', // Может быть null или строкой-URL
+        'image' => 'nullable|string|max:255',
     ];
 
     public function mount()
@@ -32,7 +31,6 @@ class ArtefactForm extends Component
 
     public function resetForm()
     {
-        Log::info('ArtefactForm: resetForm called');
         $this->reset([
             'name',
             'type',
@@ -62,7 +60,6 @@ class ArtefactForm extends Component
             // Добавьте другие поля
         ]);
 
-        Log::info('ArtefactForm: Artefact created', ['name' => $this->name]);
 
         $this->resetForm();
 
@@ -74,7 +71,6 @@ class ArtefactForm extends Component
 
     public function render()
     {
-        Log::debug('ArtefactForm: render called');
         return view('livewire.artefact-form');
     }
 }

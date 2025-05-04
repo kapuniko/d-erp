@@ -192,14 +192,6 @@ class ArtefactsCase extends Component
      */
     public function render(): View|Closure|string
     {
-        \Log::info('ArtefactsCase Rendered:', [
-            'id' => $this->id,
-            'name' => $this->name,
-            'profit' => $this->case_profit,
-            // Опционально: проверить, загружены ли артефакты
-            'artefacts_loaded' => isset($this->artefacts) && $this->artefacts instanceof \Illuminate\Support\Collection,
-            'artefact_count' => isset($this->artefacts) ? $this->artefacts->count() : 0,
-        ]);
         return view('components.artefact.case');
     }
 }

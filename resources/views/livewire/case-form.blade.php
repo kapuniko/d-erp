@@ -47,7 +47,7 @@
 
     <div>
         <label for="case_profit" class="flex items-center"><img src="{{  asset('/images/m_game3.gif') }}" alt=""> Прибыль:</label>
-        <input type="text" id="case_profit" wire:model="case_profit"
+        <input type="number" step="0.01" id="case_profit" wire:model="case_profit"
                class="mt-1 mb-4 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"> {{-- Используйте text для float --}}
         @error('case_profit') <span>{{ $message }}</span> @enderror
     </div>

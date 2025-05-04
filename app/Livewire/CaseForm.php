@@ -2,55 +2,43 @@
 
 namespace App\Livewire;
 
+use Livewire\Attributes\Rule;
 use Livewire\Component;
 use App\Models\ArtefactsCase;
 use Illuminate\Support\Facades\Auth;
 
 class CaseForm extends Component
 {
+    #[Rule('nullable', 'integer')]
     public ?int $caseId = null;
+
+    #[Rule('required', 'string', 'max:255')]
     public string $name = '';
+
+    #[Rule('required', 'string', 'in:in_calendar,sample')]
     public string $type = 'in_calendar';
+
+    // Условные правила для calendar_date и calendar_time
+    #[Rule('required_if:type,in_calendar', 'nullable', 'date', 'date_format:Y-m-d')]
     public ?string $calendar_date = '';
+
+    #[Rule('nullable', 'string')] // calendar_time всегда nullable, валидация его наличия зависит от required_if на date
     public ?string $calendar_time = '';
+
+    // Сохраняем типизацию ?int
+    #[Rule('nullable', 'sometimes', 'integer')] // sometimes: правило применяется, только если свойство присутствует (в форме)
     public ?int $sample_order = 0;
+
+    // Сохраняем типизацию ?float
+    #[Rule('nullable', 'sometimes', 'numeric')]
     public ?float $case_cost = null;
+
+    // Сохраняем типизацию ?float
+    #[Rule('nullable', 'sometimes', 'numeric')]
     public ?float $case_profit = null;
+
+    #[Rule('nullable', 'string', 'max:10000')]
     public ?string $case_description = null;
-
-
-    protected function rules()
-    {
-        // Базовые правила, которые всегда применяются
-        $baseRules = [
-            'name' => 'required|string|max:255',
-            'type' => 'required|string|in:in_calendar,sample',
-            'sample_order' => 'nullable|sometimes|integer',
-            'case_cost' => 'nullable|sometimes|numeric',
-            'case_profit' => 'nullable|sometimes|numeric',
-            'case_description' => 'nullable|string|max:10000',
-        ];
-
-        // Условные правила, которые применяются только для in_calendar
-        $conditionalRules = [];
-        if ($this->type === 'in_calendar') {
-            $conditionalRules = [
-                'calendar_date' => 'required|date|date_format:Y-m-d',
-                // calendar_time может быть nullable даже для in_calendar, если оно не обязательное для заполнения
-                'calendar_time' => 'nullable|string',
-            ];
-        } else {
-            // Если тип НЕ in_calendar, убедитесь, что эти поля не требуют заполнения
-            // и, если они не показываются, их значения игнорируются или обнуляются
-            $conditionalRules = [
-                'calendar_date' => 'nullable', // Явно указываем, что не требуется
-                'calendar_time' => 'nullable|string',
-            ];
-        }
-
-        // Объединяем базовые и условные правила
-        return array_merge($baseRules, $conditionalRules);
-    }
 
 
     public function mount()
@@ -111,7 +99,6 @@ class CaseForm extends Component
                 $this->dispatch('case-updated', ['id' => $this->caseId]);
             } else {
                 \Log::warning('CaseForm: Attempted to update non-existing case', ['id' => $this->caseId]);
-                // Опционально: можно диспатчить событие об ошибке или показать сообщение
             }
 
         } else {
@@ -124,8 +111,6 @@ class CaseForm extends Component
 
     public function resetForm()
     {
-        \Log::info('Livewire CaseForm: resetForm called'); // Лог для отладки
-
         // Сбрасываем ВСЕ поля формы к их начальным значениям, как при первом монтировании
         $this->reset([
             'name',
@@ -143,8 +128,10 @@ class CaseForm extends Component
         $this->type = 'in_calendar'; // Устанавливаем дефолтное значение для типа
         $this->sample_order = 0; // Устанавливаем дефолтное значение для sample_order
     }
-
-    // Метод render остается без изменений
+    public function setCaseProfit($value)
+    {
+        $this->case_profit = is_numeric($value) ? (float) $value : null;
+    }
     public function render()
     {
         return view('livewire.case-form');

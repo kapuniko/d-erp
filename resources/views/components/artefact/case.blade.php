@@ -31,14 +31,16 @@
 
             <!-- Кнопка редактирования -->
             @if (Auth::user())
+                <br>
+                <div class="flex items-center justify-between">
                 <button
-                    class="edit-case-btn text-gray-600 hover:text-black"
+                    class="edit-case-btn text-gray-200 hover:text-white"
                     @click="$dispatch('open-case-form-modal', { id: caseId }); showModal = true;"
                     title="Редактировать"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none"
                          viewBox="0 0 24 24" stroke-width="1.5"
-                         stroke="currentColor" class="size-4">
+                         stroke="currentColor" class="size-3">
                         <path stroke-linecap="round" stroke-linejoin="round"
                               d="m16.862 4.487 1.687-1.688a1.875 1.875
                               0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897
@@ -46,20 +48,21 @@
                               4.487Zm0 0L19.5 7.125" />
                     </svg>
                 </button>
+
+                <button type="button"
+                        @click.stop="if (confirm('Вы уверены, что хотите удалить этот чумадан?')) { $wire.deleteCase() }" {{-- ИСПРАВЛЕНО: Вызываем $wire.deleteCase() без аргументов --}}
+                        class="text-red-400 hover:text-red-600 focus:outline-none z-10"
+                        aria-label="Удалить кейс"
+                >
+                    {{-- Иконка крестика --}}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="4" stroke="currentColor" class="w-3 h-3">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+                </div>
             @endif
         </div>
     @endif
-    {{-- Кнопка удаления (абсолютное позиционирование в нижнем правом углу) --}}
-    <button type="button"
-            @click.stop="if (confirm('Вы уверены, что хотите удалить этот чумадан?')) { $wire.deleteCase() }" {{-- ИСПРАВЛЕНО: Вызываем $wire.deleteCase() без аргументов --}}
-            class="absolute bottom-0 right-0 text-red-400 hover:text-red-600 focus:outline-none z-10"
-            aria-label="Удалить кейс"
-    >
-        {{-- Иконка крестика --}}
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-3 h-3">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-    </button>
 
     <div class="flex items-center justify-between text-[10px]">
         @if($type === 'sample')<h2>{{ $name }}</h2>  @endif
