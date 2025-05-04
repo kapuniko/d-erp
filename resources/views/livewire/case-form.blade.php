@@ -2,6 +2,11 @@
       x-on:open-case-form-modal.window="$wire.loadFormData($event.detail)"
       x-on:close-case-form-modal.window="$wire.resetForm()"
 >
+    {{-- Динамический заголовок формы --}}
+    <h2 class="text-xl font-semibold mb-4">
+        {{ $caseId ? 'Редактировать чумадан' : 'Создать новый чумадан' }}
+    </h2>
+
     {{-- Поле для названия --}}
     <div>
         <label for="name">Название:</label>
@@ -10,12 +15,8 @@
         @error('name') <span>{{ $message }}</span> @enderror
     </div>
 
-    {{-- Поле для типа (можно скрыть или сделать readonly, если оно задается кнопкой открытия) --}}
-    {{-- Или оставить его видимым, если пользователь может менять тип в форме --}}
-    <input type="hidden" wire:model="type"> {{-- Чаще всего скрывают, т.к. тип задается кнопкой --}}
-{{--    @if($type === 'sample') <span>Тип: Шаблон</span> @endif--}}
-{{--    @if($type === 'in_calendar') <span>Тип: В календаре</span> @endif--}}
-
+    {{-- Поле для типа (скрытое, управляется логикой открытия) --}}
+    <input type="hidden" wire:model="type">
 
     {{-- Поля даты и времени - показываем только для типа 'in_calendar' --}}
     @if ($type === 'in_calendar')
@@ -35,7 +36,7 @@
     @endif
 
     @if ($type === 'sample')
-    {{-- Другие поля формы --}}
+    {{-- Другие поля формы типа sample --}}
     <div>
         <label for="sample_order">Sample Order:</label>
         <input type="number" id="sample_order" wire:model="sample_order"
@@ -43,19 +44,21 @@
         @error('sample_order') <span>{{ $message }}</span> @enderror
     </div>
     @endif
-{{--    <div>--}}
-{{--        <label for="case_cost">Case Cost:</label>--}}
-{{--        <input type="text" id="case_cost" wire:model="case_cost"> --}}{{-- Используйте text для float --}}
-{{--        @error('case_cost') <span>{{ $message }}</span> @enderror--}}
-{{--    </div>--}}
+
     <div>
-        <label for="case_profit">Прибыль:</label>
+        <label for="case_profit" class="flex items-center"><img src="{{  asset('/images/m_game3.gif') }}" alt=""> Прибыль:</label>
         <input type="text" id="case_profit" wire:model="case_profit"
                class="mt-1 mb-4 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"> {{-- Используйте text для float --}}
         @error('case_profit') <span>{{ $message }}</span> @enderror
     </div>
 
+    <div>
+        <label for="case_description">Описание:</label>
+        <textarea id="case_description" wire:model="case_description" rows="4"
+        class="mt-1 mb-4 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"></textarea>
+        @error('case_description') <span>{{ $message }}</span> @enderror
+    </div>
 
     {{-- Кнопка сохранения --}}
-    <x-primary-button> Сохранить</x-primary-button>
+    <x-primary-button> {{ $caseId ? 'Сохранить изменения' : 'Создать чумадан' }} </x-primary-button>
 </form>

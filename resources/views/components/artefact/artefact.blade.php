@@ -20,7 +20,7 @@ $artefact_count = $artefact->pivot?->artefact_in_case_count ?? 1;
                          @dragend="artefactIsDragging = false"
                          class="artefact-icon__size-{{ $iconSize }}"
                     >
-    <div class="artefact-tooltip">
+    <div class="calendar-tooltip">
         <img src="https://w1.dwar.ru/{{ $artefact->image }}" alt="{{ $artefact->name }}" class="artefact-icon__size-{{ $iconSize }}" />
 
         {{-- --- БЛОК ДЛЯ РЕДАКТИРОВАНИЯ КОЛИЧЕСТВА --- --}}
@@ -54,7 +54,7 @@ $artefact_count = $artefact->pivot?->artefact_in_case_count ?? 1;
         @endif
         {{-- --- КОНЕЦ БЛОКА ДЛЯ РЕДАКТИРОВАНИЯ КОЛИЧЕСТВА --- --}}
 
-        <div class="artefact-content">
+        <div class="calendar-tooltip__content tooltip__top">
             <strong>{{ $artefact->name }}</strong><br>
             Время: {{  round($artefact->duration_sec / 60, 2) }} мин.<br>
             <span class="flex items-center">

@@ -3,22 +3,21 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\ArtefactsCase; // Убедитесь, что модель импортирована
-use Illuminate\Support\Facades\Auth; // Убедитесь, что Auth импортирован
+use App\Models\ArtefactsCase;
+use Illuminate\Support\Facades\Auth;
 
 class CaseForm extends Component
 {
+    public ?int $caseId = null;
     public string $name = '';
     public string $type = 'in_calendar';
-    public string $calendar_date = '';
-    public string $calendar_time = '';
-    public int $sample_order = 0;
+    public ?string $calendar_date = '';
+    public ?string $calendar_time = '';
+    public ?int $sample_order = 0;
     public ?float $case_cost = null;
     public ?float $case_profit = null;
+    public ?string $case_description = null;
 
-    // Удобно добавить переменную для идентификации, что компонент используется в модалке,
-    // чтобы, например, диспатчить событие закрытия модалки после сохранения.
-    // public bool $inModal = true; // Опционально, если нужно отдельное поведение
 
     protected function rules()
     {
@@ -29,6 +28,7 @@ class CaseForm extends Component
             'sample_order' => 'nullable|sometimes|integer',
             'case_cost' => 'nullable|sometimes|numeric',
             'case_profit' => 'nullable|sometimes|numeric',
+            'case_description' => 'nullable|string|max:10000',
         ];
 
         // Условные правила, которые применяются только для in_calendar
@@ -52,69 +52,74 @@ class CaseForm extends Component
         return array_merge($baseRules, $conditionalRules);
     }
 
-    // Метод mount теперь получает дату из Alpine.js через параметр
+
     public function mount()
     {
-        // Основная инициализация будет происходить через loadFormData, вызванный из x-init
-        // Можно сбросить форму здесь, чтобы убедиться, что она чистая при первом монтировании
          $this->reset();
-
     }
 
-    // Метод для загрузки данных из Alpine (вызывается через x-init)
-    public function loadFormData(array $data)
+    public function loadFormData(array $data = [])
     {
-        \Log::info('CaseForm::loadFormData received data:', $data);
+        // Всегда начинаем со сброса формы, чтобы избежать "наложения" данных
+        // от предыдущего открытия модалки (для создания или редактирования).
+        $this->resetForm();
 
-        // --- ПОПРОБУЙТЕ ВРЕМЕННО ЗАКОММЕНТИРОВАТЬ ЭТУ СТРОКУ ДЛЯ ТЕСТИРОВАНИЯ ---
-        // $this->reset(); // Сброс ДО установки новых данных
-
-        // Устанавливаем тип и дату из переданных данных
-        // Убедитесь, что ключи 'type' и 'date' существуют в $data
-        $this->type = $data['type'] ?? $this->type; // Сохраняем текущий тип, если новый не передан или null
-        $this->calendar_date = $data['date'] ?? ''; // Пустая строка для date input, если null передан
-
-        // Лог после присвоения
-        \Log::info('CaseForm::loadFormData properties after assignment:', [
-            'type' => $this->type,
-            'calendar_date' => $this->calendar_date,
-            'name' => $this->name // Проверьте, что другие поля тоже в ожидаемом состоянии (они не должны меняться этим методом)
-        ]);
-
-        // Возможно, нужно добавить логику сброса для некоторых полей, если они специфичны для типа.
-        // Например, если перешли с 'sample' на 'in_calendar', sample_order должен быть сброшен.
-        // If ($this->type === 'in_calendar') { $this->sample_order = 0; }
+        // Проверяем, передан ли ID кейса для редактирования
+        if (isset($data['id']) && $case = ArtefactsCase::find($data['id'])) {
+            // Если ID передан и кейс найден, загружаем его данные
+            $this->fill($case->toArray());
+            $this->caseId = $case->id;
+        } else {
+            // Если ID не передан или кейс не найден, готовим форму для создания нового
+            // Устанавливаем тип и дату, если они были переданы (например, при клике на день календаря)
+            $this->type = $data['type'] ?? 'in_calendar'; // Устанавливаем тип, по умолчанию 'in_calendar'
+            $this->calendar_date = $data['date'] ?? ''; // Устанавливаем дату, если передана
+            $this->caseId = null; // Убеждаемся, что caseId null для нового кейса
+        }
     }
     public function store()
     {
+        // Валидация по текущим правилам
         $this->validate();
 
-        // Убедитесь, что ArtefactsCase модель существует и доступна
-        ArtefactsCase::create([
-            'name' => $this->name,
-            'type' => $this->type,
-            'calendar_date' => $this->calendar_date ?: null,
-            'calendar_time' => $this->calendar_time ?: null,
-            // Убедитесь, что nullable поля сохраняются как null, если они пустые.
-            // Casts в модели могут помочь, или можно делать тернарные операторы здесь
-            'sample_order' => $this->sample_order ?: null, // Если 0 или null, сохранить null
-            'case_cost' => $this->case_cost ?: null, // Если 0.0 или null, сохранить null
-            'case_profit' => $this->case_profit ?: null, // Если 0.0 или null, сохранить null
-            'user_id' => Auth::id(), // Используйте Auth фасад для получения ID текущего пользователя
+        // Подготавливаем данные для сохранения/обновления
+        $data = $this->only([
+            'name',
+            'type',
+            'calendar_date',
+            'calendar_time',
+            'sample_order',
+            'case_cost',
+            'case_profit',
+            'case_description',
         ]);
 
-        // Очистить форму для следующего ввода
-        $this->reset();
-        // Установить обратно дату, если форма сбрасывается и модалка остается открытой
-        // Если модалка закрывается после сохранения, этот шаг не так важен.
-        // $this->calendar_date = $date ?? now()->toDateString(); // <-- Возможно, не нужно, если модалка закрывается
+        // Приводим пустые строки к null для полей, которые могут быть nullable
+        $data['calendar_date'] = $data['calendar_date'] ?: null;
+        $data['calendar_time'] = $data['calendar_time'] ?: null;
+        $data['sample_order'] = $data['sample_order'] ?: null;
+        $data['case_cost'] = $data['case_cost'] ?: null;
+        $data['case_profit'] = $data['case_profit'] ?: null;
+        $data['case_description'] = $data['case_description'] ?: null;
+        $data['user_id'] = Auth::id(); // Добавляем ID пользователя
 
-        // Отправить событие. Слушатель этого события в Blade или другом компоненте
-        // может закрыть модалку и/или обновить список кейсов.
-        $this->dispatch('case-added');
-        // Возможно, также отправить событие для закрытия модалки, если это не делает слушатель 'case-added'
-        //$this->dispatch('close-modal', 'caseModal'); // Пример: отправить событие для закрытия модалки по ID
+        if ($this->caseId) {
+            // Если caseId существует, ищем кейс и обновляем его
+            $case = ArtefactsCase::find($this->caseId);
+            if ($case) {
+                $case->update($data);
+                $this->dispatch('case-updated', ['id' => $this->caseId]);
+            } else {
+                \Log::warning('CaseForm: Attempted to update non-existing case', ['id' => $this->caseId]);
+                // Опционально: можно диспатчить событие об ошибке или показать сообщение
+            }
 
+        } else {
+            // Если caseId отсутствует, создаем новый кейс
+            $newCase = ArtefactsCase::create($data);
+            \Log::info('CaseForm: New case created successfully', ['id' => $newCase->id]);
+            $this->dispatch('case-added');
+        }
     }
 
     public function resetForm()
@@ -130,7 +135,8 @@ class CaseForm extends Component
             'sample_order',
             'case_cost',
             'case_profit',
-            // Перечислите здесь все остальные публичные свойства формы
+            'case_description',
+            'caseId'
         ]);
 
         // Возможно, нужно явно установить тип по умолчанию после сброса

@@ -39,12 +39,7 @@ class CaseListComponent extends Component
     public function mount(string $listType, ?string $date = null)
     {
         $this->listType = $listType;
-        $this->date = $date; // Сохраняем дату, если она передана
-
-        // Выполняем базовую валидацию типа
-        // $this->validateOnly('listType'); // Можно использовать validateOnly, если нужно
-
-        // Загружаем соответствующие кейсы при монтировании
+        $this->date = $date;
         $this->loadCases();
     }
 

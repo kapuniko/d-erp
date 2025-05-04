@@ -21,7 +21,6 @@
 .day {
     padding: .5rem;
     border-radius: .25rem;
-    position: relative;
     min-height: 50px;
     display: flex;
     flex-direction: column;
@@ -94,12 +93,11 @@
     /*margin: 2px;*/
 }
 
-.artefact-tooltip {
+.calendar-tooltip {
     position: relative;
-    display: inline-block;
 }
 
-.artefact-tooltip .artefact-content {
+.calendar-tooltip .calendar-tooltip__content {
     visibility: hidden;
     width: max-content;
     background-color: rgba(0, 0, 0, 0.8);
@@ -109,8 +107,6 @@
     border-radius: 4px;
     position: absolute;
     z-index: 999;
-    bottom: 120%;
-    left:50%;
     /*transform: translateX(-50%);*/
     white-space: nowrap;
     font-size: 10px;
@@ -120,7 +116,17 @@
     transition: opacity 0.3s;
 }
 
-.artefact-tooltip:hover .artefact-content {
+.tooltip__top{
+    bottom: 120%;
+    left:50%;
+}
+
+.tooltip__bottom{
+    top: 100%;
+    left:0;
+}
+
+.calendar-tooltip:hover > .calendar-tooltip__content {
     visibility: visible;
     opacity: 1;
 }

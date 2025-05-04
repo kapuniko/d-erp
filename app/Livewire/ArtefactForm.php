@@ -51,15 +51,12 @@ class ArtefactForm extends Component
         $this->validate();
         Log::info('ArtefactForm: validation passed');
 
-        // <-- УДАЛЯЕМ: Логику сохранения файла -->
-        // $imagePath = $this->image->store('artefact-images', 'public');
-
         // Создаем новый артефакт в базе данных
         Artefact::create([
             'name' => $this->name,
             'type' => $this->type,
             'price' => $this->price,
-            'image' => $this->image, // <-- ИСПОЛЬЗУЕМ НАПРЯМУЮ: Строка URL из свойства
+            'image' => $this->image,
             'user_id' => Auth::id(),
 
             // Добавьте другие поля

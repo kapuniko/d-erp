@@ -13,6 +13,7 @@ use MoonShine\UI\Fields\ID;
 use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\UI\Fields\Number;
+use MoonShine\UI\Fields\Textarea;
 
 /**
  * @extends ModelResource<ArtefactsCase>
@@ -36,6 +37,7 @@ class ArtefactsCaseResource extends ModelResource
         return [
 			ID::make('id'),
 			Text::make('name', 'name'),
+            Textarea::make('case_description', 'case_description'),
 			Text::make('type', 'type'),
 			Text::make('calendar_date', 'calendar_date'),
 			Text::make('calendar_time', 'calendar_time'),

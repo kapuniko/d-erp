@@ -10,6 +10,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\Attributes\On;
 
 class ArtefactsCase extends Component
 {
@@ -20,9 +21,18 @@ class ArtefactsCase extends Component
     public ?float $case_profit = null;
     public ?string $calendar_date = null;
     public ?string $calendar_time = null;
-    public int $sample_order = 0;
+    public ?int $sample_order = 0;
+    public ?string $case_description = null;
 
     public Collection $artefacts;
+
+    public function refreshSelf(): void
+    {
+        $case = ArtefactsCaseModel::with('artefacts')->find($this->id);
+        $this->fill($case->getAttributes());
+        $this->artefacts = $case->artefacts;
+    }
+
 
     public function drop($artefactId, int $artefactCount = 1): void
     {
@@ -182,6 +192,14 @@ class ArtefactsCase extends Component
      */
     public function render(): View|Closure|string
     {
+        \Log::info('ArtefactsCase Rendered:', [
+            'id' => $this->id,
+            'name' => $this->name,
+            'profit' => $this->case_profit,
+            // Опционально: проверить, загружены ли артефакты
+            'artefacts_loaded' => isset($this->artefacts) && $this->artefacts instanceof \Illuminate\Support\Collection,
+            'artefact_count' => isset($this->artefacts) ? $this->artefacts->count() : 0,
+        ]);
         return view('components.artefact.case');
     }
 }

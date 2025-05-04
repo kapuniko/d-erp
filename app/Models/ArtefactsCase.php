@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -23,7 +24,13 @@ class ArtefactsCase extends Model
         'sample_order',
         'case_cost',
         'case_profit',
+        'case_description'
     ];
+
+    public function getCalendarTimeAttribute($value)
+    {
+        return $value ? Carbon::parse($value)->format('H:i') : null;
+    }
 
     public function user(): BelongsTo
     {

@@ -82,14 +82,9 @@
 
                 },
             }"
-    {{-- слушатель @case-added.window для закрытия модалки после сохранения --}}
-    @case-added.window="showModal = false; $dispatch('close-case-form-modal');"
 
-    {{-- <-- Слушатель для закрытия модалки артефактов --> --}}
     @close-artefact-modal.window="showArtefactModal = false;"
     x-cloak
-
-
 >
 
     <div :class="sidebarOpen ? 'col-span-12 xl:col-span-3' : 'xl:col-span-0 hidden'"
@@ -137,7 +132,7 @@
                 <x-moonshine::layout.box title="Чумаданы для всяких штук" class="dark:bg-gray-800">
                     <livewire:case-list-component
                         :listType="'sample'" {{-- Тип списка --}}
-                    :key="'sample-cases-list'" {{-- Уникальный ключ для Livewire --}}
+                        :key="'sample-cases-list'" {{-- Уникальный ключ для Livewire --}}
                     />
 
                     <button type="button"
@@ -308,6 +303,10 @@
             x-show="showModal"
             style="display: none;"
             x-cloak
+
+            x-on:case-added.window="showModal = false"
+            x-on:case-updated.window="showModal = false"
+            x-on:close-case-form-modal.window="showModal = false"
         >
             {{-- Устанавливаем @click.away и @click на фон ЗДЕСЬ, на внешнем контейнере модалки --}}
             <div
@@ -428,6 +427,7 @@
                 </form>
             </div>
         </div>
+        {{-- ... Модальное окно событий (eventModal) ... --}}
 
         {{-- <-- Модальное окно для формы артефакта --> --}}
         <div
@@ -461,14 +461,26 @@
                 </div>
             </div>
         </div>
+        {{-- <-- Модальное окно для формы артефакта --> --}}
 
-        {{-- ... Модальное окно событий (eventModal) ... --}}
     @endif
 
 </x-moonshine::layout.grid>
 
 @if(Auth::user())
+
     <script>
+
+        window.addEventListener('case-updated', e => {
+                if (e.detail[0].id) {
+                    const stringCaseId = 'case-' + e.detail[0].id;
+                    const componentId = document.getElementById(stringCaseId).__livewire.__livewireId;
+                    Livewire.find(componentId).call('refreshSelf');
+                }
+                else{
+                    console.log('NO Refreshed case ' + e.detail[0].id);
+                }
+        });
 
         document.getElementById('addEventBtn').addEventListener('click', () => {
             resetForm();
