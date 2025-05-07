@@ -17,7 +17,7 @@ $artefact_count = $artefact->pivot?->artefact_in_case_count ?? 1;
                          @dragstart="if ($el.draggable) {
                                             artefactIsDragging = true;
                                         }"
-                         @dragend="artefactIsDragging = false"
+                         @dragend="artefactIsDragging = false; isDragOver = false;"
                          class="artefact-icon__size-{{ $iconSize }}"
                     >
     <div class="calendar-tooltip">

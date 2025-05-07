@@ -1,6 +1,6 @@
 @props(['id', 'name', 'type', 'case_cost', 'case_profit', 'artefacts', 'calendar_time', 'case_description'])
 
-<div class="bg-gray-900 text-white p-1 rounded mb-1 transition text-xs {{ $type === 'in_calendar' ? 'calendar-tooltip' : '' }}"
+<div class="bg-gray-900 text-white p-1 rounded mb-1 transition text-xs {{ $type === 'in_calendar' ? 'case-tooltip' : '' }}"
      id="case-{{$id}}"
      x-data="{
         isDragOver: false,
@@ -14,27 +14,27 @@
                             $wire.drop(artefactId, artefactCount);
                         }"
      data-case
-     style="position: relative;" {{-- Делаем контейнер относительно позиционированным --}}
      draggable="{{ $type === 'sample' ? 'true' : 'false' }}" {{-- Только sample кейсы перетаскиваются --}}
      @dragstart="event.dataTransfer.setData('case-id', caseId); event.dataTransfer.effectAllowed = 'copy';" {{-- Сохраняем ID и указываем тип операции "копирование" --}}
-     @dragend="isDragOver = false" {{-- Опционально: для стилей после окончания перетаскивания --}}
+     @dragend="isDragOver = false" {{-- для стилей после окончания перетаскивания --}}
      :class="{ 'bg-yellow-100 bg-opacity-20': isDragOver, 'highlightGreen': artefactIsDragging }"
 >
     @if($type === 'in_calendar')
-        <div class="calendar-tooltip__content tooltip__bottom">
-            <h2>{{ $name }}</h2>
-            <p>Время: {{ $calendar_time }}</p>
+        <div class="case-tooltip__content case-tooltip__top bg-gray-900" style="visibility: hidden">
+            <div class="text-rose-500 font-bold">{{ $calendar_time }} {{ $name }}</div>
+        </div>
+        <div class="case-tooltip__content case-tooltip__bottom bg-gray-900" style="visibility: hidden">
 
             @if($case_description)
                 <p>{{ $case_description }}</p>
+                <br>
             @endif
 
             <!-- Кнопка редактирования -->
             @if (Auth::user())
-                <br>
                 <div class="flex items-center justify-between">
                 <button
-                    class="edit-case-btn text-gray-200 hover:text-white"
+                    class="edit-case-btn text-gray-500 hover:text-white"
                     @click="$dispatch('open-case-form-modal', { id: caseId }); showModal = true;"
                     title="Редактировать"
                 >

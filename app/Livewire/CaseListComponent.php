@@ -100,7 +100,7 @@ class CaseListComponent extends Component
 
         // <-- ВАЖНО: Проверяем, что этот экземпляр CaseListComponent - ЦЕЛЕВОЙ -->
         // Только in_calendar список с правильной датой должен обрабатывать событие
-        if ($this->listType === 'in_calendar' && $this->date === $targetDate) {
+        if ($this->listType === 'in_calendar' && $this->date === $targetDate && $sampleCaseId) {
 
             // 1. Находим исходный Sample Case
             $originalCase = ArtefactsCase::with('artefacts')

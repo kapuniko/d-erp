@@ -90,7 +90,6 @@
 
 .artefact-icon {
     display: inline-block;
-    /*margin: 2px;*/
 }
 
 .calendar-tooltip {
@@ -107,7 +106,6 @@
     border-radius: 4px;
     position: absolute;
     z-index: 999;
-    /*transform: translateX(-50%);*/
     white-space: nowrap;
     font-size: 10px;
 
@@ -192,4 +190,52 @@
     background-color: rgb(17 24 39);
     color: white;
     text-align: center;
+}
+
+
+
+.case-tooltip {
+    position: relative;
+}
+
+.case-tooltip:hover {
+    border-radius: 0 !important;
+    z-index: 999;
+    filter: drop-shadow(0 0 5px black);
+}
+
+.case-tooltip .case-tooltip__content {
+    visibility: hidden;
+    width: 100%;
+    color: #fff;
+    text-align: left;
+    position: absolute;
+    font-size: 10px;
+    left: 0;
+    /* Анимация */
+    opacity: 0;
+    transition: opacity 0.1s, top 0.3s, bottom 0.3s;
+}
+
+.case-tooltip__top{
+    bottom: 0;
+    padding: .25rem .25rem 0 .25rem;
+    border-radius: 4px 4px 0 0;
+}
+
+.case-tooltip__bottom{
+    top: 0;
+    padding: 0 .25rem .25rem .25rem;
+    border-radius: 0 0 4px 4px;
+}
+
+.case-tooltip:hover > .case-tooltip__content {
+    visibility: visible !important;
+    opacity: 1;
+}
+.case-tooltip:hover > .case-tooltip__top {
+    bottom: 100%;
+}
+.case-tooltip:hover > .case-tooltip__bottom {
+    top: 100%;
 }
