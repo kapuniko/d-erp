@@ -282,8 +282,8 @@
                             {{-- Повторяющиеся события --}}
                             @foreach($singleEvents as $event)
                                 @php
-                                    $key = $event->id . '|' . $event->calendar_datetime;
-                                    $reminder = $reminders[$key] ?? null;
+                                    $remindersKey = $event->id . '|' . $event->calendar_datetime;
+                                    $reminder = $reminders[$remindersKey] ?? null;
                                     $reminderStatus = $reminder
                                         ? ($reminder->sent ? 'sent' : 'pending')
                                         : 'none';
