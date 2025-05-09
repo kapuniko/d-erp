@@ -1,6 +1,6 @@
 @php
     use App\Enums\CalendarEventType;
-    use Carbon\Carbon;
+    use App\Models\Reminder;use Carbon\Carbon;
 
     $weekdays = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'];
 
@@ -11,6 +11,9 @@
 
     $sampleCases = $artefactsCases->where('type', 'sample');
     $casesInCalendar = $artefactsCases->where('type', 'in_calendar');
+
+    $reminders = Reminder::where('user_id', Auth::id())->get()
+    ->keyBy(fn($r) => $r->calendar_event_id . '|' . $r->remind_at);
 
 
 //     TODO:
@@ -24,7 +27,7 @@
 @endphp
 <x-moonshine::layout.grid
     @style('margin: 1.25rem')
-                x-data="{   showModal: false, // Для кейсов
+    x-data="{   showModal: false, // Для кейсов
                 formData: { type: 'in_calendar', date: null },
                 showArtefactModal: false, // Для артефактов
                 // openCaseModal метод остается здесь
@@ -90,8 +93,10 @@
     >
         <div x-data="{ tab: 'events' }" class="sticky top-0 ">
             <button @click="toggleSidebar" class="absolute top-0 right-0 p-1 text-xs z-10">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="size-6">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                 </svg>
             </button>
 
@@ -119,21 +124,22 @@
                             <li>Тут совсем ничиво нету =(</li>
                         @endforelse
 
-                            <button class="rounded px-3 py-1 bg-indigo-600 text-white hover:bg-indigo-500"
-                                    @click="openArtefactModal()"> {{-- Вызываем Alpine метод для открытия модалки --}}
-                                + добавить какуюнибудь штуку
-                            </button>
+                        <button class="rounded px-3 py-1 bg-indigo-600 text-white hover:bg-indigo-500"
+                                @click="openArtefactModal()"> {{-- Вызываем Alpine метод для открытия модалки --}}
+                            + добавить какуюнибудь штуку
+                        </button>
                     </div>
                 </x-moonshine::layout.box>
 
                 <x-moonshine::layout.box title="Чумаданы для всяких штук" class="dark:bg-gray-800">
                     <livewire:case-list-component
                         :listType="'sample'" {{-- Тип списка --}}
-                        :key="'sample-cases-list'" {{-- Уникальный ключ для Livewire --}}
+                    :key="'sample-cases-list'" {{-- Уникальный ключ для Livewire --}}
                     />
 
                     <button type="button"
-                            class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-500" {{-- Tailwind классы --}}
+                            class="px-3 py-1 bg-indigo-600 text-white rounded hover:bg-indigo-500"
+                            {{-- Tailwind классы --}}
                             {{-- Устанавливаем showModal в true и formData с типом 'sample' и date: null --}}
                             @click="openCaseModal('sample')">
                         + добавить чумадан
@@ -147,7 +153,8 @@
             <div x-show="tab === 'events'" x-transition class="flex flex-col gap-4">
                 @auth
                     <button id="addEventBtn" class="btn mb-3">
-                        <x-moonshine::icon icon="plus" /> Добавить событие
+                        <x-moonshine::icon icon="plus"/>
+                        Добавить событие
                     </button>
                 @endauth
 
@@ -180,8 +187,10 @@
     >
         <!-- Кнопка показать сайдбар (появляется, когда он скрыт) -->
         <button x-show="!sidebarOpen" @click="toggleSidebar" class="fixed top-20 left-1 z-10">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                 stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="m12.75 15 3-3m0 0-3-3m3 3h-7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
             </svg>
 
         </button>
@@ -228,17 +237,21 @@
                          @drop="isDragOver = false; Livewire.dispatch('add-sample-case-to-list-event', { sampleCaseId: event.dataTransfer.getData('case-id'), targetDate: $el.dataset.date })"
                          @dragend="isDragOver = false"
                          :class="{'bg-white bg-opacity-20': isDragOver}" {{-- Визуальный фидбек при наведении --}}
-                        >
+                    >
                         <div class="flex @if(Auth::user()) justify-between @else justify-center @endif w-full">
-                            @if(Auth::user())<div class="size-6"></div>@endif
+                            @if(Auth::user())
+                                <div class="size-6"></div>
+                            @endif
                             <span class="font-bold">{{ $day }}</span>
 
                             @if(Auth::user())
                                 <x-dropdown>
                                     <x-slot name="trigger">
                                         <div class="addInDay">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                                 stroke-width="1.5" stroke="currentColor" class="size-6">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
                                             </svg>
                                         </div>
                                     </x-slot>
@@ -248,12 +261,12 @@
                                         </x-dropdown-link>
 
                                         <x-dropdown-link class="cursor-pointer addCaseInDay"
-                                                         @click="openCaseModal('in_calendar', '{{ $key }}')" >
+                                                         @click="openCaseModal('in_calendar', '{{ $key }}')">
                                             Добавить чумадан
                                         </x-dropdown-link>
                                     </x-slot>
 
-                            </x-dropdown>
+                                </x-dropdown>
                             @endif
                         </div>
 
@@ -268,19 +281,27 @@
 
                             {{-- Повторяющиеся события --}}
                             @foreach($singleEvents as $event)
-                                <x-calendar.event :event="$event" />
+                                @php
+                                    $key = $event->id . '|' . $event->calendar_datetime;
+                                    $reminder = $reminders[$key] ?? null;
+                                    $reminderStatus = $reminder
+                                        ? ($reminder->sent ? 'sent' : 'pending')
+                                        : 'none';
+                                @endphp
+
+                                <x-calendar.event :event="$event" :reminder-status="$reminderStatus" />
                             @endforeach
 
                             {{-- Многодневные события --}}
                             @foreach($rangeEvents as $event)
-                                <x-calendar.event :event="$event" is_multiday="true" />
+                                <x-calendar.event :event="$event" is_multiday="true"/>
                             @endforeach
 
 
                             {{-- Вставляем компонент для отображения кейсов календаря для ЭТОГО дня --}}
                             <livewire:case-list-component
                                 :listType="'in_calendar'" {{-- Тип списка --}}
-                                :date="$key"           {{-- Передаем дату этого дня --}}
+                            :date="$key" {{-- Передаем дату этого дня --}}
                                 :key="'day-cases-list-' . $key" {{-- Уникальный ключ для Livewire --}}
                             />
                         </div>
@@ -333,8 +354,9 @@
                         @click="showModal = false; $dispatch('close-case-form-modal');"
                     >
                         <span class="sr-only">Закрыть</span>
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
 
@@ -441,14 +463,19 @@
 
             {{-- Контент модалки --}}
             <div class="flex items-center justify-center min-h-screen p-4"
-                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
-                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-90">
+                 x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 scale-90"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-90">
                 <div class="relative bg-white rounded-lg shadow-xl max-w-lg mx-auto p-6 dark:bg-gray-800">
                     {{-- Кнопка закрытия --}}
                     <button type="button" class="absolute top-3 right-3 text-gray-400 hover:text-gray-500"
                             @click="showArtefactModal = false; $dispatch('close-artefact-modal');"> {{-- Закрытие и диспатч события закрытия --}}
                         <span class="sr-only">Закрыть</span>
-                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                        <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
                     </button>
                     {{-- <-- ДОБАВЛЕНО: Livewire компонент формы артефакта --> --}}
                     <livewire:artefact-form
@@ -469,14 +496,13 @@
     <script>
 
         window.addEventListener('case-updated', e => {
-                if (e.detail[0].id) {
-                    const stringCaseId = 'case-' + e.detail[0].id;
-                    const componentId = document.getElementById(stringCaseId).__livewire.__livewireId;
-                    Livewire.find(componentId).call('refreshSelf');
-                }
-                else{
-                    console.log('NO Refreshed case ' + e.detail[0].id);
-                }
+            if (e.detail[0].id) {
+                const stringCaseId = 'case-' + e.detail[0].id;
+                const componentId = document.getElementById(stringCaseId).__livewire.__livewireId;
+                Livewire.find(componentId).call('refreshSelf');
+            } else {
+                console.log('NO Refreshed case ' + e.detail[0].id);
+            }
         });
 
         document.getElementById('addEventBtn').addEventListener('click', () => {
@@ -561,17 +587,17 @@
                 document.getElementById('event_time').value = this.dataset.event_time;
                 document.getElementById('event_emoji').value = this.dataset.emoji;
                 document.getElementById('event_display_type').value = this.dataset.display_type;
-                if(this.dataset.display_type === 'range'){
+                if (this.dataset.display_type === 'range') {
                     document.getElementById('event_end_date_wrapper').classList.remove('hidden');
                     document.getElementById('event_end_date').value = this.dataset.event_end_date;
-                }else{
+                } else {
                     document.getElementById('event_end_date').value = '';
                 }
-                if(this.dataset.display_type === 'repeat'){
+                if (this.dataset.display_type === 'repeat') {
                     document.getElementById('event_repeat_wrapper').classList.remove('hidden');
                     document.getElementById('event_interval_hours').value = this.dataset.interval_hours;
                     document.getElementById('event_repeat_until').value = this.dataset.repeat_until;
-                }else{
+                } else {
                     document.getElementById('event_interval_hours').value = '';
                     document.getElementById('event_repeat_until').value = '';
                 }

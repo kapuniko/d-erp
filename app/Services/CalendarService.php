@@ -38,6 +38,7 @@ class CalendarService
                         'event_end_date' => $event->event_end_date,
                         'repeat_until' => $event->repeat_until,
                         'interval_hours' => $event->interval_hours,
+                        'calendar_datetime' => $instance->format('Y-m-d H:i:s'),
                     ]);
                 }
             }

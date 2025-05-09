@@ -40,6 +40,9 @@
 }
 .emoji {
     font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
 
 .today {
@@ -238,4 +241,13 @@
 }
 .case-tooltip:hover > .case-tooltip__bottom {
     top: 100%;
+}
+
+
+.addReminder{
+    opacity: 0;
+}
+
+.emoji:hover > .addReminder{
+    opacity: 1;
 }

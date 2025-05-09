@@ -1,4 +1,4 @@
-@props(['event', 'is_multiday' => false])
+@props(['event', 'is_multiday' => false, 'reminderStatus' => 'none'])
 
 @if($is_multiday)
     <div class="emoji multiday-event {{ 'event_'.$event->id }}" style="">
@@ -12,11 +12,25 @@
     </div>
 @else
     <div class="emoji {{ 'event_'.$event->id }}" style="">
+        <div class="size-4"></div>
         {{ $event->emoji }}
         {{ \Carbon\Carbon::parse($event->event_time)->format('H:i') }}
         @if($event->amount !== null)
             {{ $event->amount >= 0 ? '💰' : '💸' }}{{ abs($event->amount) }}
         @endif
+
+    @if(Auth::user()->telegram_id)
+        @livewire('add-reminder-button', [
+            'calendarEventId' => $event->id,
+            'remindAt' => $event->calendar_datetime,
+            'emoji' => $event->emoji,
+            'name' => $event->name,
+            'initialStatus' => $reminderStatus,
+            'eventTime' => $event->event_time,
+        ], key($event->id . '|' . $event->calendar_datetime))
+
+        @endif
+
     </div>
 @endif
 
