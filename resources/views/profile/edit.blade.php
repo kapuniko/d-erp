@@ -51,8 +51,6 @@
                             {{-- Кнопка "Отвязать Telegram" --}}
                             {{-- <form action="..." method="POST"> ... </form> --}}
 
-                            <button id="sendTelegram">Отправить в Telegram</button>
-                            <div id="result" style="margin-top: 10px;"></div>
                         @else
                             <p class="mt-2 text-gray-900 dark:text-gray-100">
                                 Вы можете привязать ваш Telegram аккаунт для быстрого входа.
@@ -77,36 +75,3 @@
     </div>
 </x-app-layout>
 
-<script>
-    document.getElementById('sendTelegram').addEventListener('click', async () => {
-        const button = document.getElementById('sendTelegram');
-        const result = document.getElementById('result');
-        button.disabled = true;
-        result.textContent = 'Отправка...';
-
-        try {
-            const response = await fetch("{{ route('telegram.send') }}", {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({})
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                result.textContent = data.message;
-                result.style.color = 'green';
-            } else {
-                result.textContent = data.message;
-                result.style.color = 'red';
-            }
-        } catch (error) {
-            result.textContent = 'Ошибка при запросе: ' + error;
-            result.style.color = 'red';
-        } finally {
-            button.disabled = false;
-        }
-    });
-</script>

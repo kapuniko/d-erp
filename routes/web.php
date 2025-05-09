@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\SocialAuthController;
-use App\Http\Controllers\TelegramController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TaxesController;
 use App\Http\Controllers\ProfileController;
@@ -21,8 +20,6 @@ use App\Http\Controllers\ProfileController;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::post('/send-test-message', [TelegramController::class, 'sendTestMessage'])->name('telegram.send');
 
 Route::get('/taxes/{token}', [TaxesController::class, 'show'])->name('taxes.show');
 
