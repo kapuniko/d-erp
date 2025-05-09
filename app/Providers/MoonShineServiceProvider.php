@@ -19,6 +19,7 @@ use App\MoonShine\Resources\CalendarEventResource;
 use App\MoonShine\Resources\UserResource;
 use App\MoonShine\Resources\ArtefactResource;
 use App\MoonShine\Resources\ArtefactsCaseResource;
+use App\MoonShine\Resources\ReminderResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -43,6 +44,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 UserResource::class,
                 ArtefactResource::class,
                 ArtefactsCaseResource::class,
+                ReminderResource::class,
             ])
             ->pages([
                 ...$config->getPages(),

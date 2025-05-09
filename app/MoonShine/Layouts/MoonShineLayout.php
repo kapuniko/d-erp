@@ -44,6 +44,7 @@ use App\MoonShine\Resources\CalendarEventResource;
 use App\MoonShine\Resources\UserResource;
 use App\MoonShine\Resources\ArtefactResource;
 use App\MoonShine\Resources\ArtefactsCaseResource;
+use App\MoonShine\Resources\ReminderResource;
 
 final class MoonShineLayout extends AppLayout
 {
@@ -79,6 +80,7 @@ final class MoonShineLayout extends AppLayout
             MenuItem::make('User', UserResource::class),
             MenuItem::make('Artefact', ArtefactResource::class),
             MenuItem::make('ArtefactsCase', ArtefactsCaseResource::class),
+            MenuItem::make('Reminder', ReminderResource::class),
         ];
 
         if (request()->user('moonshine')->moonshine_user_role_id == 1) {
