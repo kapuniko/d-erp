@@ -29,6 +29,8 @@
             'eventTime' => $event->event_time,
         ], key($event->id . '|' . $event->calendar_datetime))
 
+        @else
+            <div class="size-4"></div>
         @endif
 
     </div>
