@@ -13,9 +13,9 @@ class AddReminderButton extends Component
     public $emoji;
     public $name;
     public $eventTime;
-    public $status = 'none'; // none, pending, sent
+    public $status = 'none';  //none, pending, sent
 
-    public function mount($calendarEventId, $remindAt, $emoji, $name, $eventTime, $initialStatus = 'none')
+    public function mount($calendarEventId, $remindAt, $emoji, $name, $eventTime, $initialStatus)
     {
         $this->calendarEventId = $calendarEventId;
         $this->remindAt = $remindAt;

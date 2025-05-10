@@ -40,9 +40,6 @@
 }
 .emoji {
     font-size: 12px;
-    display: flex;
-    align-items: center;
-    gap: 5px;
 }
 
 .today {
@@ -245,7 +242,7 @@
 
 
 .addReminder{
-    opacity: 0;
+    /*opacity: 0;*/
 }
 
 .emoji:hover > .addReminder{

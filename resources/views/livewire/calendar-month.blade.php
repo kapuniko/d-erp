@@ -288,8 +288,7 @@
                                         ? ($reminder->sent ? 'sent' : 'pending')
                                         : 'none';
                                 @endphp
-
-                                <x-calendar.event :event="$event" :reminder-status="$reminderStatus" />
+                                <x-calendar.event :event="$event" :reminderStatus="$reminderStatus" />
                             @endforeach
 
                             {{-- Многодневные события --}}

@@ -1,12 +1,12 @@
 @php
-    $color = match($status) {
+    $color = match($this->status) {
         'pending' => 'text-green-500',
         'sent' => 'text-yellow-500',
         default => 'text-gray-400',
     };
 @endphp
 
-<button wire:click="toggleReminder" class="addReminder" title="Управление напоминанием">
+<button wire:click="toggleReminder" class="@if($this->status === 'pending') opacity-100 @else opacity-0 @endif addReminder" title="Управление напоминанием">
     <svg xmlns="http://www.w3.org/2000/svg"
          fill="none"
          viewBox="0 0 24 24"

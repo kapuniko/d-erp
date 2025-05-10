@@ -11,7 +11,7 @@
         </span>
     </div>
 @else
-    <div class="emoji {{ 'event_'.$event->id }}" style="">
+    <div class="w-full flex align-center gap-1 justify-between emoji {{ 'event_'.$event->id }}" style="">
         <div class="size-4"></div>
         {{ $event->emoji }}
         {{ \Carbon\Carbon::parse($event->event_time)->format('H:i') }}
