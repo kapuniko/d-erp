@@ -36,6 +36,7 @@ class ReminderResource extends ModelResource
 			Text::make('remind_at', 'remind_at'),
 			Switcher::make('sent', 'sent'),
 			Number::make('calendar_event_id', 'calendar_event_id'),
+            Text::make('event_key', 'event_key'),
         ];
     }
 

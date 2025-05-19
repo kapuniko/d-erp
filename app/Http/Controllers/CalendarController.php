@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\CalendarEvent;
 use Illuminate\Support\Carbon;
 
+use App\Models\Reminder;
+
+
 use App\Services\CalendarService;
 
 class CalendarController extends Controller
@@ -34,6 +37,15 @@ class CalendarController extends Controller
         $event->fill($data);
         $event->user_id = auth()->id(); // или null, если общее
         $event->save();
+
+        //удаляю все напоминалки при изменения события (тупо, но пока так)
+        if ($data['id']){
+            Reminder::where('user_id', $event->user_id)
+                ->where('calendar_event_id', $data['id'])
+                ->delete();
+        }
+
+
 
         return response()->json(['success' => true]);
     }

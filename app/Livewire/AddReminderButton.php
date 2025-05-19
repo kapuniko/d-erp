@@ -14,8 +14,9 @@ class AddReminderButton extends Component
     public $name;
     public $eventTime;
     public $status = 'none';  //none, pending, sent
+    public $eventKey;
 
-    public function mount($calendarEventId, $remindAt, $emoji, $name, $eventTime, $initialStatus)
+    public function mount($calendarEventId, $remindAt, $emoji, $name, $eventTime, $initialStatus, $eventKey)
     {
         $this->calendarEventId = $calendarEventId;
         $this->remindAt = $remindAt;
@@ -23,6 +24,7 @@ class AddReminderButton extends Component
         $this->name = $name;
         $this->status = $initialStatus;
         $this->eventTime = $eventTime;
+        $this->eventKey = $eventKey;
     }
 
     public function toggleReminder()
@@ -33,8 +35,9 @@ class AddReminderButton extends Component
             Reminder::create([
                 'user_id' => $user->id,
                 'chat_id' => $user->telegram_id,
-                'message' => $this->eventTime .' - '. $this->emoji . ' ' . $this->name,
+                'message' => 'Через 10 минут, в ' . $this->eventTime .' - '. $this->emoji . ' ' . $this->name,
                 'remind_at' => $this->remindAt,
+                'event_key' => $this->eventKey,
                 'sent' => false,
                 'calendar_event_id' => $this->calendarEventId,
             ]);
@@ -43,7 +46,7 @@ class AddReminderButton extends Component
         } else {
             Reminder::where('user_id', $user->id)
                 ->where('calendar_event_id', $this->calendarEventId)
-                ->where('remind_at', $this->remindAt)
+                ->where('event_key', $this->eventKey)
                 ->delete();
 
             $this->status = 'none';

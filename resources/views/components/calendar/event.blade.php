@@ -22,7 +22,8 @@
     @if(Auth::user()->telegram_id)
         @livewire('add-reminder-button', [
             'calendarEventId' => $event->id,
-            'remindAt' => $event->calendar_datetime,
+            'remindAt' => \Carbon\Carbon::parse($event->calendar_datetime)->subMinutes(10)->format('Y-m-d H:i:s'),
+            'eventKey' => $event->calendar_datetime,
             'emoji' => $event->emoji,
             'name' => $event->name,
             'initialStatus' => $reminderStatus,

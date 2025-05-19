@@ -14,10 +14,12 @@ class Reminder extends Model
 		'remind_at',
 		'sent',
 		'calendar_event_id',
+        'event_key'
     ];
 
     protected $casts = [
         'remind_at' => 'datetime',
+        'event_key' => 'datetime',
         'sent' => 'boolean',
     ];
 }

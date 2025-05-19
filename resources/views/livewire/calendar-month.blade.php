@@ -13,7 +13,7 @@
     $casesInCalendar = $artefactsCases->where('type', 'in_calendar');
 
     $reminders = Reminder::where('user_id', Auth::id())->get()
-    ->keyBy(fn($r) => $r->calendar_event_id . '|' . $r->remind_at);
+    ->keyBy(fn($r) => $r->calendar_event_id . '|' . $r->event_key);
 
 
 //     TODO:
