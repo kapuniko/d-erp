@@ -20,6 +20,7 @@ use App\MoonShine\Resources\UserResource;
 use App\MoonShine\Resources\ArtefactResource;
 use App\MoonShine\Resources\ArtefactsCaseResource;
 use App\MoonShine\Resources\ReminderResource;
+use App\MoonShine\Resources\CoinResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -45,6 +46,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 ArtefactResource::class,
                 ArtefactsCaseResource::class,
                 ReminderResource::class,
+                CoinResource::class,
             ])
             ->pages([
                 ...$config->getPages(),

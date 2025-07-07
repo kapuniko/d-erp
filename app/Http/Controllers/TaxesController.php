@@ -43,7 +43,8 @@ class TaxesController extends Controller
             $donutChart_jetons = DonutChartMetric::make('Жетоны')
                 ->values($jetons_val);
 
-            // Если клан найден, передаем данные во вью
+            $summaryTable = $this->getMonthlySummary($clan->id);
+
             return view('taxes.show', [
                 'clan' => $clan,
                 'logs' => $logs,
@@ -52,6 +53,8 @@ class TaxesController extends Controller
                 'donutChart_crystals' => $donutChart_crystals,
                 'donutChart_pages' => $donutChart_pages,
                 'donutChart_jetons' => $donutChart_jetons,
+                'summaryTable' => $summaryTable['table'],
+                'summaryMonths' => $summaryTable['months'],
             ]);
         }
 
@@ -114,6 +117,68 @@ class TaxesController extends Controller
         return array_filter($values, function ($value) {
             return $value > 0; // Оставляем только значения больше нуля
         });
+    }
+
+    private function getMonthlySummary($clanId)
+    {
+        $resourceNames = [
+            'Монеты' => 'Золото',
+            'Кристаллизованный прах' => 'Прах',
+            'Кристаллы истины' => 'Истина',
+            'Страница из трактата «Единство клана»' => 'Страницы',
+        ];
+
+        $start = now()->subMonths(12)->startOfMonth();
+        $end = now()->subMonth()->endOfMonth();
+
+        $rawData = TreasuryLog::selectRaw("
+            object,
+            DATE_FORMAT(date, '%Y-%m') as month,
+            SUM(quantity) as total
+        ")
+            ->where('clan_id', $clanId)
+            ->whereIn('object', array_keys($resourceNames))
+            ->whereBetween('date', [$start, $end])
+            ->groupBy('object', DB::raw("DATE_FORMAT(date, '%Y-%m')"))
+            ->get();
+
+        $months = collect();
+        for ($i = 12; $i >= 1; $i--) {
+            $monthKey = now()->subMonths($i)->format('Y-m');
+            $months->push($monthKey);
+        }
+
+        $table = [];
+        foreach ($resourceNames as $dbName => $label) {
+            $monthlyTotals = [];
+
+            foreach ($months as $month) {
+                $value = $rawData
+                    ->where('object', $dbName)
+                    ->where('month', $month)
+                    ->first()
+                    ->total ?? 0;
+
+                $monthlyTotals[$month] = round($value);
+            }
+
+            $average = count(array_filter($monthlyTotals, fn($v) => $v != 0))
+                ? round(array_sum($monthlyTotals) / count(array_filter($monthlyTotals)))
+                : 0;
+
+            $table[] = [
+                'name' => $label,
+                'average' => $average,
+                'months' => $monthlyTotals
+            ];
+        }
+
+        $monthLabels = $months->map(fn($m) => \Carbon\Carbon::parse($m . '-01')->translatedFormat('F Y'))->toArray();
+
+        return [
+            'table' => $table,
+            'months' => $monthLabels,
+        ];
     }
 }
 

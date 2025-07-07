@@ -95,4 +95,29 @@
         <br>* при уплате налог за год, то доп налог платим каждый месяц
     </x-moonshine::layout.box>
 
+    <x-moonshine::layout.box title="Сводная таблица по ключевым ресурсам за последние 12 месяцев (без текущего):" @style('margin: 1.25rem')>
+        <table class="table" border="1" style="width: 100%; text-align: center;">
+            <thead>
+            <tr>
+                <th>Предмет</th>
+                <th>Среднее</th>
+                @foreach($summaryMonths as $month)
+                    <th>{{ $month }}</th>
+                @endforeach
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($summaryTable as $row)
+                <tr>
+                    <td><strong>{{ $row['name'] }}</strong></td>
+                    <td><strong>{{ number_format($row['average'], 0, ',', ' ') }}</strong></td>
+                    @foreach($row['months'] as $val)
+                        <td>{{ number_format($val, 0, ',', ' ') }}</td>
+                    @endforeach
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </x-moonshine::layout.box>
+
 @endsection
