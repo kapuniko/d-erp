@@ -156,6 +156,8 @@ class TaxesController extends Controller
             $months->push($monthKey);
         }
 
+        $months = $months->reverse(); // <-- ВАЖНО: разворот порядка
+
         $table = [];
         foreach ($resourceNames as $dbName => $label) {
             $monthlyTotals = [];
