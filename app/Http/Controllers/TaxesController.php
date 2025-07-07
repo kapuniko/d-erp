@@ -133,13 +133,13 @@ class TaxesController extends Controller
 
         $rawData = TreasuryLog::selectRaw("
             object,
-            DATE_FORMAT(date, '%Y-%m') as month,
+            TO_CHAR(date, 'YYYY-MM') as month,
             SUM(quantity) as total
         ")
             ->where('clan_id', $clanId)
             ->whereIn('object', array_keys($resourceNames))
             ->whereBetween('date', [$start, $end])
-            ->groupBy('object', DB::raw("DATE_FORMAT(date, '%Y-%m')"))
+            ->groupBy('object', DB::raw("TO_CHAR(date, 'YYYY-MM')"))
             ->get();
 
         $months = collect();
