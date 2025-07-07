@@ -172,9 +172,20 @@ class TaxesController extends Controller
                 $monthlyTotals[$month] = round($value);
             }
 
-            $average = count(array_filter($monthlyTotals, fn($v) => $v != 0))
-                ? round(array_sum($monthlyTotals) / count(array_filter($monthlyTotals)))
-                : 0;
+            // Расчёт усечённого среднего
+            $nonZeroValues = array_filter(array_values($monthlyTotals), fn($v) => $v != 0);
+            $count = count($nonZeroValues);
+
+            if ($count > 2) {
+                sort($nonZeroValues);
+                array_shift($nonZeroValues); // убираем минимум
+                array_pop($nonZeroValues);   // убираем максимум
+                $average = round(array_sum($nonZeroValues) / count($nonZeroValues));
+            } elseif ($count > 0) {
+                $average = round(array_sum($nonZeroValues) / $count); // обычное среднее, если не из чего обрезать
+            } else {
+                $average = 0;
+            }
 
             $table[] = [
                 'name' => $label,

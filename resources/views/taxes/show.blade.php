@@ -95,12 +95,12 @@
         <br>* при уплате налог за год, то доп налог платим каждый месяц
     </x-moonshine::layout.box>
 
-    <x-moonshine::layout.box title="Сводная таблица по ключевым ресурсам за последние 12 месяцев (без текущего):" @style('margin: 1.25rem')>
+    <x-moonshine::layout.box title="Сводная таблица по ключевым ресурсам за последние 6 месяцев (без текущего):" @style('margin: 1.25rem')>
         <table class="table" border="1" style="width: 100%; text-align: center;">
             <thead>
             <tr>
                 <th>Предмет</th>
-                <th>Среднее</th>
+                <th>Среднее (усеченное, без пиков)</th>
                 @foreach($summaryMonths as $month)
                     <th>{{ $month }}</th>
                 @endforeach
