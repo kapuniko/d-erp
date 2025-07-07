@@ -126,7 +126,7 @@
             @endforeach
 
             <tr>
-                <td colspan="{{ count($row['months']) + 2 }}" style="text-align: left; font-size: 12px; color: #666;">
+                <td colspan="8" style="text-align: left; font-size: 12px; color: #666;">
                 Суть метода:<br>
                 1. Находим медиану значений.<br>
 
