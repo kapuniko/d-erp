@@ -100,7 +100,7 @@
             <thead>
             <tr>
                 <th>Предмет</th>
-                <th>Среднее (усеченное, без пиков)</th>
+                <th>Среднее<br>(усеченное,<br>без пиков)</th>
                 @foreach($summaryMonths as $month)
                     <th>{{ $month }}</th>
                 @endforeach
