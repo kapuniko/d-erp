@@ -128,22 +128,30 @@ class TaxesController extends Controller
             'Страница из трактата «Единство клана»' => 'Страницы',
         ];
 
-        $start = now()->subMonths(12)->startOfMonth();
-        $end = now()->subMonth()->endOfMonth();
+        $start = now()->subMonths(6)->startOfMonth(); // За 6 месяцев
+        $end = now()->subMonth()->endOfMonth(); // До прошлого месяца включительно
 
         $rawData = TreasuryLog::selectRaw("
-            object,
-            TO_CHAR(date, 'YYYY-MM') as month,
-            SUM(quantity) as total
-        ")
+        object,
+        TO_CHAR(date, 'YYYY-MM') as month,
+        SUM(quantity) as total
+    ")
             ->where('clan_id', $clanId)
             ->whereIn('object', array_keys($resourceNames))
             ->whereBetween('date', [$start, $end])
+            ->where(function ($query) {
+                $query->where('for_talents', '!=', true)
+                    ->orWhereNull('for_talents');
+            })
+            ->where(function ($query) {
+                $query->where('repaid_the_debt', '!=', true)
+                    ->orWhereNull('repaid_the_debt');
+            })
             ->groupBy('object', DB::raw("TO_CHAR(date, 'YYYY-MM')"))
             ->get();
 
         $months = collect();
-        for ($i = 12; $i >= 1; $i--) {
+        for ($i = 6; $i >= 1; $i--) {
             $monthKey = now()->subMonths($i)->format('Y-m');
             $months->push($monthKey);
         }
