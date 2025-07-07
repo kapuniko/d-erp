@@ -172,25 +172,14 @@ class TaxesController extends Controller
                 $monthlyTotals[$month] = round($value);
             }
 
-            // Расчёт усечённого среднего
-            $nonZeroValues = array_filter(array_values($monthlyTotals), fn($v) => $v != 0);
-            $count = count($nonZeroValues);
-
-            if ($count > 2) {
-                sort($nonZeroValues);
-                array_shift($nonZeroValues); // убираем минимум
-                array_pop($nonZeroValues);   // убираем максимум
-                $average = round(array_sum($nonZeroValues) / count($nonZeroValues));
-            } elseif ($count > 0) {
-                $average = round(array_sum($nonZeroValues) / $count); // обычное среднее, если не из чего обрезать
-            } else {
-                $average = 0;
-            }
+            // расчёт устойчивого среднего (усечённого по MAD)
+            $robust = $this->getRobustAverage(array_values($monthlyTotals));
 
             $table[] = [
                 'name' => $label,
-                'average' => $average,
-                'months' => $monthlyTotals
+                'average' => $robust['average'],
+                'months' => $monthlyTotals,
+                'excluded' => $robust['excluded'], // добавим список исключённых значений
             ];
         }
 
@@ -200,6 +189,61 @@ class TaxesController extends Controller
             'table' => $table,
             'months' => $monthLabels,
         ];
+    }
+
+
+    private function getRobustAverage(array $values, float $thresholdMultiplier = 2.0): array
+    {
+        $filtered = array_filter($values, fn($v) => $v != 0);
+        $count = count($filtered);
+
+        if ($count === 0) {
+            return [
+                'average' => 0,
+                'excluded' => [],
+            ];
+        }
+
+        sort($filtered);
+        $median = $this->getMedian($filtered);
+
+        $deviations = array_map(fn($v) => abs($v - $median), $filtered);
+        $mad = $this->getMedian($deviations);
+
+        $cleaned = [];
+        $excluded = [];
+
+        foreach ($filtered as $v) {
+            if ($mad == 0 || abs($v - $median) <= $thresholdMultiplier * $mad) {
+                $cleaned[] = $v;
+            } else {
+                $excluded[] = $v;
+            }
+        }
+
+        $average = count($cleaned) > 0
+            ? round(array_sum($cleaned) / count($cleaned))
+            : round(array_sum($filtered) / $count);
+
+        return [
+            'average' => $average,
+            'excluded' => $excluded,
+        ];
+    }
+
+    private function getMedian(array $arr): float
+    {
+        $count = count($arr);
+        if ($count === 0) {
+            return 0;
+        }
+
+        sort($arr);
+        $middle = (int) floor($count / 2);
+
+        return $count % 2
+            ? $arr[$middle]
+            : ($arr[$middle - 1] + $arr[$middle]) / 2;
     }
 }
 

@@ -115,6 +115,14 @@
                         <td>{{ number_format($val, 0, ',', ' ') }}</td>
                     @endforeach
                 </tr>
+
+                @if(!empty($row['excluded']))
+                    <tr>
+                        <td colspan="{{ count($row['months']) + 2 }}" style="text-align: left; font-size: 12px; color: #666;">
+                            <em>Исключено из расчёта: {{ implode(', ', array_map(fn($v) => number_format($v, 0, ',', ' '), $row['excluded'])) }}</em>
+                        </td>
+                    </tr>
+                @endif
             @endforeach
             </tbody>
         </table>
