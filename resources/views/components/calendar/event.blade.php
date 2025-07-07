@@ -19,7 +19,7 @@
             {{ $event->amount >= 0 ? '💰' : '💸' }}{{ abs($event->amount) }}
         @endif
 
-    @if(Auth::user()->telegram_id)
+        @if(Auth::check() && Auth::user()->telegram_id)
         @livewire('add-reminder-button', [
             'calendarEventId' => $event->id,
             'remindAt' => \Carbon\Carbon::parse($event->calendar_datetime)->subMinutes(10)->format('Y-m-d H:i:s'),
