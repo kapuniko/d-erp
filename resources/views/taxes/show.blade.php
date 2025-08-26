@@ -37,41 +37,33 @@
 
 
 
-<x-moonshine::layout.box title="{{ $clan->name }}: сводная таблица, в которой отражен вклад каждого участника за последние 12 месяцев." @style('margin: 1.25rem')>
-
-
-    <div class="overflow-x-auto">
-        <table class="table-auto border-collapse border border-gray-400 text-sm">
+    <x-moonshine::layout.box title="Взносы за последние 12 месяцев" @style('margin: 1.25rem')>
+        <table class="table" border="1" style="width: 100%; text-align: center;">
             <thead>
             <tr>
-                <th class="border border-gray-400 px-2 py-1">Ник</th>
-                @foreach($summaryMonths as $month)
-                    <th class="border border-gray-400 px-2 py-1">
-                        {{ \Carbon\Carbon::parse($month.'-01')->translatedFormat('M Y') }}
-                    </th>
+                <th>Ник</th>
+                @foreach($monthLabels as $month)
+                    <th>{{ \Carbon\Carbon::parse($month . '-01')->translatedFormat('M Y') }}</th>
                 @endforeach
             </tr>
             </thead>
             <tbody>
-            @foreach($summary12Months as $name => $monthsData)
+            @foreach($playersData as $player)
                 <tr>
-                    <td class="border border-gray-400 px-2 py-1 font-semibold">{{ $name }}</td>
-                    @foreach($summaryMonths as $month)
-                        @php
-                            $data = $monthsData[$month] ?? ['gold'=>0,'dust'=>0,'truth'=>0,'jetons'=>0];
-                        @endphp
-                        <td class="border border-gray-400 px-2 py-1 whitespace-pre-line">
-                            Золото: {{ $data['gold'] }}<br>
-                            Прах: {{ $data['dust'] }}<br>
-                            Истина: {{ $data['truth'] }}<br>
-                            Жетоны: {{ $data['jetons'] }}
+                    <td><strong>{{ $player['name'] }}</strong></td>
+                    @foreach($player['months'] as $data)
+                        <td style="font-size: 12px; text-align: left;">
+                            Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
+                            Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
+                            Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
+                            Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}
                         </td>
                     @endforeach
                 </tr>
             @endforeach
             </tbody>
         </table>
-    </div>
+    </x-moonshine::layout.box>
 
 </x-moonshine::layout.box >
 
