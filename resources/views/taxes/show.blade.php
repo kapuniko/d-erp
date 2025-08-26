@@ -37,33 +37,41 @@
 
 
 
-<x-moonshine::layout.box title="{{ $clan->name }}: сводная таблица, в которой отражен вклад каждого участника за всё время, а так-же за текущий и 2 предыдущих месяца." @style('margin: 1.25rem')>
-    <x-moonshine::table :sticky="true" @style('max-height: 78dvh !important;')>
-        <x-slot:thead class="text-center">
-            <th>Ник</th>
-            <th>Золото</th>
-            <th>Прах</th>
-            <th>Истина</th>
-            <th>Страницы</th>
-            <th>Жетоны</th>
-        </x-slot:thead>
-        <x-slot:tbody>
-            @foreach($logs as $log)
+<x-moonshine::layout.box title="{{ $clan->name }}: сводная таблица, в которой отражен вклад каждого участника за последние 12 месяцев." @style('margin: 1.25rem')>
+
+
+    <div class="overflow-x-auto">
+        <table class="table-auto border-collapse border border-gray-400 text-sm">
+            <thead>
+            <tr>
+                <th class="border border-gray-400 px-2 py-1">Ник</th>
+                @foreach($summaryMonths as $month)
+                    <th class="border border-gray-400 px-2 py-1">
+                        {{ \Carbon\Carbon::parse($month.'-01')->translatedFormat('M Y') }}
+                    </th>
+                @endforeach
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($summary12Months as $name => $monthsData)
                 <tr>
-                    <td style="font-size: 20px">{{ $log->name }}</td>
-                    <td><strong>Всего: {{ rtrim(rtrim(number_format($log->coins_total, 4, ',', ' '), '\0'), '\,') }}</strong><br>
-                        <x-moonshine::badge color="yellow">
-                            {{ \Carbon\Carbon::now()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->coins_current_month, 4, ',', ' '), '\0'), '\,') }}<br>
-                            {{ \Carbon\Carbon::now()->subMonth()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->coins_previous_month, 4, ',', ' '), '\0'), '\,') }}<br>
-                            {{ \Carbon\Carbon::now()->subMonth(2)->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->coins_two_months_ago, 4, ',', ' '), '\0'), '\,') }}</x-moonshine::badge></td>
-                    <td><strong>Всего: {{ rtrim(rtrim(number_format($log->dust_total, 4, ',', ' '), '\0'), '\,') }}</strong><br><x-moonshine::badge color="red">{{ now()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->dust_current_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->dust_previous_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth(2)->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->dust_two_months_ago, 4, ',', ' '), '\0'), '\,') }}</x-moonshine::badge></td>
-                    <td><strong>Всего: {{ rtrim(rtrim(number_format($log->crystals_total, 4, ',', ' '), '\0'), '\,') }}</strong><br><x-moonshine::badge color="blue">{{ now()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->crystals_current_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->crystals_previous_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth(2)->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->crystals_two_months_ago, 4, ',', ' '), '\0'), '\,') }}</x-moonshine::badge></td>
-                    <td><strong>Всего: {{ rtrim(rtrim(number_format($log->pages_total, 4, ',', ' '), '\0'), '\,') }}</strong><br><x-moonshine::badge color="gray">{{ now()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->pages_current_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->pages_previous_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth(2)->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->pages_two_months_ago, 4, ',', ' '), '\0'), '\,') }}</x-moonshine::badge></td>
-                    <td><strong>Всего: {{ rtrim(rtrim(number_format($log->jetons_total, 4, ',', ' '), '\0'), '\,') }}</strong><br><x-moonshine::badge color="purple">{{ now()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->jetons_current_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth()->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->jetons_previous_month, 4, ',', ' '), '\0'), '\,') }}<br>{{ now()->subMonth(2)->translatedFormat('M') }}: {{ rtrim(rtrim(number_format($log->jetons_two_months_ago, 4, ',', ' '), '\0'), '\,') }}</x-moonshine::badge></td>
+                    <td class="border border-gray-400 px-2 py-1 font-semibold">{{ $name }}</td>
+                    @foreach($summaryMonths as $month)
+                        @php
+                            $data = $monthsData[$month] ?? ['gold'=>0,'dust'=>0,'truth'=>0,'jetons'=>0];
+                        @endphp
+                        <td class="border border-gray-400 px-2 py-1 whitespace-pre-line">
+                            Золото: {{ $data['gold'] }}<br>
+                            Прах: {{ $data['dust'] }}<br>
+                            Истина: {{ $data['truth'] }}<br>
+                            Жетоны: {{ $data['jetons'] }}
+                        </td>
+                    @endforeach
                 </tr>
             @endforeach
-        </x-slot:tbody>
-    </x-moonshine::table>
+            </tbody>
+        </table>
+    </div>
 
 </x-moonshine::layout.box >
 
