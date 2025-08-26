@@ -60,11 +60,21 @@
                         </td>
                         @foreach($player['months'] as $data)
                             <td style="font-size: 12px; text-align: left; white-space: nowrap;">
-                                Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
-                                Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
-                                Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
-                                Страницы: {{ number_format($data['pages'] ?? 0, 0, ',', ' ') }}<br>
-                                Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}
+                                @if(!empty($data['gold']))
+                                    Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
+                                @endif
+                                @if(!empty($data['dust']))
+                                    Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
+                                @endif
+                                @if(!empty($data['truth']))
+                                    Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
+                                @endif
+                                @if(!empty($data['jetons']))
+                                    Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}<br>
+                                @endif
+                                @if(!empty($data['pages']))
+                                    Страницы: {{ number_format($data['pages'], 0, ',', ' ') }}
+                                @endif
                             </td>
                         @endforeach
                     </tr>
