@@ -92,13 +92,14 @@ class TaxesController extends Controller
             ->groupBy('name', DB::raw("TO_CHAR(date, 'YYYY-MM')"))
             ->get();
 
-        // Генерируем список месяцев (12 последних)
+        // Месяцы: текущий первый, затем предыдущие
         $months = collect();
-        for ($i = 11; $i >= 0; $i--) {
+        for ($i = 0; $i <= 11; $i++) {
             $months->push(now()->subMonths($i)->format('Y-m'));
         }
+        // $months now: [current, -1, -2, ..., -11]
 
-        // Группируем по игрокам
+        // Группируем по игрокам и собираем суммы по месяцам
         $players = [];
         foreach ($rows as $row) {
             $name = $row->name;
@@ -109,27 +110,29 @@ class TaxesController extends Controller
                 ];
             }
             $players[$name]['months'][$row->ym] = [
-                'gold' => $row->gold,
-                'dust' => $row->dust,
-                'truth' => $row->truth,
-                'jetons' => $row->jetons
+                'gold' => (int) $row->gold,
+                'dust' => (int) $row->dust,
+                'truth' => (int) $row->truth,
+                'jetons' => (int) $row->jetons
             ];
         }
 
-        // Заполняем нулями для отсутствующих месяцев
-        foreach ($players as &$player) {
+        // Заполняем нулями отсутствующие месяцы и упорядочиваем согласно $months
+        foreach ($players as $name => $player) {
+            $ordered = [];
             foreach ($months as $month) {
                 if (!isset($player['months'][$month])) {
-                    $player['months'][$month] = ['gold' => 0, 'dust' => 0, 'truth' => 0, 'jetons' => 0];
+                    $ordered[$month] = ['gold' => 0, 'dust' => 0, 'truth' => 0, 'jetons' => 0];
+                } else {
+                    $ordered[$month] = $player['months'][$month];
                 }
             }
-            // Сортируем по ключу
-            ksort($player['months']);
+            $players[$name]['months'] = $ordered;
         }
 
         return [
             'players' => $players,
-            'months' => $months
+            'months' => $months->toArray()
         ];
     }
     public function getLog($clan_id)
