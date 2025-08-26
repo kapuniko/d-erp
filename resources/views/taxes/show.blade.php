@@ -38,32 +38,41 @@
 
 
     <x-moonshine::layout.box title="Взносы за последние 12 месяцев" @style('margin: 1.25rem')>
-        <table class="table" border="1" style="width: 100%; text-align: center;">
-            <thead>
-            <tr>
-                <th>Ник</th>
-                @foreach($monthLabels as $month)
-                    <th>{{ \Carbon\Carbon::parse($month . '-01')->translatedFormat('M Y') }}</th>
-                @endforeach
-            </tr>
-            </thead>
-            <tbody>
-            @foreach($playersData as $player)
+        <div style="overflow-x: auto; max-width: 100%;">
+            <table class="table" border="1" style="border-collapse: collapse; width: max-content; min-width: 100%; text-align: center;">
+                <thead>
                 <tr>
-                    <td><strong>{{ $player['name'] }}</strong></td>
-                    @foreach($player['months'] as $data)
-                        <td style="font-size: 12px; text-align: left;">
-                            Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
-                            Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
-                            Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
-                            Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}
-                        </td>
+                    <th style="position: sticky; left: 0; background: #fff; z-index: 2;">
+                        Ник
+                    </th>
+                    @foreach($monthLabels as $month)
+                        <th style="white-space: nowrap;">
+                            {{ \Carbon\Carbon::parse($month . '-01')->translatedFormat('M Y') }}
+                        </th>
                     @endforeach
                 </tr>
-            @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                @foreach($playersData as $player)
+                    <tr>
+                        <td style="position: sticky; left: 0; background: #fff; z-index: 1; font-weight: bold; text-align: left;">
+                            {{ $player['name'] }}
+                        </td>
+                        @foreach($player['months'] as $data)
+                            <td style="font-size: 12px; text-align: left; white-space: nowrap;">
+                                Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
+                                Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
+                                Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
+                                Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}
+                            </td>
+                        @endforeach
+                    </tr>
+                @endforeach
+                </tbody>
+            </table>
+        </div>
     </x-moonshine::layout.box>
+
 
     <x-moonshine::layout.box title="Размеры взносов:" @style('margin: 1.25rem')>
         <br><strong>6-14 лвл:</strong> 200з (или 3000 истины / 300 страниц)
