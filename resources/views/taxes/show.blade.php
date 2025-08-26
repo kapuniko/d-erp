@@ -63,6 +63,7 @@
                                 Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
                                 Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
                                 Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
+                                Страницы: {{ number_format($data['pages'] ?? 0, 0, ',', ' ') }}<br>
                                 Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}
                             </td>
                         @endforeach

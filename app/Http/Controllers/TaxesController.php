@@ -78,7 +78,8 @@ class TaxesController extends Controller
             SUM(CASE WHEN object = 'Монеты' THEN quantity ELSE 0 END) as gold,
             SUM(CASE WHEN object = 'Кристаллизованный прах' THEN quantity ELSE 0 END) as dust,
             SUM(CASE WHEN object = 'Кристаллы истины' THEN quantity ELSE 0 END) as truth,
-            SUM(CASE WHEN object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons
+            SUM(CASE WHEN object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons,
+            SUM(CASE WHEN object = 'Страница из трактата «Единство клана»' THEN quantity ELSE 0 END) as pages
         ")
         )
             ->where('clan_id', $clanId)
@@ -113,7 +114,8 @@ class TaxesController extends Controller
                 'gold' => (int) $row->gold,
                 'dust' => (int) $row->dust,
                 'truth' => (int) $row->truth,
-                'jetons' => (int) $row->jetons
+                'jetons' => (int) $row->jetons,
+                'pages' => (int) $row->pages
             ];
         }
 
