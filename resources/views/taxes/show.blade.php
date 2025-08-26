@@ -70,7 +70,7 @@
                                         <x-moonshine::badge color="blue">Истина: {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                 @endif
                                     @if(!empty($data['pages']))
-                                        <x-moonshine::badge color="gray">Страницы: {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge>
+                                        <x-moonshine::badge color="gray">Страницы: {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                     @endif
                                 @if(!empty($data['jetons']))
                                         <x-moonshine::badge color="purple">Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>
