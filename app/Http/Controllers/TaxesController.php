@@ -21,7 +21,9 @@ class TaxesController extends Controller
         $clan = Clan::where('token', $token)->first();
 
         if ($clan) {
+            $logs = $this->getLog($clan->id);
             $yearlyLog = $this->getYearlyLog($clan->id);
+
 
             $coins_val = $this->getValuesToChart('coins_current_month', $logs );
             $donutChart_coins = DonutChartMetric::make('Золото')
@@ -48,6 +50,7 @@ class TaxesController extends Controller
 
             return view('taxes.show', [
                 'clan' => $clan,
+                'logs' => $logs,
                 'donutChart_coins' => $donutChart_coins,
                 'donutChart_dust' => $donutChart_dust,
                 'donutChart_crystals' => $donutChart_crystals,
