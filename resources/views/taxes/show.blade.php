@@ -61,20 +61,21 @@
                         @foreach($player['months'] as $data)
                             <td style="font-size: 12px; text-align: left; white-space: nowrap;">
                                 @if(!empty($data['gold']))
-                                    Золото: {{ number_format($data['gold'], 0, ',', ' ') }}<br>
+                                    <x-moonshine::badge color="yellow">Золото: {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                 @endif
                                 @if(!empty($data['dust']))
-                                    Прах: {{ number_format($data['dust'], 0, ',', ' ') }}<br>
+                                        <x-moonshine::badge color="red">Прах: {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                 @endif
                                 @if(!empty($data['truth']))
-                                    Истина: {{ number_format($data['truth'], 0, ',', ' ') }}<br>
+                                        <x-moonshine::badge color="blue">Истина: {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                 @endif
+                                    @if(!empty($data['pages']))
+                                        <x-moonshine::badge color="gray">Страницы: {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge>
+                                    @endif
                                 @if(!empty($data['jetons']))
-                                    Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}<br>
+                                        <x-moonshine::badge color="purple">Жетоны: {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>
                                 @endif
-                                @if(!empty($data['pages']))
-                                    Страницы: {{ number_format($data['pages'], 0, ',', ' ') }}
-                                @endif
+
                             </td>
                         @endforeach
                     </tr>
