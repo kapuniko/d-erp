@@ -59,6 +59,7 @@
                             {{ $player['name'] }}
                         </td>
                         @foreach($player['months'] as $data)
+
                             <td style="font-size: 12px; text-align: left; white-space: nowrap;">
                                 @if(!empty($data['gold']))
                                     <x-moonshine::badge color="yellow">Золото: {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>
