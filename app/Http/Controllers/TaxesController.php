@@ -17,54 +17,74 @@ class TaxesController extends Controller
 {
     public function show($token)
     {
-        // Поиск клана по токену
-        $clan = Clan::where('token', $token)->first();
+        $clan = Clan::where('token', $token)->firstOrFail();
 
-        if ($clan) {
-            $logs = $this->getLog($clan->id);
-            $yearlyLog = $this->getYearlyLog($clan->id);
+        // 🔹 СПЕЦИАЛЬНЫЙ ИНТЕРВАЛ
+        $special_date = Carbon::createFromFormat('d.m.Y', '01.11.2025')->startOfDay();
+        $special_next_date = Carbon::createFromFormat('d.m.Y', '12.01.2026')->endOfDay();
 
+        $logs = $this->getLog($clan->id);
+        $yearlyLog = $this->getYearlyLog($clan->id);
 
-            $coins_val = $this->getValuesToChart('coins_current_month', $logs );
-            $donutChart_coins = DonutChartMetric::make('Золото')
-                ->values($coins_val);
+        // Графики
+        $donutChart_coins = DonutChartMetric::make('Золото')
+            ->values($this->getValuesToChart('coins_current_month', $logs));
 
-            $dust_val = $this->getValuesToChart('dust_current_month', $logs );
-            $donutChart_dust = DonutChartMetric::make('Прах')
-                ->values($dust_val);
+        $donutChart_dust = DonutChartMetric::make('Прах')
+            ->values($this->getValuesToChart('dust_current_month', $logs));
 
-            $crystals_val = $this->getValuesToChart('crystals_current_month', $logs );
-            $donutChart_crystals = DonutChartMetric::make('Истина')
-                ->values($crystals_val);
+        $donutChart_crystals = DonutChartMetric::make('Истина')
+            ->values($this->getValuesToChart('crystals_current_month', $logs));
 
-            $pages_val = $this->getValuesToChart('pages_current_month', $logs );
-            $donutChart_pages = DonutChartMetric::make('Страницы')
-                ->values($pages_val);
+        $donutChart_pages = DonutChartMetric::make('Страницы')
+            ->values($this->getValuesToChart('pages_current_month', $logs));
 
-            $jetons_val = $this->getValuesToChart('jetons_current_month', $logs );
-            $donutChart_jetons = DonutChartMetric::make('Жетоны')
-                ->values($jetons_val);
+        $donutChart_jetons = DonutChartMetric::make('Жетоны')
+            ->values($this->getValuesToChart('jetons_current_month', $logs));
 
-            $summaryTable = $this->getMonthlySummary($clan->id);
+        // 🔹 СУММЫ ЗА СПЕЦ-ИНТЕРВАЛ
+        $specialTotals = TreasuryLog::select(
+            'name',
+            DB::raw("
+                SUM(CASE WHEN object = 'Монеты' THEN quantity ELSE 0 END) as gold,
+                SUM(CASE WHEN object = 'Кристаллизованный прах' THEN quantity ELSE 0 END) as dust,
+                SUM(CASE WHEN object = 'Кристаллы истины' THEN quantity ELSE 0 END) as truth,
+                SUM(CASE WHEN object = 'Страница из трактата «Единство клана»' THEN quantity ELSE 0 END) as pages,
+                SUM(CASE WHEN object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons
+            ")
+        )
+            ->where('clan_id', $clan->id)
+            ->whereBetween('date', [$special_date, $special_next_date])
+            ->where(function ($q) {
+                $q->where('for_talents', '!=', true)->orWhereNull('for_talents');
+            })
+            ->where(function ($q) {
+                $q->where('repaid_the_debt', '!=', true)->orWhereNull('repaid_the_debt');
+            })
+            ->groupBy('name')
+            ->get()
+            ->filter(function ($row) {
+                return $row->gold || $row->dust || $row->truth || $row->pages || $row->jetons;
+            });
 
+        $summaryTable = $this->getMonthlySummary($clan->id);
 
-            return view('taxes.show', [
-                'clan' => $clan,
-                'logs' => $logs,
-                'donutChart_coins' => $donutChart_coins,
-                'donutChart_dust' => $donutChart_dust,
-                'donutChart_crystals' => $donutChart_crystals,
-                'donutChart_pages' => $donutChart_pages,
-                'donutChart_jetons' => $donutChart_jetons,
-                'summaryTable' => $summaryTable['table'],
-                'summaryMonths' => $summaryTable['months'],
-                'playersData' => $yearlyLog['players'],
-                'monthLabels' => $yearlyLog['months'],
-            ]);
-        }
-
-        // Если клан не найден, возвращаем 404 страницу
-        abort(404, 'Clan not found');
+        return view('taxes.show', [
+            'clan' => $clan,
+            'logs' => $logs,
+            'donutChart_coins' => $donutChart_coins,
+            'donutChart_dust' => $donutChart_dust,
+            'donutChart_crystals' => $donutChart_crystals,
+            'donutChart_pages' => $donutChart_pages,
+            'donutChart_jetons' => $donutChart_jetons,
+            'playersData' => $yearlyLog['players'],
+            'monthLabels' => $yearlyLog['months'],
+            'summaryTable' => $summaryTable['table'],
+            'summaryMonths' => $summaryTable['months'],
+            'specialTotals' => $specialTotals,
+            'special_date' => $special_date,
+            'special_next_date' => $special_next_date,
+        ]);
     }
     public function getYearlyLog($clanId)
     {

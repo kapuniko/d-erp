@@ -143,4 +143,36 @@
         </table>
     </x-moonshine::layout.box>
 
+    <x-moonshine::layout.box
+        title="Суммарные взносы за период {{ $special_date->format('d.m.Y') }} – {{ $special_next_date->format('d.m.Y') }}"
+        @style('margin: 1.25rem')
+    >
+        <table class="table" border="1" style="width:100%; text-align:center;">
+            <thead>
+            <tr>
+                <th>Игрок</th>
+                <th>Золото</th>
+                <th>Прах</th>
+                <th>Истина</th>
+                <th>Страницы</th>
+                <th>Жетоны</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($specialTotals as $row)
+                <tr>
+                    <td style="text-align:left; font-weight:bold;">
+                        {{ $row->name }}
+                    </td>
+                    <td>{{ number_format($row->gold, 0, ',', ' ') }}</td>
+                    <td>{{ number_format($row->dust, 0, ',', ' ') }}</td>
+                    <td>{{ number_format($row->truth, 0, ',', ' ') }}</td>
+                    <td>{{ number_format($row->pages, 0, ',', ' ') }}</td>
+                    <td>{{ number_format($row->jetons, 0, ',', ' ') }}</td>
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+    </x-moonshine::layout.box>
+
 @endsection
