@@ -164,11 +164,11 @@
                     <td style="text-align:left; font-weight:bold;">
                         {{ $row->name }}
                     </td>
-                    <td>{{ number_format($row->gold, 0, ',', ' ') }}</td>
-                    <td>{{ number_format($row->dust, 0, ',', ' ') }}</td>
-                    <td>{{ number_format($row->truth, 0, ',', ' ') }}</td>
-                    <td>{{ number_format($row->pages, 0, ',', ' ') }}</td>
-                    <td>{{ number_format($row->jetons, 0, ',', ' ') }}</td>
+                    <td>Золото {{ number_format($row->gold, 0, ',', ' ') }}</td>
+                    <td>Прах {{ number_format($row->dust, 0, ',', ' ') }}</td>
+                    <td>Истина {{ number_format($row->truth, 0, ',', ' ') }}</td>
+                    <td>Страницы {{ number_format($row->pages, 0, ',', ' ') }}</td>
+                    <td>Жетоны {{ number_format($row->jetons, 0, ',', ' ') }}</td>
                 </tr>
             @endforeach
             </tbody>
