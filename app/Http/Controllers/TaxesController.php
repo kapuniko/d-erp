@@ -14,7 +14,7 @@ class TaxesController extends Controller
         $clan = Clan::where('token', $token)->firstOrFail();
 
         // 🔹 СПЕЦИАЛЬНЫЙ ИНТЕРВАЛ
-        $special_date = Carbon::createFromFormat('d.m.Y H:i', '12.01.2026 18:00')->startOfDay();
+        $special_date = Carbon::createFromFormat('d.m.Y H:i', '12.01.2026 18:00');
         $special_next_date = Carbon::createFromFormat('d.m.Y', '15.03.2026')->endOfDay();
 
         // 🔹 КУРСЫ РЕСУРСОВ (за 1 единицу в золоте)
