@@ -13,10 +13,10 @@
                 <br>Остальные графики показывают прогресс в штуках.
                 <br><br>На момент покраски предыдущего таланта, в казне оставались ресурсы:
                 <br>
-                <img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы"> 2247 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="display: inline" alt="Истина"> 370 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="display: inline" alt="Прах"> 2573 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны"> 1394 шт.
+                <img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Страницы"> 2247 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Истина"> 370 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Прах"> 2573 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="margin: 0; display: inline" alt="Жетоны"> 1394 шт.
                 <br><br>Чуть позже тут появится подсчет гориков, огников, центриков и инкарнумов, а так-же красных ресов и боевых свидетельств.
                 <br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
