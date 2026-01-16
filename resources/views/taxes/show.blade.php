@@ -7,16 +7,15 @@
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6" >
             <x-moonshine::layout.box>
-                Спасибо всем за поддержку нашего общего дела! ❤️
-                <br><br>На графиках ниже отражены взносы за период:
-                <x-moonshine::badge color="purple">{{ $special_date->format('d.m.Y') }} — {{ $special_next_date->format('d.m.Y') }}</x-moonshine::badge>
-                <br><br>Для ресурсов с установленным лимитом серый сектор диаграммы показывает, сколько еще осталось собрать до цели.
+                <p>Период сбора: <strong>{{ $special_date->format('d.m.Y') }} – {{ $special_next_date->format('d.m.Y') }}</strong></p>
+                <br>График <strong>Золото</strong> отражает общую стоимость всех собранных ресурсов, пересчитанных в золото по курсу.
+                <br>Остальные графики показывают прогресс в штуках.
                 <br><br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
 
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
-            <x-moonshine::layout.box title="Золото (Без лимита)">
+            <x-moonshine::layout.box title="Общий прогресс (в Золотом эквиваленте)">
                 <div id="chart-gold"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
@@ -24,27 +23,28 @@
 
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-            <x-moonshine::layout.box title="Истина (макс. {{ number_format($limits['truth'], 0, ',', ' ') }})">
+            <x-moonshine::layout.box title="Истина (цель {{ number_format($limits['truth'], 0, ',', ' ') }})">
                 <div id="chart-truth"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-            <x-moonshine::layout.box title="Прах (макс. {{ number_format($limits['dust'], 0, ',', ' ') }})">
+            <x-moonshine::layout.box title="Прах (цель {{ number_format($limits['dust'], 0, ',', ' ') }})">
                 <div id="chart-dust"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-            <x-moonshine::layout.box title="Страницы (макс. {{ number_format($limits['pages'], 0, ',', ' ') }})">
+            <x-moonshine::layout.box title="Страницы (цель {{ number_format($limits['pages'], 0, ',', ' ') }})">
                 <div id="chart-pages"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-            <x-moonshine::layout.box title="Жетоны (макс. {{ number_format($limits['jetons'], 0, ',', ' ') }})">
+            <x-moonshine::layout.box title="Жетоны (цель {{ number_format($limits['jetons'], 0, ',', ' ') }})">
                 <div id="chart-jetons"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
     </x-moonshine::layout.grid>
 
+    {{-- Таблица 12 месяцев --}}
     <x-moonshine::layout.box title="Взносы за последние 12 месяцев" @style('margin: 1.25rem')>
         <div style="overflow-x: auto; max-width: 100%;">
             <table class="table" style="border-collapse: collapse; width: max-content; min-width: 100%; text-align: center;">
@@ -76,7 +76,8 @@
         </div>
     </x-moonshine::layout.box>
 
-    <x-moonshine::layout.box title="Сводная таблица по ресурсам (6 мес):" @style('margin: 1.25rem')>
+    {{-- Сводная таблица --}}
+    <x-moonshine::layout.box title="Сводная таблица (6 мес):" @style('margin: 1.25rem')>
         <table class="table" border="1" style="width: 100%; text-align: center;">
             <thead>
             <tr>
@@ -99,29 +100,36 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
-        const chartData = @json($chartData);
+        const chartDataRaw = @json($chartData);
+        const goldEquiv = @json($goldEquivalentData);
         const limits = @json($limits);
         const baseColors = ['#F7B924', '#3f6ad8', '#d92550', '#3ac47d', '#16aaff', '#f7b924', '#6610f2'];
 
-        function createChart(id, label, data, limit) {
-            let series = Object.values(data);
-            let labels = Object.keys(data);
+        function createChart(id, label, dataObj, limit) {
+            const container = document.querySelector("#chart-" + id);
+            if (!container || !dataObj) return;
+
+            let labels = Object.keys(dataObj);
+            let series = Object.values(dataObj).map(v => Number(v));
             let total = series.reduce((a, b) => a + b, 0);
             let colors = [...baseColors];
 
-            if (limit && total < limit) {
-                series.push(limit - total);
+            if (limit && limit > 0 && total < limit) {
+                series.push(Number((limit - total).toFixed(2)));
                 labels.push('Осталось собрать');
-                colors.push('#E0E0E0'); // Серый для остатка
+                colors.push('#E0E0E0');
             }
 
             const options = {
                 series: series,
                 labels: labels,
-                chart: { type: 'donut', height: 300 },
+                chart: { type: 'donut', height: 350, animations: { enabled: false } },
                 colors: colors,
-                legend: { position: 'bottom', fontSize: '12px' },
-                dataLabels: { enabled: true, formatter: (val, opt) => opt.w.globals.series[opt.seriesIndex].toLocaleString() },
+                legend: { position: 'bottom', fontSize: '11px' },
+                dataLabels: {
+                    enabled: true,
+                    formatter: (val, opt) => Number(opt.w.globals.series[opt.seriesIndex]).toLocaleString('ru-RU')
+                },
                 plotOptions: {
                     pie: {
                         donut: {
@@ -130,24 +138,27 @@
                                 total: {
                                     show: true,
                                     label: 'Собрано',
-                                    formatter: () => total.toLocaleString()
+                                    formatter: () => total.toLocaleString('ru-RU')
                                 }
                             }
                         }
                     }
                 },
-                tooltip: { y: { formatter: (v) => v.toLocaleString() } }
+                tooltip: { y: { formatter: (v) => v.toLocaleString('ru-RU') } }
             };
 
-            new ApexCharts(document.querySelector("#chart-" + id), options).render();
+            new ApexCharts(container, options).render();
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            createChart('gold', 'Золото', chartData.gold, limits.gold);
-            createChart('truth', 'Истина', chartData.truth, limits.truth);
-            createChart('dust', 'Прах', chartData.dust, limits.dust);
-            createChart('pages', 'Страницы', chartData.pages, limits.pages);
-            createChart('jetons', 'Жетоны', chartData.jetons, limits.jetons);
+            // Золото рендерим по спец-данным (эквиваленту)
+            createChart('gold', 'Золото', goldEquiv, limits.gold);
+
+            // Остальные по обычным данным
+            createChart('truth', 'Истина', chartDataRaw.truth, limits.truth);
+            createChart('dust', 'Прах', chartDataRaw.dust, limits.dust);
+            createChart('pages', 'Страницы', chartDataRaw.pages, limits.pages);
+            createChart('jetons', 'Жетоны', chartDataRaw.jetons, limits.jetons);
         });
     </script>
 @endsection
