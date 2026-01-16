@@ -13,10 +13,10 @@
                 <br>Остальные графики показывают прогресс в штуках.
                 <br><br>На момент покраски предыдущего таланта, в казне оставались ресурсы:
                 <br>
-                <img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Страницы"> 2247 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Истина"> 370 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Прах"> 2573 шт.,
-                <img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="margin: 0; display: inline" alt="Жетоны"> 1394 шт.
+                <img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Страницы" title="Страницы"> 2247 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Истина" title="Истина"> 370 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Прах" title="Прах"> 2573 шт.,
+                <img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="margin: 0; display: inline" alt="Жетоны" title="Жетоны"> 1394 шт.
                 <br><br>Чуть позже тут появится подсчет гориков, огников, центриков и инкарнумов, а так-же красных ресов и боевых свидетельств.
                 <br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
@@ -71,10 +71,10 @@
                         @foreach($player['months'] as $data)
                             <td style="font-size: 11px; text-align: left; white-space: nowrap; line-height: 1.4;">
                                 @if(!empty($data['gold']))<x-moonshine::badge color="yellow"><img src="https://w1.dwar.ru/images/m_game3.gif" width="11px" height="11px" style="display: inline" alt="Золото"> {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['dust']))<x-moonshine::badge color="red"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="display: inline" alt="Прах"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['truth']))<x-moonshine::badge color="blue"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="display: inline" alt="Истина"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['dust']))<x-moonshine::badge color="red"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="display: inline" alt="Прах" title="Прах"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['truth']))<x-moonshine::badge color="blue"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="display: inline" alt="Истина" title="Истина"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы" title="Страницы"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны" title="Жетоны"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                             </td>
                         @endforeach
                     </tr>
