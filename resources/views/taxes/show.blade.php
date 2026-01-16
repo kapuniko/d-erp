@@ -8,9 +8,11 @@
         <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6" >
             <x-moonshine::layout.box>
                 <p>Период сбора: <strong>{{ $special_date->format('d.m.Y') }} – {{ $special_next_date->format('d.m.Y') }}</strong></p>
+                <p>Наша цель - красный талант физ.защиты.</p>
                 <br>График <strong>Золото</strong> отражает общую стоимость всех собранных ресурсов, пересчитанных в золото по курсу.
                 <br>Остальные графики показывают прогресс в штуках.
-                <br><br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
+                <br><br>Чуть позже тут появится подсчет гориков, огников, центриков и инкарнумов, а так-же красных ресов и боевых свидетельств.
+                <br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
 
