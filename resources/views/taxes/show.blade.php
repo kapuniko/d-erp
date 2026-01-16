@@ -62,11 +62,11 @@
                         <td style="position: sticky; left: 0; background: #fff; z-index: 1; font-weight: bold; text-align: left;">{{ $player['name'] }}</td>
                         @foreach($player['months'] as $data)
                             <td style="font-size: 11px; text-align: left; white-space: nowrap; line-height: 1.4;">
-                                @if(!empty($data['gold']))<x-moonshine::badge color="yellow">З: {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['dust']))<x-moonshine::badge color="red">П: {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['truth']))<x-moonshine::badge color="blue">И: {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['pages']))<x-moonshine::badge color="gray">С: {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['jetons']))<x-moonshine::badge color="purple">Ж: {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['gold']))<x-moonshine::badge color="yellow"><img src="https://w1.dwar.ru/images/m_game3.gif" width="11px" height="11px"> {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['dust']))<x-moonshine::badge color="red"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="11px" height="11px"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['truth']))<x-moonshine::badge color="blue"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="11px" height="11px"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="11px" height="11px"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="11px" height="11px"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                             </td>
                         @endforeach
                     </tr>
