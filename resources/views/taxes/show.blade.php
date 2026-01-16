@@ -89,7 +89,7 @@
                                             @if($resCount > 0)
                                                 <x-moonshine::badge color="gray">
                                                     @if(isset($resIcons[$resName]))
-                                                        <img src="{{ $resIcons[$resName] }}" width="13px" height="13px" style="display: inline; margin-right: 2px;" alt="{{ $resName }}" title="{{ $resName }}">
+                                                        <img src="{{ $resIcons[$resName] }}" width="15px" height="15px" style="display: inline; margin-right: 2px;" alt="{{ $resName }}" title="{{ $resName }}">
                                                     @else
                                                         {{ mb_substr($resName, 0, 1) }}:
                                                     @endif

@@ -78,7 +78,7 @@ class TaxesController extends Controller
             $contrib += $row->res_gorecvet / ($exchange_rates['Горецвет'] ?? 2);
             $contrib += $row->res_incarnum / ($exchange_rates['Инкарнум'] ?? 2);
             $contrib += $row->res_centrido / ($exchange_rates['Центридо'] ?? 2);
-            return $contrib;
+            return floor($contrib);
         };
 
         // Формируем данные для графиков
