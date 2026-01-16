@@ -10,15 +10,14 @@
                 <p>Период сбора: <strong>{{ $special_date->format('d.m.Y') }} – {{ $special_next_date->format('d.m.Y') }}</strong></p>
                 <p>Наша цель - красный талант физ.защиты.</p>
                 <br>График <strong>Золото</strong> отражает общую стоимость всех собранных ресурсов, пересчитанных в золото по курсу.
-                <br>Остальные графики показывают прогресс в штуках.
+                <br>График <strong>Страницы</strong> включает в себя также взносы ресурсов: Горецвет, Огневик, Инкарнум и Центридо (из расчета 2 к 1).
                 <br><br>На момент покраски предыдущего таланта, в казне оставались ресурсы:
                 <br>
                 <img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Страницы" title="Страницы"> 2247 шт.,
                 <img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Истина" title="Истина"> 370 шт.,
                 <img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px" height="15px" style="margin: 0; display: inline" alt="Прах" title="Прах"> 2573 шт.,
                 <img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="margin: 0; display: inline" alt="Жетоны" title="Жетоны"> 1394 шт.
-                <br><br>Чуть позже тут появится подсчет гориков, огников, центриков и инкарнумов, а так-же красных ресов и боевых свидетельств.
-                <br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
+                <br><br> с ❤️ ваш <a target="_blank" href="https://w1.dwar.ru/user_info.php?nick=%D0%9C%D1%8C%D0%BE%D0%B4">Мьод</a>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
 
@@ -75,6 +74,17 @@
                                 @if(!empty($data['truth']))<x-moonshine::badge color="blue"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px" height="15px" style="display: inline" alt="Истина" title="Истина"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы" title="Страницы"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны" title="Жетоны"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+
+                                {{-- Новые ресурсы (Травы и камни) --}}
+                                @if(isset($data['resources']))
+                                    @foreach($data['resources'] as $resName => $resCount)
+                                        @if($resCount > 0)
+                                            <x-moonshine::badge color="gray" style="opacity: 0.8; font-size: 9px;">
+                                                {{ mb_substr($resName, 0, 1) }}: {{ number_format($resCount, 0, ',', ' ') }}
+                                            </x-moonshine::badge><br>
+                                        @endif
+                                    @endforeach
+                                @endif
                             </td>
                         @endforeach
                     </tr>
@@ -159,10 +169,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            // Золото рендерим по спец-данным (эквиваленту)
             createChart('gold', 'Золото', goldEquiv, limits.gold);
-
-            // Остальные по обычным данным
             createChart('truth', 'Истина', chartDataRaw.truth, limits.truth);
             createChart('dust', 'Прах', chartDataRaw.dust, limits.dust);
             createChart('pages', 'Страницы', chartDataRaw.pages, limits.pages);
