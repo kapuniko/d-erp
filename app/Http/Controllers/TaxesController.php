@@ -17,12 +17,20 @@ class TaxesController extends Controller
         $special_date = Carbon::createFromFormat('d.m.Y H:i', '12.01.2026 18:00');
         $special_next_date = Carbon::createFromFormat('d.m.Y', '15.03.2026')->endOfDay();
 
-        // 🔹 КУРСЫ РЕСУРСОВ (за 1 единицу в золоте)
+        // 🔹 КУРСЫ ВАЛЮТ (цена 1 единицы ресурса в золоте)
         $rates = [
-            'pages'  => 0.62,
-            'truth'  => 0.043,
-            'dust'   => 0.05,
+            'pages'  => 0.62, //странички
+            'truth'  => 0.043, // истина
+            'dust'   => 0.05, //прах
             'jetons' => 0,
+        ];
+
+        // 🔹 КУРСЫ ОБМЕНА НА СТРАНИЦЫ (сколько штук ресурса нужно на 1 страницу)
+        $exchange_rates = [
+            'Огневик'  => 3,
+            'Горецвет' => 2,
+            'Инкарнум' => 2, // Пример: курс 1 к 6
+            'Центридо' => 2, // Пример: курс 1 к 6
         ];
 
         // 🔹 МАКСИМУМЫ (в штуках)
@@ -42,7 +50,7 @@ class TaxesController extends Controller
         $yearlyLog = $this->getYearlyLog($clan->id);
         $summaryTable = $this->getMonthlySummary($clan->id);
 
-        // 🔹 ВЗНОСЫ ЗА ПЕРИОД
+        // 🔹 ВЗНОСЫ ЗА ПЕРИОД (выбираем ресурсы по отдельности для точного расчета)
         $specialTotals = TreasuryLog::select(
             'name',
             DB::raw("SUM(CASE WHEN object = 'Монеты' THEN quantity ELSE 0 END) as gold"),
@@ -50,8 +58,11 @@ class TaxesController extends Controller
             DB::raw("SUM(CASE WHEN object = 'Кристаллы истины' THEN quantity ELSE 0 END) as truth"),
             DB::raw("SUM(CASE WHEN object = 'Страница из трактата «Единство клана»' THEN quantity ELSE 0 END) as pages"),
             DB::raw("SUM(CASE WHEN object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons"),
-            // Новые ресурсы
-            DB::raw("SUM(CASE WHEN object IN ('Огневик', 'Горецвет', 'Инкарнум', 'Центридо') THEN quantity ELSE 0 END) as resources_for_pages")
+            // Выбираем каждый ресурс отдельно для применения индивидуальных коэффициентов
+            DB::raw("SUM(CASE WHEN object = 'Огневик' THEN quantity ELSE 0 END) as res_ognevik"),
+            DB::raw("SUM(CASE WHEN object = 'Горецвет' THEN quantity ELSE 0 END) as res_gorecvet"),
+            DB::raw("SUM(CASE WHEN object = 'Инкарнум' THEN quantity ELSE 0 END) as res_incarnum"),
+            DB::raw("SUM(CASE WHEN object = 'Центридо' THEN quantity ELSE 0 END) as res_centrido")
         )
             ->where('clan_id', $clan->id)
             ->whereBetween('date', [$special_date, $special_next_date])
@@ -60,13 +71,23 @@ class TaxesController extends Controller
             ->groupBy('name')
             ->get();
 
-        // Формируем данные для графиков (Страницы теперь включают ресурсы с коэф 0.5)
+        // Функция-помощник для расчета вклада в страницы
+        $calculatePagesContribution = function($row) use ($exchange_rates) {
+            $contrib = 0;
+            $contrib += $row->res_ognevik  / ($exchange_rates['Огневик'] ?? 2);
+            $contrib += $row->res_gorecvet / ($exchange_rates['Горецвет'] ?? 2);
+            $contrib += $row->res_incarnum / ($exchange_rates['Инкарнум'] ?? 2);
+            $contrib += $row->res_centrido / ($exchange_rates['Центридо'] ?? 2);
+            return $contrib;
+        };
+
+        // Формируем данные для графиков
         $chartData = [
             'gold'   => $specialTotals->pluck('gold', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
             'dust'   => $specialTotals->pluck('dust', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
             'truth'  => $specialTotals->pluck('truth', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
-            'pages'  => $specialTotals->mapWithKeys(function ($item) {
-                $total = $item->pages + ($item->resources_for_pages * 0.5);
+            'pages'  => $specialTotals->mapWithKeys(function ($item) use ($calculatePagesContribution) {
+                $total = $item->pages + $calculatePagesContribution($item);
                 return [$item->name => (float)$total];
             })->filter(fn($v) => $v > 0)->toArray(),
             'jetons' => $specialTotals->pluck('jetons', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
@@ -75,8 +96,10 @@ class TaxesController extends Controller
         // ЗОЛОТОЙ ЭКВИВАЛЕНТ
         $goldEquivalentData = [];
         foreach ($specialTotals as $row) {
+            $pagesTotal = $row->pages + $calculatePagesContribution($row);
+
             $equiv = $row->gold +
-                (($row->pages + ($row->resources_for_pages * 0.5)) * $rates['pages']) +
+                ($pagesTotal * $rates['pages']) +
                 ($row->truth * $rates['truth']) +
                 ($row->dust * $rates['dust']) +
                 ($row->jetons * $rates['jetons']);

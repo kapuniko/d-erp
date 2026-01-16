@@ -65,6 +65,14 @@
                 </thead>
                 <tbody>
                 @foreach($playersData as $player)
+                    @php
+                        $resIcons = [
+                            'Огневик'  => 'https://w1.dwar.ru/images/data/artifacts/ognevikgreen1009.gif',
+                            'Горецвет' => 'https://w1.dwar.ru/images/data/artifacts/feigoblue1009.gif',
+                            'Инкарнум' => 'https://w1.dwar.ru/images/data/artifacts/eldserdce_090702.gif',
+                            'Центридо' => 'https://w1.dwar.ru/images/data/artifacts/krofserdce_090702.gif',
+                        ];
+                    @endphp
                     <tr>
                         <td style="position: sticky; left: 0; background: #fff; z-index: 1; font-weight: bold; text-align: left;">{{ $player['name'] }}</td>
                         @foreach($player['months'] as $data)
@@ -75,16 +83,21 @@
                                 @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы" title="Страницы"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны" title="Жетоны"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
 
-                                {{-- Новые ресурсы (Травы и камни) --}}
-                                @if(isset($data['resources']))
-                                    @foreach($data['resources'] as $resName => $resCount)
-                                        @if($resCount > 0)
-                                            <x-moonshine::badge color="gray" style="opacity: 0.8; font-size: 9px;">
-                                                {{ mb_substr($resName, 0, 1) }}: {{ number_format($resCount, 0, ',', ' ') }}
-                                            </x-moonshine::badge><br>
-                                        @endif
-                                    @endforeach
-                                @endif
+                                    {{-- Новые ресурсы (Травы и камни) --}}
+                                    @if(isset($data['resources']))
+                                        @foreach($data['resources'] as $resName => $resCount)
+                                            @if($resCount > 0)
+                                                <x-moonshine::badge color="gray">
+                                                    @if(isset($resIcons[$resName]))
+                                                        <img src="{{ $resIcons[$resName] }}" width="13px" height="13px" style="display: inline; margin-right: 2px;" alt="{{ $resName }}" title="{{ $resName }}">
+                                                    @else
+                                                        {{ mb_substr($resName, 0, 1) }}:
+                                                    @endif
+                                                    {{ number_format($resCount, 0, ',', ' ') }}
+                                                </x-moonshine::badge><br>
+                                            @endif
+                                        @endforeach
+                                    @endif
                             </td>
                         @endforeach
                     </tr>
