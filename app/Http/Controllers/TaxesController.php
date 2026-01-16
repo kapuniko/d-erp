@@ -14,7 +14,7 @@ class TaxesController extends Controller
         $clan = Clan::where('token', $token)->firstOrFail();
 
         // 🔹 СПЕЦИАЛЬНЫЙ ИНТЕРВАЛ
-        $special_date = Carbon::createFromFormat('d.m.Y H:i', '13.01.2025 16:33')->startOfDay();
+        $special_date = Carbon::createFromFormat('d.m.Y H:i', '13.01.2026 16:33')->startOfDay();
         $special_next_date = Carbon::createFromFormat('d.m.Y', '15.03.2026')->endOfDay();
 
         // 🔹 ЛИМИТЫ РЕСУРСОВ
