@@ -19,19 +19,18 @@ class TaxesController extends Controller
 
         // 🔹 ЛИМИТЫ РЕСУРСОВ
         $limits = [
-            'gold'    => null,   // Нет максимума
+            'gold'    => null,
             'pages'   => 60000,
             'truth'   => 420000,
             'dust'    => 45000,
             'jetons'  => 550,
         ];
 
-        // Данные для таблиц (оставляем без изменений)
         $logs = $this->getLog($clan->id);
         $yearlyLog = $this->getYearlyLog($clan->id);
         $summaryTable = $this->getMonthlySummary($clan->id);
 
-        // 🔹 СУММЫ ЗА СПЕЦ-ИНТЕРВАЛ (для новых графиков)
+        // 🔹 СУММЫ ЗА СПЕЦ-ИНТЕРВАЛ
         $specialTotals = TreasuryLog::select(
             'name',
             DB::raw("SUM(CASE WHEN object = 'Монеты' THEN quantity ELSE 0 END) as gold"),
@@ -51,13 +50,13 @@ class TaxesController extends Controller
             ->groupBy('name')
             ->get();
 
-        // Формируем чистые данные для графиков (без нулей)
+        // Формируем данные и ПРИНУДИТЕЛЬНО приводим к числу (float)
         $chartData = [
-            'gold'   => $specialTotals->pluck('gold', 'name')->filter(fn($v) => $v > 0)->toArray(),
-            'dust'   => $specialTotals->pluck('dust', 'name')->filter(fn($v) => $v > 0)->toArray(),
-            'truth'  => $specialTotals->pluck('truth', 'name')->filter(fn($v) => $v > 0)->toArray(),
-            'pages'  => $specialTotals->pluck('pages', 'name')->filter(fn($v) => $v > 0)->toArray(),
-            'jetons' => $specialTotals->pluck('jetons', 'name')->filter(fn($v) => $v > 0)->toArray(),
+            'gold'   => $specialTotals->pluck('gold', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
+            'dust'   => $specialTotals->pluck('dust', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
+            'truth'  => $specialTotals->pluck('truth', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
+            'pages'  => $specialTotals->pluck('pages', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
+            'jetons' => $specialTotals->pluck('jetons', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
         ];
 
         return view('taxes.show', [
