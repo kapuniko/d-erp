@@ -74,7 +74,7 @@ class TaxesController extends Controller
         // Функция-помощник для расчета вклада в страницы
         $calculatePagesContribution = function($row) use ($exchange_rates) {
             $contrib = 0;
-            $contrib += $row->res_ognevik  / ($exchange_rates['Огневик'] ?? 2);
+            $contrib += $row->res_ognevik  / ($exchange_rates['Огневик'] ?? 3);
             $contrib += $row->res_gorecvet / ($exchange_rates['Горецвет'] ?? 2);
             $contrib += $row->res_incarnum / ($exchange_rates['Инкарнум'] ?? 2);
             $contrib += $row->res_centrido / ($exchange_rates['Центридо'] ?? 2);
