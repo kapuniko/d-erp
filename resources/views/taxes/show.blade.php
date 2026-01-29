@@ -77,6 +77,8 @@
                         <td style="position: sticky; left: 0; background: #fff; z-index: 1; font-weight: bold; text-align: left;">{{ $player['name'] }}</td>
                         @foreach($player['months'] as $data)
                             <td style="font-size: 11px; text-align: left; white-space: nowrap; line-height: 1.4;">
+                                <div style="display: flex;">
+                                    <div>
                                 @if(!empty($data['gold']))<x-moonshine::badge color="{{ $data['gold'] < 0 ? 'red' : 'yellow' }}"><img src="https://w1.dwar.ru/images/m_game3.gif" width="11px"  style="display: inline"> {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['dust']))<x-moonshine::badge color="{{ $data['dust'] < 0 ? 'red' : 'red' }}"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px"  style="display: inline"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['truth']))<x-moonshine::badge color="{{ $data['truth'] < 0 ? 'red' : 'blue' }}"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px"  style="display: inline"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
@@ -96,7 +98,8 @@
                                         @endif
                                     @endforeach
                                 @endif
-
+                                    </div>
+                                    <div>
                                     {{-- Мистрас (новое) --}}
                                     @if(!empty($data['extra']))
                                         @php
@@ -127,6 +130,8 @@
                                             @endif
                                         @endforeach
                                     @endif
+                                    </div>
+                                </div>
                             </td>
                         @endforeach
                     </tr>

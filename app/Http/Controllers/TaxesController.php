@@ -28,9 +28,9 @@ class TaxesController extends Controller
 
         // 🔹 ЛИМИТЫ ДЛЯ МЕЖДУМИРЬЯ
         $extra_limits = [
-            'brasleti_jinov' => 100, 'mo_trava_zel' => 500, 'mo_kamen_zel' => 500, 'mo_riba_zel' => 500,
-            'mo_trava_sin' => 300, 'mo_kamen_sin' => 300, 'mo_riba_sin' => 300,
-            'mo_trava_fiol' => 100, 'mo_kamen_fiol' => 100, 'mo_riba_fiol' => 100,
+            'brasleti_jinov' => 1500, 'mo_trava_zel' => 1500, 'mo_kamen_zel' => 1500, 'mo_riba_zel' => 1500,
+            'mo_trava_sin' => 600, 'mo_kamen_sin' => 600, 'mo_riba_sin' => 600,
+            'mo_trava_fiol' => 200, 'mo_kamen_fiol' => 200, 'mo_riba_fiol' => 200,
         ];
 
         $total_gold_goal = ($limits_count['pages'] * $rates['pages']) + ($limits_count['truth'] * $rates['truth']) + ($limits_count['dust'] * $rates['dust']);
