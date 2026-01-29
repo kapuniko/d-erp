@@ -98,6 +98,8 @@ class TaxesController extends Controller
             if ($equiv > 0) $goldEquivalentData[$row->name] = round($equiv, 2);
         }
 
+        $lastUpdate = TreasuryLog::where('clan_id', $clan->id)->max('date');
+
         return view('taxes.show', [
             'clan' => $clan, 'logs' => $logs, 'playersData' => $yearlyLog['players'], 'monthLabels' => $yearlyLog['months'],
             'summaryTable' => $summaryTable['table'], 'summaryMonths' => $summaryTable['months'],
@@ -105,6 +107,7 @@ class TaxesController extends Controller
             'extraChartsData' => $extraChartsData, 'extraLimits' => $extra_limits, 'realTotals' => $realTotals,
             'limits' => array_merge($limits_count, ['gold' => round($total_gold_goal, 2)]),
             'special_date' => $special_date, 'special_next_date' => $special_next_date,
+            'lastUpdate' => $lastUpdate ? Carbon::parse($lastUpdate) : now(), 
         ]);
     }
 
