@@ -77,11 +77,11 @@
                         <td style="position: sticky; left: 0; background: #fff; z-index: 1; font-weight: bold; text-align: left;">{{ $player['name'] }}</td>
                         @foreach($player['months'] as $data)
                             <td style="font-size: 11px; text-align: left; white-space: nowrap; line-height: 1.4;">
-                                @if(!empty($data['gold']))<x-moonshine::badge color="{{ $data['gold'] < 0 ? 'red' : 'yellow' }}"><img src="https://w1.dwar.ru/images/m_game3.gif" width="11px"> {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['dust']))<x-moonshine::badge color="{{ $data['dust'] < 0 ? 'red' : 'red' }}"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['truth']))<x-moonshine::badge color="{{ $data['truth'] < 0 ? 'red' : 'blue' }}"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['pages']))<x-moonshine::badge color="{{ $data['pages'] < 0 ? 'red' : 'gray' }}"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
-                                @if(!empty($data['jetons']))<x-moonshine::badge color="{{ $data['jetons'] < 0 ? 'red' : 'purple' }}"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['gold']))<x-moonshine::badge color="{{ $data['gold'] < 0 ? 'red' : 'yellow' }}"><img src="https://w1.dwar.ru/images/m_game3.gif" width="11px"  style="display: inline"> {{ number_format($data['gold'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['dust']))<x-moonshine::badge color="{{ $data['dust'] < 0 ? 'red' : 'red' }}"><img src="https://w1.dwar.ru/images/data/artifacts/lab_powd_red.gif" width="15px"  style="display: inline"> {{ number_format($data['dust'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['truth']))<x-moonshine::badge color="{{ $data['truth'] < 0 ? 'red' : 'blue' }}"><img src="https://w1.dwar.ru/images/data/artifacts/crystalsoftruth.gif" width="15px"  style="display: inline"> {{ number_format($data['truth'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['pages']))<x-moonshine::badge color="{{ $data['pages'] < 0 ? 'red' : 'gray' }}"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px"  style="display: inline"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
+                                @if(!empty($data['jetons']))<x-moonshine::badge color="{{ $data['jetons'] < 0 ? 'red' : 'purple' }}"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px"  style="display: inline"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
 
                                 {{-- Талантные ресурсы --}}
                                 @if(isset($data['resources']))
@@ -97,17 +97,36 @@
                                     @endforeach
                                 @endif
 
-                                {{-- Междумирье (новое) --}}
-                                @if(!empty($data['extra']))
-                                    @foreach($data['extra'] as $exName => $exVal)
-                                        @if($exVal != 0)
-                                            <x-moonshine::badge color="{{ $exVal < 0 ? 'red' : 'blue' }}" style="opacity: 0.8;">
-                                                <img src="https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif" width="13px" height="13px" style="display: inline" title="{{ $exName }}">
-                                                {{ number_format($exVal, 0, ',', ' ') }}
-                                            </x-moonshine::badge><br>
-                                        @endif
-                                    @endforeach
-                                @endif
+                                    {{-- Мистрас (новое) --}}
+                                    @if(!empty($data['extra']))
+                                        @php
+                                            $extraIcons = [
+                                                'Браслеты джиннов'                      => 'https://w1.dwar.ru/images/data/artifacts/3_shacles_04.gif',
+                                                'Мо-датхар альвы благонравной'          => 'https://w1.dwar.ru/images/data/artifacts/semyachko_2_02.gif',
+                                                'Мо-датхар нурида'                      => 'https://w1.dwar.ru/images/data/artifacts/concentrate_stone_1_02.gif',
+                                                'Мо-датхар золтой шамсы'                => 'https://w1.dwar.ru/iimages/data/artifacts/_thumb_2398615.png',
+                                                'Мо-датхар чёрного лотоса'              => 'https://w1.dwar.ru/images/data/artifacts/semyachko_1_03.gif',
+                                                'Мо-датхар шахифрита'                   => 'https://w1.dwar.ru/images/data/artifacts/concentrate_stone_2_03.gif',
+                                                'Мо-датхар мистрасского рыбозмея'       => 'https://w1.dwar.ru/images/data/artifacts/concentrate_eel_03.gif',
+                                                'Мо-датхар аракша неугасимого'          => 'https://w1.dwar.ru/images/data/artifacts/semyachko_3_04.gif',
+                                                'Мо-датхар замридина'                   => 'https://w1.dwar.ru/images/data/artifacts/concentrate_stone_3_04.gif',
+                                                'Мо-датхар акдуфа-многонога'            => 'https://w1.dwar.ru/images/data/artifacts/concentrate_octopus_04.gif',
+                                            ];
+                                        @endphp
+
+                                        @foreach($data['extra'] as $exName => $exVal)
+                                            @if($exVal != 0)
+                                                <x-moonshine::badge color="{{ $exVal < 0 ? 'red' : 'blue' }}" style="opacity: 0.9; margin-bottom: 2px;">
+                                                    <img src="{{ $extraIcons[$exName] ?? 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif' }}"
+                                                         width="15px" height="15px"
+                                                         style="display: inline; vertical-align: middle; margin-right: 2px;"
+                                                         alt="{{ $exName }}"
+                                                         title="{{ $exName }}">
+                                                    {{ number_format($exVal, 0, ',', ' ') }}
+                                                </x-moonshine::badge><br>
+                                            @endif
+                                        @endforeach
+                                    @endif
                             </td>
                         @endforeach
                     </tr>
