@@ -122,7 +122,7 @@
                                                 <x-moonshine::badge color="{{ $exVal < 0 ? 'red' : 'blue' }}" style="opacity: 0.9; margin-bottom: 2px;">
                                                     <img src="{{ $extraIcons[$exName] ?? 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif' }}"
                                                          width="15px" height="15px"
-                                                         style="display: inline; vertical-align: middle; margin-right: 2px;"
+                                                         style="display: inline; vertical-align: middle;"
                                                          alt="{{ $exName }}"
                                                          title="{{ $exName }}">
                                                     {{ number_format($exVal, 0, ',', ' ') }}
@@ -163,12 +163,29 @@
         </table>
     </x-moonshine::layout.box>
 
-    {{-- ГЛОБАЛЬНЫЕ ЦЕЛИ (МЕЖДУМИРЬЕ) --}}
-    <x-moonshine::layout.box title="Глобальные цели Междумирья" @style('margin: 1.25rem')>
+    {{-- Мистрас --}}
+    <x-moonshine::layout.box title="Талант на золото в Мистрас" @style('margin: 1.25rem')>
+        @php
+            // Массив для подписей графиков
+            $extraNames = [
+                'Браслеты джиннов'                => 'Браслеты джиннов',
+                'Мо-датхар альвы благонравной'    => 'Альва (трава)',
+                'Мо-датхар нурида'                => 'Нурид (камни)',
+                'Мо-датхар золтой шамсы'          => 'Шамса (рыба)',
+                'Мо-датхар чёрного лотоса'        => 'Лотос (трава)',
+                'Мо-датхар шахифрита'             => 'Шахифрит (камни)',
+                'Мо-датхар мистрасского рыбозмея' => 'Рыбозмей (рыба)',
+                'Мо-датхар аракша неугасимого'    => 'Аракш (трава)',
+                'Мо-датхар замридина'             => 'Замридин (камни)',
+                'Мо-датхар акдуфа-многонога'      => 'Акдуф (рыба)',
+            ];
+        @endphp
+
         <x-moonshine::layout.grid>
             @foreach($extraLimits as $key => $limit)
                 <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-                    <x-moonshine::layout.box title="Цель: {{ number_format($limit, 0, ',', ' ') }}">
+                    {{-- Добавили название ресурса в заголовок бокса --}}
+                    <x-moonshine::layout.box title="{{ $extraNames[$key] ?? $key }} (цель {{ number_format($limit, 0, ',', ' ') }})">
                         <div id="chart-{{ $key }}"></div>
                     </x-moonshine::layout.box>
                 </x-moonshine::layout.column>
