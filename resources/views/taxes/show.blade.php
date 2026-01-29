@@ -71,6 +71,16 @@
                             'Горецвет' => 'https://w1.dwar.ru/images/data/artifacts/feigoblue1009.gif',
                             'Инкарнум' => 'https://w1.dwar.ru/images/data/artifacts/eldserdce_090702.gif',
                             'Центридо' => 'https://w1.dwar.ru/images/data/artifacts/krofserdce_090702.gif',
+                            'Браслеты джиннов' => 'https://w1.dwar.ru/images/data/artifacts/lib_jinn_brac_01.gif',
+                            'Мо-датхар альвы благонравной' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif',
+                            'Мо-датхар нурида' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif',
+                            'Мо-датхар золтой шамсы' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_01.gif',
+                            'Мо-датхар чёрного лотоса' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_02.gif',
+                            'Мо-датхар шахифрита' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_02.gif',
+                            'Мо-датхар мистрасского рыбозмея' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_02.gif',
+                            'Мо-датхар аракша неугасимого' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_03.gif',
+                            'Мо-датхар замридина' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_03.gif',
+                            'Мо-датхар акдуфа-многонога' => 'https://w1.dwar.ru/images/data/artifacts/mo_dathar_item_03.gif',
                         ];
                     @endphp
                     <tr>
@@ -83,21 +93,29 @@
                                 @if(!empty($data['pages']))<x-moonshine::badge color="gray"><img src="https://w1.dwar.ru/images/data/artifacts/talant_list1.gif" width="15px" height="15px" style="display: inline" alt="Страницы" title="Страницы"> {{ number_format($data['pages'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
                                 @if(!empty($data['jetons']))<x-moonshine::badge color="purple"><img src="https://w1.dwar.ru/images/data/artifacts/season_coin_04.png" width="15px" height="15px" style="display: inline" alt="Жетоны" title="Жетоны"> {{ number_format($data['jetons'], 0, ',', ' ') }}</x-moonshine::badge><br>@endif
 
-                                    {{-- Новые ресурсы (Травы и камни) --}}
-                                    @if(isset($data['resources']))
-                                        @foreach($data['resources'] as $resName => $resCount)
-                                            @if($resCount > 0)
-                                                <x-moonshine::badge color="gray">
-                                                    @if(isset($resIcons[$resName]))
-                                                        <img src="{{ $resIcons[$resName] }}" width="15px" height="15px" style="display: inline; margin-right: 2px;" alt="{{ $resName }}" title="{{ $resName }}">
-                                                    @else
-                                                        {{ mb_substr($resName, 0, 1) }}:
-                                                    @endif
-                                                    {{ number_format($resCount, 0, ',', ' ') }}
-                                                </x-moonshine::badge><br>
-                                            @endif
-                                        @endforeach
-                                    @endif
+                                {{-- Ресурсы для страниц --}}
+                                @if(isset($data['resources']))
+                                    @foreach($data['resources'] as $resName => $resCount)
+                                        @if($resCount > 0)
+                                            <x-moonshine::badge color="gray">
+                                                <img src="{{ $resIcons[$resName] ?? '' }}" width="15px" height="15px" style="display: inline; margin-right: 2px;" alt="{{ $resName }}" title="{{ $resName }}">
+                                                {{ number_format($resCount, 0, ',', ' ') }}
+                                            </x-moonshine::badge><br>
+                                        @endif
+                                    @endforeach
+                                @endif
+
+                                {{-- Новые ресурсы Междумирья --}}
+                                @if(isset($data['extra']))
+                                    @foreach($data['extra'] as $exName => $exCount)
+                                        @if($exCount > 0)
+                                            <x-moonshine::badge color="blue" style="opacity: 0.9;">
+                                                <img src="{{ $resIcons[$exName] ?? '' }}" width="15px" height="15px" style="display: inline; margin-right: 2px;" alt="{{ $exName }}" title="{{ $exName }}">
+                                                {{ number_format($exCount, 0, ',', ' ') }}
+                                            </x-moonshine::badge><br>
+                                        @endif
+                                    @endforeach
+                                @endif
                             </td>
                         @endforeach
                     </tr>
@@ -107,7 +125,34 @@
         </div>
     </x-moonshine::layout.box>
 
-    {{-- Сводная таблица --}}
+    {{-- ГЛОБАЛЬНЫЕ ЦЕЛИ (МИСТРАС) --}}
+    <x-moonshine::layout.box title="Таланты Мистрас" @style('margin: 1.25rem')>
+        <x-moonshine::layout.grid>
+            @php
+                $extraNames = [
+                    'brasleti_jinov' => 'Браслеты джиннов',
+                    'mo_trava_zel'   => 'Зел. Мо-трава',
+                    'mo_kamen_zel'   => 'Зел. Мо-камни',
+                    'mo_riba_zel'    => 'Зел. Мо-рыба',
+                    'mo_trava_sin'   => 'Син. Мо-трава',
+                    'mo_kamen_sin'   => 'Син. Мо-камни',
+                    'mo_riba_sin'    => 'Син. Мо-рыба',
+                    'mo_trava_fiol'  => 'Фиол. Мо-трава',
+                    'mo_kamen_fiol'  => 'Фиол. Мо-камни',
+                    'mo_riba_fiol'   => 'Фиол. Мо-рыба',
+                ];
+            @endphp
+
+            @foreach($extraNames as $key => $label)
+                <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
+                    <x-moonshine::layout.box title="{{ $label }} (цель {{ number_format($extraLimits[$key], 0, ',', ' ') }})">
+                        <div id="chart-{{ $key }}"></div>
+                    </x-moonshine::layout.box>
+                </x-moonshine::layout.column>
+            @endforeach
+        </x-moonshine::layout.grid>
+    </x-moonshine::layout.box>
+
     <x-moonshine::layout.box title="Сводная таблица (6 мес):" @style('margin: 1.25rem')>
         <table class="table" border="1" style="width: 100%; text-align: center;">
             <thead>
@@ -134,6 +179,8 @@
         const chartDataRaw = @json($chartData);
         const goldEquiv = @json($goldEquivalentData);
         const limits = @json($limits);
+        const extraChartsData = @json($extraChartsData);
+        const extraLimits = @json($extraLimits);
         const baseColors = ['#F7B924', '#3f6ad8', '#d92550', '#3ac47d', '#16aaff', '#f7b924', '#6610f2'];
 
         function createChart(id, label, dataObj, limit) {
@@ -156,7 +203,7 @@
                 labels: labels,
                 chart: { type: 'donut', height: 350, animations: { enabled: false } },
                 colors: colors,
-                legend: { position: 'bottom', fontSize: '11px' },
+                legend: { position: 'bottom', fontSize: '10px' },
                 dataLabels: {
                     enabled: true,
                     formatter: (val, opt) => Number(opt.w.globals.series[opt.seriesIndex]).toLocaleString('ru-RU')
@@ -182,11 +229,17 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Таланты
             createChart('gold', 'Золото', goldEquiv, limits.gold);
             createChart('truth', 'Истина', chartDataRaw.truth, limits.truth);
             createChart('dust', 'Прах', chartDataRaw.dust, limits.dust);
             createChart('pages', 'Страницы', chartDataRaw.pages, limits.pages);
             createChart('jetons', 'Жетоны', chartDataRaw.jetons, limits.jetons);
+
+            // Междумирье
+            Object.keys(extraChartsData).forEach(key => {
+                createChart(key, '', extraChartsData[key], extraLimits[key]);
+            });
         });
     </script>
 @endsection

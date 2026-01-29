@@ -13,27 +13,17 @@ class TaxesController extends Controller
     {
         $clan = Clan::where('token', $token)->firstOrFail();
 
-        // 🔹 СПЕЦИАЛЬНЫЙ ИНТЕРВАЛ
+        // 🔹 ИНТЕРВАЛ ДЛЯ ТАЛАНТОВ
         $special_date = Carbon::createFromFormat('d.m.Y H:i', '12.01.2026 18:00');
         $special_next_date = Carbon::createFromFormat('d.m.Y', '15.03.2026')->endOfDay();
 
-        // 🔹 КУРСЫ ВАЛЮТ (цена 1 единицы ресурса в золоте)
-        $rates = [
-            'pages'  => 0.62, //странички
-            'truth'  => 0.043, // истина
-            'dust'   => 0.05, //прах
-            'jetons' => 0,
-        ];
+        // 🔹 КУРСЫ ВАЛЮТ (цена за 1 ед. в золоте)
+        $rates = ['pages' => 0.62, 'truth' => 0.043, 'dust' => 0.05, 'jetons' => 0];
 
-        // 🔹 КУРСЫ ОБМЕНА НА СТРАНИЦЫ (сколько штук ресурса нужно на 1 страницу)
-        $exchange_rates = [
-            'Огневик'  => 3,
-            'Горецвет' => 2,
-            'Инкарнум' => 2, // Пример: курс 1 к 6
-            'Центридо' => 2, // Пример: курс 1 к 6
-        ];
+        // 🔹 КУРСЫ ОБМЕНА НА СТРАНИЦЫ
+        $exchange_rates = ['Огневик' => 3, 'Горецвет' => 2, 'Инкарнум' => 2, 'Центридо' => 2];
 
-        // 🔹 МАКСИМУМЫ (в штуках)
+        // 🔹 МАКСИМУМЫ ДЛЯ ТАЛАНТОВ
         $limits_count = [
             'pages'  => 60000 - 2247,
             'truth'  => 418500 - 370,
@@ -41,16 +31,31 @@ class TaxesController extends Controller
             'jetons' => 530 - 1394,
         ];
 
+        // 🔹 МАКСИМУМЫ ДЛЯ МИСТРАС (Цели за всё время)
+        $extra_limits = [
+            'brasleti_jinov' => 1500,
+            'mo_trava_zel'   => 1500,
+            'mo_kamen_zel'   => 1500,
+            'mo_riba_zel'    => 1500,
+            'mo_trava_sin'   => 600,
+            'mo_kamen_sin'   => 600,
+            'mo_riba_sin'    => 600,
+            'mo_trava_fiol'  => 200,
+            'mo_kamen_fiol'  => 200,
+            'mo_riba_fiol'   => 200,
+        ];
+
         $total_gold_goal = ($limits_count['pages'] * $rates['pages']) +
             ($limits_count['truth'] * $rates['truth']) +
             ($limits_count['dust'] * $rates['dust']) +
             ($limits_count['jetons'] * $rates['jetons']);
 
+        // Данные для таблиц
         $logs = $this->getLog($clan->id);
         $yearlyLog = $this->getYearlyLog($clan->id);
         $summaryTable = $this->getMonthlySummary($clan->id);
 
-        // 🔹 ВЗНОСЫ ЗА ПЕРИОД (выбираем ресурсы по отдельности для точного расчета)
+        // 🔹 ВЗНОСЫ ЗА ПЕРИОД ТАЛАНТОВ (для круговых диаграмм талантов)
         $specialTotals = TreasuryLog::select(
             'name',
             DB::raw("SUM(CASE WHEN object = 'Монеты' THEN quantity ELSE 0 END) as gold"),
@@ -58,7 +63,6 @@ class TaxesController extends Controller
             DB::raw("SUM(CASE WHEN object = 'Кристаллы истины' THEN quantity ELSE 0 END) as truth"),
             DB::raw("SUM(CASE WHEN object = 'Страница из трактата «Единство клана»' THEN quantity ELSE 0 END) as pages"),
             DB::raw("SUM(CASE WHEN object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons"),
-            // Выбираем каждый ресурс отдельно для применения индивидуальных коэффициентов
             DB::raw("SUM(CASE WHEN object = 'Огневик' THEN quantity ELSE 0 END) as res_ognevik"),
             DB::raw("SUM(CASE WHEN object = 'Горецвет' THEN quantity ELSE 0 END) as res_gorecvet"),
             DB::raw("SUM(CASE WHEN object = 'Инкарнум' THEN quantity ELSE 0 END) as res_incarnum"),
@@ -67,49 +71,63 @@ class TaxesController extends Controller
             ->where('clan_id', $clan->id)
             ->whereBetween('date', [$special_date, $special_next_date])
             ->where(function ($q) { $q->where('for_talents', '!=', true)->orWhereNull('for_talents'); })
-            ->where(function ($q) { $q->where('repaid_the_debt', '!=', true)->orWhereNull('repaid_the_debt'); })
             ->groupBy('name')
             ->get();
 
-        // Функция-помощник для расчета вклада в страницы
+        // 🔹 ВЗНОСЫ ЗА ВСЕ ВРЕМЯ (для новых ресурсов по игрокам)
+        $extraTotalsRaw = TreasuryLog::select(
+            'name',
+            DB::raw("SUM(CASE WHEN object = 'Браслеты джиннов' THEN quantity ELSE 0 END) as brasleti_jinov"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар альвы благонравной' THEN quantity ELSE 0 END) as mo_trava_zel"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар нурида' THEN quantity ELSE 0 END) as mo_kamen_zel"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар золтой шамсы' THEN quantity ELSE 0 END) as mo_riba_zel"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар чёрного лотоса' THEN quantity ELSE 0 END) as mo_trava_sin"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар шахифрита' THEN quantity ELSE 0 END) as mo_kamen_sin"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар мистрасского рыбозмея' THEN quantity ELSE 0 END) as mo_riba_sin"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар аракша неугасимого' THEN quantity ELSE 0 END) as mo_trava_fiol"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар замридина' THEN quantity ELSE 0 END) as mo_kamen_fiol"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар акдуфа-многонога' THEN quantity ELSE 0 END) as mo_riba_fiol")
+        )
+            ->where('clan_id', $clan->id)
+            ->groupBy('name')
+            ->get();
+
+        // Хелпер округления страниц
         $calculatePagesContribution = function($row) use ($exchange_rates) {
-            $contrib = 0;
-            $contrib += $row->res_ognevik  / ($exchange_rates['Огневик'] ?? 3);
-            $contrib += $row->res_gorecvet / ($exchange_rates['Горецвет'] ?? 2);
-            $contrib += $row->res_incarnum / ($exchange_rates['Инкарнум'] ?? 2);
-            $contrib += $row->res_centrido / ($exchange_rates['Центридо'] ?? 2);
+            $contrib = ($row->res_ognevik / ($exchange_rates['Огневик'] ?? 3)) +
+                ($row->res_gorecvet / ($exchange_rates['Горецвет'] ?? 2)) +
+                ($row->res_incarnum / ($exchange_rates['Инкарнум'] ?? 2)) +
+                ($row->res_centrido / ($exchange_rates['Центридо'] ?? 2));
             return floor($contrib);
         };
 
-        // Формируем данные для графиков
+        // Данные для графиков талантов
         $chartData = [
             'gold'   => $specialTotals->pluck('gold', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
             'dust'   => $specialTotals->pluck('dust', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
             'truth'  => $specialTotals->pluck('truth', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
             'pages'  => $specialTotals->mapWithKeys(function ($item) use ($calculatePagesContribution) {
-                $total = $item->pages + $calculatePagesContribution($item);
-                return [$item->name => (float)$total];
+                return [$item->name => (float)($item->pages + $calculatePagesContribution($item))];
             })->filter(fn($v) => $v > 0)->toArray(),
             'jetons' => $specialTotals->pluck('jetons', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
         ];
 
-        // ЗОЛОТОЙ ЭКВИВАЛЕНТ
-        $goldEquivalentData = [];
-        foreach ($specialTotals as $row) {
-            $pagesTotal = $row->pages + $calculatePagesContribution($row);
-
-            $equiv = $row->gold +
-                ($pagesTotal * $rates['pages']) +
-                ($row->truth * $rates['truth']) +
-                ($row->dust * $rates['dust']) +
-                ($row->jetons * $rates['jetons']);
-
-            if ($equiv > 0) {
-                $goldEquivalentData[$row->name] = round($equiv, 2);
-            }
+        // Данные для графиков Междумирья
+        $extraChartsData = [];
+        $resourceKeys = array_keys($extra_limits);
+        foreach ($resourceKeys as $key) {
+            $extraChartsData[$key] = $extraTotalsRaw->pluck($key, 'name')
+                ->filter(fn($v) => $v > 0)
+                ->map(fn($v) => (float)$v)
+                ->toArray();
         }
 
-        $limits = array_merge($limits_count, ['gold' => round($total_gold_goal, 2)]);
+        // Золотой эквивалент
+        $goldEquivalentData = [];
+        foreach ($specialTotals as $row) {
+            $equiv = $row->gold + (($row->pages + $calculatePagesContribution($row)) * $rates['pages']) + ($row->truth * $rates['truth']) + ($row->dust * $rates['dust']);
+            if ($equiv > 0) $goldEquivalentData[$row->name] = round($equiv, 2);
+        }
 
         return view('taxes.show', [
             'clan' => $clan,
@@ -120,7 +138,9 @@ class TaxesController extends Controller
             'summaryMonths' => $summaryTable['months'],
             'chartData' => $chartData,
             'goldEquivalentData' => $goldEquivalentData,
-            'limits' => $limits,
+            'extraChartsData' => $extraChartsData,
+            'extraLimits' => $extra_limits,
+            'limits' => array_merge($limits_count, ['gold' => round($total_gold_goal, 2)]),
             'special_date' => $special_date,
             'special_next_date' => $special_next_date,
         ]);
@@ -140,41 +160,63 @@ class TaxesController extends Controller
                 SUM(CASE WHEN object = 'Огневик' THEN quantity ELSE 0 END) as ognevik,
                 SUM(CASE WHEN object = 'Горецвет' THEN quantity ELSE 0 END) as gorecvet,
                 SUM(CASE WHEN object = 'Инкарнум' THEN quantity ELSE 0 END) as incarnum,
-                SUM(CASE WHEN object = 'Центридо' THEN quantity ELSE 0 END) as centrido
+                SUM(CASE WHEN object = 'Центридо' THEN quantity ELSE 0 END) as centrido,
+                SUM(CASE WHEN object = 'Браслеты джиннов' THEN quantity ELSE 0 END) as extra_1,
+                SUM(CASE WHEN object = 'Мо-датхар альвы благонравной' THEN quantity ELSE 0 END) as extra_2,
+                SUM(CASE WHEN object = 'Мо-датхар нурида' THEN quantity ELSE 0 END) as extra_3,
+                SUM(CASE WHEN object = 'Мо-датхар золтой шамсы' THEN quantity ELSE 0 END) as extra_4,
+                SUM(CASE WHEN object = 'Мо-датхар чёрного лотоса' THEN quantity ELSE 0 END) as extra_5,
+                SUM(CASE WHEN object = 'Мо-датхар шахифрита' THEN quantity ELSE 0 END) as extra_6,
+                SUM(CASE WHEN object = 'Мо-датхар мистрасского рыбозмея' THEN quantity ELSE 0 END) as extra_7,
+                SUM(CASE WHEN object = 'Мо-датхар аракша неугасимого' THEN quantity ELSE 0 END) as extra_8,
+                SUM(CASE WHEN object = 'Мо-датхар замридина' THEN quantity ELSE 0 END) as extra_9,
+                SUM(CASE WHEN object = 'Мо-датхар акдуфа-многонога' THEN quantity ELSE 0 END) as extra_10
             ")
         )
             ->where('clan_id', $clanId)
             ->whereBetween('date', [$startDate, $endDate])
-            ->where(function ($query) { $query->where('for_talents', '!=', true)->orWhereNull('for_talents'); })
-            ->where(function ($query) { $query->where('repaid_the_debt', '!=', true)->orWhereNull('repaid_the_debt'); })
             ->groupBy('name', DB::raw("TO_CHAR(date, 'YYYY-MM')"))
             ->get();
 
         $months = collect();
-        for ($i = 0; $i <= 11; $i++) { $months->push(now()->subMonths($i)->format('Y-m')); }
+        for ($i = 0; $i <= 11; $i++) $months->push(now()->subMonths($i)->format('Y-m'));
+
         $players = [];
         foreach ($rows as $row) {
-            $name = $row->name;
-            if (!isset($players[$name])) { $players[$name] = ['name' => $name, 'months' => []]; }
-            $players[$name]['months'][$row->ym] = [
+            $players[$row->name]['months'][$row->ym] = [
                 'gold' => (int)$row->gold, 'dust' => (int)$row->dust, 'truth' => (int)$row->truth,
                 'jetons' => (int)$row->jetons, 'pages' => (int)$row->pages,
                 'resources' => [
                     'Огневик' => (int)$row->ognevik, 'Горецвет' => (int)$row->gorecvet,
                     'Инкарнум' => (int)$row->incarnum, 'Центридо' => (int)$row->centrido
+                ],
+                'extra' => [
+                    'Браслеты джиннов' => (int)$row->extra_1,
+                    'Мо-датхар альвы благонравной' => (int)$row->extra_2,
+                    'Мо-датхар нурида' => (int)$row->extra_3,
+                    'Мо-датхар золтой шамсы' => (int)$row->extra_4,
+                    'Мо-датхар чёрного лотоса' => (int)$row->extra_5,
+                    'Мо-датхар шахифрита' => (int)$row->extra_6,
+                    'Мо-датхар мистрасского рыбозмея' => (int)$row->extra_7,
+                    'Мо-датхар аракша неугасимого' => (int)$row->extra_8,
+                    'Мо-датхар замридина' => (int)$row->extra_9,
+                    'Мо-датхар акдуфа-многонога' => (int)$row->extra_10,
                 ]
             ];
         }
+
         foreach ($players as $name => $player) {
             $ordered = [];
             foreach ($months as $month) {
                 $ordered[$month] = $player['months'][$month] ?? [
                     'gold' => 0, 'dust' => 0, 'truth' => 0, 'jetons' => 0, 'pages' => 0,
-                    'resources' => ['Огневик' => 0, 'Горецвет' => 0, 'Инкарнум' => 0, 'Центридо' => 0]
+                    'resources' => [], 'extra' => []
                 ];
             }
             $players[$name]['months'] = $ordered;
+            $players[$name]['name'] = $name;
         }
+
         return ['players' => $players, 'months' => $months->toArray()];
     }
 
@@ -188,8 +230,6 @@ class TaxesController extends Controller
             DB::raw("SUM(CASE WHEN EXTRACT(MONTH FROM date) = {$currentMonth->month} AND EXTRACT(YEAR FROM date) = {$currentMonth->year} AND object = 'Жетон «Времена года»' THEN quantity ELSE 0 END) as jetons_current_month")
         )
             ->where('clan_id', $clan_id)
-            ->where(function ($q) { $q->where('for_talents', '!=', true)->orWhereNull('for_talents'); })
-            ->where(function ($q) { $q->where('repaid_the_debt', '!=', true)->orWhereNull('repaid_the_debt'); })
             ->groupBy('name')->get();
     }
 
@@ -197,20 +237,20 @@ class TaxesController extends Controller
         $resourceNames = ['Монеты' => 'Золото', 'Кристаллизованный прах' => 'Прах', 'Кристаллы истины' => 'Истина', 'Страница из трактата «Единство клана»' => 'Страницы'];
         $start = now()->subMonths(6)->startOfMonth();
         $end = now()->subMonth()->endOfMonth();
-        $rawData = TreasuryLog::selectRaw("object, TO_CHAR(date, 'YYYY-MM') as month, SUM(quantity) as total")->where('clan_id', $clanId)->whereIn('object', array_keys($resourceNames))->whereBetween('date', [$start, $end])->where(function ($q) { $q->where('for_talents', '!=', true)->orWhereNull('for_talents'); })->groupBy('object', DB::raw("TO_CHAR(date, 'YYYY-MM')"))->get();
+        $rawData = TreasuryLog::selectRaw("object, TO_CHAR(date, 'YYYY-MM') as month, SUM(quantity) as total")->where('clan_id', $clanId)->whereIn('object', array_keys($resourceNames))->whereBetween('date', [$start, $end])->groupBy('object', DB::raw("TO_CHAR(date, 'YYYY-MM')"))->get();
         $months = collect();
-        for ($i = 6; $i >= 1; $i--) { $months->push(now()->subMonths($i)->format('Y-m')); }
+        for ($i = 6; $i >= 1; $i--) $months->push(now()->subMonths($i)->format('Y-m'));
         $months = $months->reverse();
         $table = [];
         foreach ($resourceNames as $dbName => $label) {
             $monthlyTotals = [];
-            foreach ($months as $month) { $monthlyTotals[$month] = round($rawData->where('object', $dbName)->where('month', $month)->first()->total ?? 0); }
+            foreach ($months as $month) $monthlyTotals[$month] = round($rawData->where('object', $dbName)->where('month', $month)->first()->total ?? 0);
             $robust = $this->getRobustAverage(array_values($monthlyTotals));
             $table[] = ['name' => $label, 'average' => $robust['average'], 'months' => $monthlyTotals, 'excluded' => $robust['excluded']];
         }
         return ['table' => $table, 'months' => $months->map(fn($m) => Carbon::parse($m . '-01')->translatedFormat('F Y'))->toArray()];
     }
 
-    private function getRobustAverage(array $values): array { $filtered = array_filter($values, fn($v) => $v != 0); if (count($filtered) === 0) return ['average' => 0, 'excluded' => []]; sort($filtered); $median = $this->getMedian($filtered); $deviations = array_map(fn($v) => abs($v - $median), $filtered); $mad = $this->getMedian($deviations); $cleaned = []; $excluded = []; foreach ($filtered as $v) { if ($mad == 0 || abs($v - $median) <= 2.0 * $mad) { $cleaned[] = $v; } else { $excluded[] = $v; } } return ['average' => count($cleaned) > 0 ? round(array_sum($cleaned) / count($cleaned)) : round(array_sum($filtered) / count($filtered)), 'excluded' => $excluded]; }
+    private function getRobustAverage(array $values): array { $filtered = array_filter($values, fn($v) => $v != 0); if (count($filtered) === 0) return ['average' => 0, 'excluded' => []]; sort($filtered); $median = $this->getMedian($filtered); $deviations = array_map(fn($v) => abs($v - $median), $filtered); $mad = $this->getMedian($deviations); $cleaned = []; $excluded = []; foreach ($filtered as $v) { if ($mad == 0 || abs($v - $median) <= 2.0 * $mad) $cleaned[] = $v; else $excluded[] = $v; } return ['average' => count($cleaned) > 0 ? round(array_sum($cleaned) / count($cleaned)) : round(array_sum($filtered) / count($filtered)), 'excluded' => $excluded]; }
     private function getMedian(array $arr): float { $count = count($arr); if ($count === 0) return 0; sort($arr); $mid = (int) floor($count / 2); return $count % 2 ? $arr[$mid] : ($arr[$mid - 1] + $arr[$mid]) / 2; }
 }
