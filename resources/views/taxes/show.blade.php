@@ -237,7 +237,7 @@
                                 show: true,
                                 total: {
                                     show: true,
-                                    label: 'В казне',
+                                    label: 'Собрали',
                                     formatter: () => Math.round(currentTotal).toLocaleString('ru-RU')
                                 }
                             }
