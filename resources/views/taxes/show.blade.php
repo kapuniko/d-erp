@@ -31,22 +31,22 @@
     </x-moonshine::layout.grid>
 
     <x-moonshine::layout.grid @style('margin: 1.25rem')>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
             <x-moonshine::layout.box title="Истина (цель {{ number_format($limits['truth'], 0, ',', ' ') }})">
                 <div id="chart-truth"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
-            <x-moonshine::layout.box title="Прах (цель {{ number_format($limits['dust'], 0, ',', ' ') }})">
-                <div id="chart-dust"></div>
-            </x-moonshine::layout.box>
-        </x-moonshine::layout.column>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
             <x-moonshine::layout.box title="Страницы (цель {{ number_format($limits['pages'], 0, ',', ' ') }})">
                 <div id="chart-pages"></div>
             </x-moonshine::layout.box>
         </x-moonshine::layout.column>
-        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="3">
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
+            <x-moonshine::layout.box title="Прах (цель {{ number_format($limits['dust'], 0, ',', ' ') }})">
+                <div id="chart-dust"></div>
+            </x-moonshine::layout.box>
+        </x-moonshine::layout.column>
+        <x-moonshine::layout.column adaptiveColSpan="12" colSpan="6">
             <x-moonshine::layout.box title="Жетоны (цель {{ number_format($limits['jetons'], 0, ',', ' ') }})">
                 <div id="chart-jetons"></div>
             </x-moonshine::layout.box>
