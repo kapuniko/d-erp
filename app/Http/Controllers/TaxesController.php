@@ -76,11 +76,11 @@ class TaxesController extends Controller
         };
 
         $chartData = [
-            'gold'   => $specialTotals->pluck('gold', 'name')->map(fn($v) => (float)$v)->toArray(),
-            'dust'   => $specialTotals->pluck('dust', 'name')->map(fn($v) => (float)$v)->toArray(),
-            'truth'  => $specialTotals->pluck('truth', 'name')->map(fn($v) => (float)$v)->toArray(),
-            'pages'  => $specialTotals->mapWithKeys(fn($item) => [$item->name => (float)($item->pages + $calculatePagesContribution($item))])->toArray(),
-            'jetons' => $specialTotals->pluck('jetons', 'name')->map(fn($v) => (float)$v)->toArray(),
+            'gold'   => $specialTotals->pluck('gold', 'name')->map(fn($v) => (float)$v)->filter(fn($v) => $v != 0)->toArray(),
+            'dust'   => $specialTotals->pluck('dust', 'name')->map(fn($v) => (float)$v)->filter(fn($v) => $v != 0)->toArray(),
+            'truth'  => $specialTotals->pluck('truth', 'name')->map(fn($v) => (float)$v)->filter(fn($v) => $v != 0)->toArray(),
+            'pages'  => $specialTotals->mapWithKeys(fn($item) => [$item->name => (float)($item->pages + $calculatePagesContribution($item))])->filter(fn($v) => $v != 0)->toArray(),
+            'jetons' => $specialTotals->pluck('jetons', 'name')->map(fn($v) => (float)$v)->filter(fn($v) => $v != 0)->toArray(),
         ];
 
         // Группируем данные для диаграмм Мистрас
