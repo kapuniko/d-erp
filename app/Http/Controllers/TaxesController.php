@@ -16,7 +16,7 @@ class TaxesController extends Controller
         $special_date = Carbon::createFromFormat('d.m.Y H:i', '12.01.2026 18:00');
         $special_next_date = Carbon::createFromFormat('d.m.Y', '15.03.2026')->endOfDay();
 
-        $rates = ['pages' => 0.62, 'truth' => 0.043, 'dust' => 0.05, 'jetons' => 0];
+        $rates = ['pages' => 0.65, 'truth' => 0.043, 'dust' => 0.05, 'jetons' => 0];
         $exchange_rates = ['Огневик' => 3, 'Горецвет' => 2, 'Инкарнум' => 2, 'Центридо' => 2];
 
         $limits_count = [
@@ -56,7 +56,7 @@ class TaxesController extends Controller
             ->where(function ($q) { $q->where('repaid_the_debt', '!=', true)->orWhereNull('repaid_the_debt'); })
             ->groupBy('name')->get();
 
-        // 🔹 ВЗНОСЫ ЗА ВСЁ ВРЕМЯ (МЕЖДУМИРЬЕ)
+        // 🔹 ВЗНОСЫ ЗА ВСЁ ВРЕМЯ (Мистрас)
         $extraTotalsRaw = TreasuryLog::select('name',
             DB::raw("SUM(CASE WHEN object = 'Браслеты джиннов' THEN quantity ELSE 0 END) as brasleti_jinov"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар альвы благонравной' THEN quantity ELSE 0 END) as mo_trava_zel"),
@@ -77,18 +77,18 @@ class TaxesController extends Controller
         };
 
         $chartData = [
-            'gold'   => $specialTotals->pluck('gold', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
-            'dust'   => $specialTotals->pluck('dust', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
-            'truth'  => $specialTotals->pluck('truth', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
-            'pages'  => $specialTotals->mapWithKeys(fn($item) => [$item->name => (float)($item->pages + $calculatePagesContribution($item))])->filter(fn($v) => $v > 0)->toArray(),
-            'jetons' => $specialTotals->pluck('jetons', 'name')->filter(fn($v) => $v > 0)->map(fn($v) => (float)$v)->toArray(),
+            'gold'   => $specialTotals->pluck('gold', 'name')->map(fn($v) => (float)$v)->toArray(),
+            'dust'   => $specialTotals->pluck('dust', 'name')->map(fn($v) => (float)$v)->toArray(),
+            'truth'  => $specialTotals->pluck('truth', 'name')->map(fn($v) => (float)$v)->toArray(),
+            'pages'  => $specialTotals->mapWithKeys(fn($item) => [$item->name => (float)($item->pages + $calculatePagesContribution($item))])->toArray(),
+            'jetons' => $specialTotals->pluck('jetons', 'name')->map(fn($v) => (float)$v)->toArray(),
         ];
 
-        // Группируем данные для диаграмм Междумирья
+        // Группируем данные для диаграмм Мистрас
         $extraChartsData = [];
         $realTotals = [];
         foreach (array_keys($extra_limits) as $key) {
-            $extraChartsData[$key] = $extraTotalsRaw->pluck($key, 'name')->filter(fn($v) => $v > 0)->toArray();
+            $extraChartsData[$key] = $extraTotalsRaw->pluck($key, 'name')->toArray();
             $realTotals[$key] = $extraTotalsRaw->sum($key); // Честный Total для центра круга
         }
 
@@ -107,7 +107,7 @@ class TaxesController extends Controller
             'extraChartsData' => $extraChartsData, 'extraLimits' => $extra_limits, 'realTotals' => $realTotals,
             'limits' => array_merge($limits_count, ['gold' => round($total_gold_goal, 2)]),
             'special_date' => $special_date, 'special_next_date' => $special_next_date,
-            'lastUpdate' => $lastUpdate ? Carbon::parse($lastUpdate) : now(), 
+            'lastUpdate' => $lastUpdate ? Carbon::parse($lastUpdate) : now(),
         ]);
     }
 
