@@ -126,7 +126,7 @@ class TaxesController extends Controller
                 SUM(CASE WHEN object = 'Браслеты джиннов' THEN quantity ELSE 0 END) as extra_1,
                 SUM(CASE WHEN object = 'Мо-датхар альвы благонравной' THEN quantity ELSE 0 END) as extra_2,
                 SUM(CASE WHEN object = 'Мо-датхар нурида' THEN quantity ELSE 0 END) as extra_3,
-                SUM(CASE WHEN object = 'Мо-датхар золтой шамсы' THEN quantity ELSE 0 END) as extra_4,
+                SUM(CASE WHEN object = 'Мо-датхар золотой шамсы' THEN quantity ELSE 0 END) as extra_4,
                 SUM(CASE WHEN object = 'Мо-датхар чёрного лотоса' THEN quantity ELSE 0 END) as extra_5,
                 SUM(CASE WHEN object = 'Мо-датхар шахифрита' THEN quantity ELSE 0 END) as extra_6,
                 SUM(CASE WHEN object = 'Мо-датхар мистрасского рыбозмея' THEN quantity ELSE 0 END) as extra_7,
@@ -152,7 +152,7 @@ class TaxesController extends Controller
                 'resources' => ['Огневик' => (int)$row->ognevik, 'Горецвет' => (int)$row->gorecvet, 'Инкарнум' => (int)$row->incarnum, 'Центридо' => (int)$row->centrido],
                 // 🔹 ДОБАВЛЯЕМ НОВЫЕ РЕСУРСЫ В МАССИВ МЕСЯЦА
                 'extra' => [
-                    'Браслеты джиннов' => (int)$row->extra_1, 'Мо-датхар альвы благонравной' => (int)$row->extra_2, 'Мо-датхар нурида' => (int)$row->extra_3, 'Мо-датхар золтой шамсы' => (int)$row->extra_4,
+                    'Браслеты джиннов' => (int)$row->extra_1, 'Мо-датхар альвы благонравной' => (int)$row->extra_2, 'Мо-датхар нурида' => (int)$row->extra_3, 'Мо-датхар золотой шамсы' => (int)$row->extra_4,
                     'Мо-датхар чёрного лотоса' => (int)$row->extra_5, 'Мо-датхар шахифрита' => (int)$row->extra_6, 'Мо-датхар мистрасского рыбозмея' => (int)$row->extra_7,
                     'Мо-датхар аракша неугасимого' => (int)$row->extra_8, 'Мо-датхар замридина' => (int)$row->extra_9, 'Мо-датхар акдуфа-многонога' => (int)$row->extra_10
                 ]
