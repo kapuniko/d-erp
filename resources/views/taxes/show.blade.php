@@ -109,7 +109,7 @@
                                                 'Браслеты джиннов'                      => 'https://w1.dwar.ru/images/data/artifacts/3_shacles_04.gif',
                                                 'Мо-датхар альвы благонравной'          => 'https://w1.dwar.ru/images/data/artifacts/semyachko_2_02.gif',
                                                 'Мо-датхар нурида'                      => 'https://w1.dwar.ru/images/data/artifacts/concentrate_stone_1_02.gif',
-                                                'Мо-датхар золотой шамсы'                => 'https://w1.dwar.ru/iimages/data/artifacts/_thumb_2398615.png',
+                                                'Мо-датхар золотой шамсы'               => 'https://w1.dwar.ru/images/data/artifacts/_thumb_2398615.png',
                                                 'Мо-датхар чёрного лотоса'              => 'https://w1.dwar.ru/images/data/artifacts/semyachko_1_03.gif',
                                                 'Мо-датхар шахифрита'                   => 'https://w1.dwar.ru/images/data/artifacts/concentrate_stone_2_03.gif',
                                                 'Мо-датхар мистрасского рыбозмея'       => 'https://w1.dwar.ru/images/data/artifacts/concentrate_eel_03.gif',
