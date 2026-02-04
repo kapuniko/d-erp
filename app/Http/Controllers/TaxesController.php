@@ -61,7 +61,7 @@ class TaxesController extends Controller
             DB::raw("SUM(CASE WHEN object = 'Браслеты джиннов' THEN quantity ELSE 0 END) as brasleti_jinov"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар альвы благонравной' THEN quantity ELSE 0 END) as mo_trava_zel"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар нурида' THEN quantity ELSE 0 END) as mo_kamen_zel"),
-            DB::raw("SUM(CASE WHEN object = 'Мо-датхар золтой шамсы' THEN quantity ELSE 0 END) as mo_riba_zel"),
+            DB::raw("SUM(CASE WHEN object = 'Мо-датхар золотой шамсы' THEN quantity ELSE 0 END) as mo_riba_zel"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар чёрного лотоса' THEN quantity ELSE 0 END) as mo_trava_sin"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар шахифрита' THEN quantity ELSE 0 END) as mo_kamen_sin"),
             DB::raw("SUM(CASE WHEN object = 'Мо-датхар мистрасского рыбозмея' THEN quantity ELSE 0 END) as mo_riba_sin"),
