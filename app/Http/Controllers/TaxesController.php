@@ -72,8 +72,7 @@ class TaxesController extends Controller
             ->where('clan_id', $clan->id)->groupBy('name')->get();
 
         $calculatePagesContribution = function($row) use ($exchange_rates) {
-            $contrib = ($row->res_ognevik / 3) + ($row->res_gorecvet / 2) + ($row->res_incarnum / 2) + ($row->res_centrido / 2);
-            return floor($contrib);
+            return ($row->res_ognevik / 3) + ($row->res_gorecvet / 2) + ($row->res_incarnum / 2) + ($row->res_centrido / 2);
         };
 
         $chartData = [
@@ -95,7 +94,7 @@ class TaxesController extends Controller
         $goldEquivalentData = [];
         foreach ($specialTotals as $row) {
             $equiv = $row->gold + (($row->pages + $calculatePagesContribution($row)) * $rates['pages']) + ($row->truth * $rates['truth']) + ($row->dust * $rates['dust']);
-            if ($equiv > 0) $goldEquivalentData[$row->name] = round($equiv, 2);
+            $goldEquivalentData[$row->name] = round($equiv, 2);
         }
 
         $lastUpdate = TreasuryLog::where('clan_id', $clan->id)->max('date');
