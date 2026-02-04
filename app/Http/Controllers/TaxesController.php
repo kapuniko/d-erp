@@ -94,7 +94,7 @@ class TaxesController extends Controller
         $goldEquivalentData = [];
         foreach ($specialTotals as $row) {
             $equiv = $row->gold + (($row->pages + $calculatePagesContribution($row)) * $rates['pages']) + ($row->truth * $rates['truth']) + ($row->dust * $rates['dust']);
-            $goldEquivalentData[$row->name] = round($equiv, 2);
+            if ($equiv !== 0) $goldEquivalentData[$row->name] = round($equiv, 2);
         }
 
         $lastUpdate = TreasuryLog::where('clan_id', $clan->id)->max('date');
