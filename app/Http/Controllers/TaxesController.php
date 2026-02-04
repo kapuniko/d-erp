@@ -87,7 +87,7 @@ class TaxesController extends Controller
         $extraChartsData = [];
         $realTotals = [];
         foreach (array_keys($extra_limits) as $key) {
-            $extraChartsData[$key] = $extraTotalsRaw->pluck($key, 'name')->toArray();
+            $extraChartsData[$key] = $extraTotalsRaw->pluck($key, 'name')->filter(fn($v) => $v != 0)->toArray();
             $realTotals[$key] = $extraTotalsRaw->sum($key); // Честный Total для центра круга
         }
 
